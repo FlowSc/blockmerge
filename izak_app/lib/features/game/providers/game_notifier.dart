@@ -122,11 +122,24 @@ class GameNotifier extends _$GameNotifier {
     );
   }
 
-  void _haptic() {
+  void _haptic([int chainLevel = 0]) {
     final bool enabled =
         ref.read(settingsNotifierProvider).vibrationEnabled;
-    if (enabled) {
-      HapticFeedback.mediumImpact();
+    if (!enabled) return;
+
+    switch (chainLevel) {
+      case 0:
+        HapticFeedback.lightImpact();
+      case 1:
+        HapticFeedback.mediumImpact();
+      case 2:
+        HapticFeedback.heavyImpact();
+      default:
+        // 3+ chains: heavy + vibrate for extra punch
+        HapticFeedback.heavyImpact();
+        Future<void>.delayed(const Duration(milliseconds: 50), () {
+          HapticFeedback.heavyImpact();
+        });
     }
   }
 
@@ -343,33 +356,74 @@ class GameNotifier extends _$GameNotifier {
     });
   }
 
-  /// Pick the pair that maximises follow-up chain potential.
-  /// Tiebreaker: prefer merges closer to bottom-right.
+  /// Expand a pair into both merge directions (merge into from1 or from2).
+  List<MergedPair> _expandDirections(MergedPair pair) {
+    return [
+      MergedPair(
+        from1: pair.from1,
+        from2: pair.from2,
+        to: pair.from1,
+        newValue: pair.newValue,
+      ),
+      MergedPair(
+        from1: pair.from1,
+        from2: pair.from2,
+        to: pair.from2,
+        newValue: pair.newValue,
+      ),
+    ];
+  }
+
+  /// Pick the pair + direction that maximises the full chain reaction.
+  /// Simulates the entire remaining chain for each candidate and picks
+  /// the one with the most total merges (tiebreaker: highest score).
   MergedPair _selectBestPair(
     List<List<int?>> grid,
     List<MergedPair> pairs,
   ) {
-    if (pairs.length == 1) return pairs.first;
+    if (pairs.length == 1) {
+      // Even with a single pair, still pick the better direction
+      final List<MergedPair> directions = _expandDirections(pairs.first);
+      return _pickBestCandidate(grid, directions);
+    }
 
-    MergedPair best = pairs.first;
-    int bestChain = -1;
-    int bestPos = -1;
+    // Build all candidates: each pair × 2 directions
+    final List<MergedPair> candidates = [
+      for (final MergedPair pair in pairs) ..._expandDirections(pair),
+    ];
 
-    for (final MergedPair pair in pairs) {
-      // Simulate this single merge + gravity
-      final List<List<int?>> afterMerge = Board.applyMerges(grid, [pair]);
+    return _pickBestCandidate(grid, candidates);
+  }
+
+  MergedPair _pickBestCandidate(
+    List<List<int?>> grid,
+    List<MergedPair> candidates,
+  ) {
+    MergedPair best = candidates.first;
+    int bestMerges = -1;
+    int bestScore = -1;
+
+    for (final MergedPair candidate in candidates) {
+      // Simulate: apply this merge → gravity → run full remaining chain
+      final List<List<int?>> afterMerge =
+          Board.applyMerges(grid, [candidate]);
       final List<List<int?>> afterGravity = Board.applyGravity(afterMerge);
-      final int nextCount = Board.findMergeablePairs(afterGravity).length;
+      final MergeChainResult chainResult =
+          Board.runMergeChain(afterGravity);
 
-      // Position score: higher row (bottom) and higher col (right) = better
-      final int posScore =
-          pair.to.row * GameConstants.columns + pair.to.col;
+      // Total merges = 1 (this merge) + all follow-up merges
+      final int totalMerges = 1 + chainResult.steps.fold<int>(
+        0,
+        (int sum, MergeStep step) => sum + step.mergedPairs.length,
+      );
+      final int totalScore =
+          candidate.newValue + chainResult.totalScore;
 
-      if (nextCount > bestChain ||
-          (nextCount == bestChain && posScore > bestPos)) {
-        best = pair;
-        bestChain = nextCount;
-        bestPos = posScore;
+      if (totalMerges > bestMerges ||
+          (totalMerges == bestMerges && totalScore > bestScore)) {
+        best = candidate;
+        bestMerges = totalMerges;
+        bestScore = totalScore;
       }
     }
 
@@ -399,7 +453,7 @@ class GameNotifier extends _$GameNotifier {
       final int multiplier = GameConstants.chainMultiplier(chainLevel);
       final int stepScore = target.newValue * multiplier;
 
-      _haptic();
+      _haptic(chainLevel);
       final List<List<int?>> mergedGrid =
           Board.applyMerges(grid, singlePair);
 
