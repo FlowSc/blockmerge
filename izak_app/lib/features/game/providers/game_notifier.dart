@@ -86,6 +86,8 @@ class GameNotifier extends _$GameNotifier {
       highScore: state.highScore,
       status: GameStatus.playing,
       lastMergeChain: null,
+      totalMerges: 0,
+      maxChainLevel: 0,
     );
 
     _startTicker();
@@ -349,6 +351,8 @@ class GameNotifier extends _$GameNotifier {
         newMergedPositions: () => {target.to},
         score: state.score + stepScore,
         lastMergeChain: () => chainResult,
+        totalMerges: state.totalMerges + 1,
+        maxChainLevel: max(state.maxChainLevel, chainLevel),
       );
 
       // Phase 3: After showing merged tile, apply gravity

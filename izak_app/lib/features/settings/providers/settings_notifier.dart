@@ -9,6 +9,8 @@ const String _soundKey = 'sound_enabled';
 const String _vibrationKey = 'vibration_enabled';
 const String _ghostKey = 'show_ghost';
 const String _tutorialKey = 'tutorial_seen';
+const String _nicknameKey = 'nickname';
+const String _adFreeKey = 'ad_free';
 
 @Riverpod(keepAlive: true)
 class SettingsNotifier extends _$SettingsNotifier {
@@ -25,6 +27,8 @@ class SettingsNotifier extends _$SettingsNotifier {
       vibrationEnabled: prefs.getBool(_vibrationKey) ?? true,
       showGhost: prefs.getBool(_ghostKey) ?? true,
       tutorialSeen: prefs.getBool(_tutorialKey) ?? false,
+      nickname: prefs.getString(_nicknameKey),
+      isAdFree: prefs.getBool(_adFreeKey) ?? false,
     );
   }
 
@@ -53,5 +57,17 @@ class SettingsNotifier extends _$SettingsNotifier {
     state = state.copyWith(tutorialSeen: true);
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_tutorialKey, true);
+  }
+
+  Future<void> setNickname(String nickname) async {
+    state = state.copyWith(nickname: () => nickname);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_nicknameKey, nickname);
+  }
+
+  Future<void> setAdFree(bool value) async {
+    state = state.copyWith(isAdFree: value);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_adFreeKey, value);
   }
 }

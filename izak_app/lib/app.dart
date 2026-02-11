@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'core/theme/app_theme.dart';
 import 'features/game/game_screen.dart';
 import 'features/home/home_screen.dart';
+import 'features/leaderboard/leaderboard_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/tutorial/tutorial_screen.dart';
 
@@ -32,6 +33,12 @@ GoRouter _createRouter() => GoRouter(
       path: '/tutorial',
       builder: (BuildContext context, GoRouterState state) {
         return const TutorialScreen();
+      },
+    ),
+    GoRoute(
+      path: '/leaderboard',
+      builder: (BuildContext context, GoRouterState state) {
+        return const LeaderboardScreen();
       },
     ),
   ],

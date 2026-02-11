@@ -63,6 +63,27 @@ class HomeScreen extends ConsumerWidget {
                 width: 220,
                 height: 56,
                 child: OutlinedButton(
+                  onPressed: () => context.push('/leaderboard'),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      color: const Color(0xFFFFD700).withValues(alpha: 0.5),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  child: const Text('리더보드'),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: 220,
+                height: 56,
+                child: OutlinedButton(
                   onPressed: () => context.push('/settings'),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(

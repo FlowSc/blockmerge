@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/constants/game_constants.dart';
 import '../providers/game_notifier.dart';
 
 class ScoreDisplay extends ConsumerWidget {
@@ -14,10 +15,11 @@ class ScoreDisplay extends ConsumerWidget {
         ref.watch(gameNotifierProvider.select((s) => s.score));
     final int highScore =
         ref.watch(gameNotifierProvider.select((s) => s.highScore));
+    final int level = score ~/ GameConstants.pointsPerLevel;
 
     return Row(
       children: [
-        Expanded(child: _ScoreBox(label: 'SCORE', value: score)),
+        Expanded(child: _ScoreBox(label: 'SCORE', value: score, sublabel: 'LV.$level')),
         if (center != null) ...[
           const SizedBox(width: 8),
           center!,
@@ -30,10 +32,11 @@ class ScoreDisplay extends ConsumerWidget {
 }
 
 class _ScoreBox extends StatelessWidget {
-  const _ScoreBox({required this.label, required this.value});
+  const _ScoreBox({required this.label, required this.value, this.sublabel});
 
   final String label;
   final int value;
+  final String? sublabel;
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +70,18 @@ class _ScoreBox extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
+          if (sublabel != null) ...[
+            const SizedBox(height: 2),
+            Text(
+              sublabel!,
+              style: TextStyle(
+                color: const Color(0xFF00D2FF).withValues(alpha: 0.8),
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+              ),
+            ),
+          ],
         ],
       ),
     );

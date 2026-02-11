@@ -19,6 +19,8 @@ final class GameState {
     this.isAnimating = false,
     this.highlightedPositions,
     this.newMergedPositions,
+    this.totalMerges = 0,
+    this.maxChainLevel = 0,
   });
 
   /// 12 rows x 6 columns. null = empty cell, int = tile value.
@@ -42,6 +44,12 @@ final class GameState {
   /// Positions of tiles that just appeared from a merge (pop effect).
   final Set<Position>? newMergedPositions;
 
+  /// Total number of merges in the current game.
+  final int totalMerges;
+
+  /// Maximum chain level reached in the current game.
+  final int maxChainLevel;
+
   GameState copyWith({
     List<List<int?>>? grid,
     FallingBlock? Function()? currentBlock,
@@ -53,6 +61,8 @@ final class GameState {
     bool? isAnimating,
     Set<Position>? Function()? highlightedPositions,
     Set<Position>? Function()? newMergedPositions,
+    int? totalMerges,
+    int? maxChainLevel,
   }) {
     return GameState(
       grid: grid ?? this.grid,
@@ -71,6 +81,8 @@ final class GameState {
       newMergedPositions: newMergedPositions != null
           ? newMergedPositions()
           : this.newMergedPositions,
+      totalMerges: totalMerges ?? this.totalMerges,
+      maxChainLevel: maxChainLevel ?? this.maxChainLevel,
     );
   }
 }

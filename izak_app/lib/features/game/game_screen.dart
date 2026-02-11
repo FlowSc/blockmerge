@@ -7,9 +7,11 @@ import 'providers/game_notifier.dart';
 import 'widgets/combo_display.dart';
 import 'widgets/game_board_widget.dart';
 import 'widgets/game_over_overlay.dart';
+import 'widgets/new_best_notification.dart';
 import 'widgets/next_block_preview.dart';
 import 'widgets/pause_overlay.dart';
 import 'widgets/score_display.dart';
+import '../../shared/widgets/banner_ad_widget.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
   const GameScreen({super.key});
@@ -130,6 +132,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
                     ),
                   ),
                   const SizedBox(height: 8),
+                  const BannerAdWidget(),
                 ],
               ),
             ),
@@ -138,6 +141,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
           const Positioned.fill(
             child: ComboDisplay(),
           ),
+          const NewBestNotification(),
           if (status == GameStatus.paused) const PauseOverlay(),
           if (status == GameStatus.gameOver) const GameOverOverlay(),
           if (_showCountdown)
