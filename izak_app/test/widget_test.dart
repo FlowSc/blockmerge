@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:izak_app/app.dart';
+import 'package:izak_app/features/game/widgets/game_board_widget.dart';
+import 'package:izak_app/features/game/widgets/score_display.dart';
 
 void main() {
   testWidgets('Home screen renders title and buttons',
@@ -30,7 +32,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Game screen is visible behind countdown overlay
-    expect(find.text('Game Board'), findsOneWidget);
+    expect(find.byType(GameBoardWidget), findsOneWidget);
     expect(find.text('3'), findsOneWidget);
   });
 
@@ -55,9 +57,9 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
 
-    // Countdown gone, game board visible
+    // Countdown gone, game board and score display visible
     expect(find.text('3'), findsNothing);
-    expect(find.text('Game Board'), findsOneWidget);
-    expect(find.text('Score: 0'), findsOneWidget);
+    expect(find.byType(GameBoardWidget), findsOneWidget);
+    expect(find.byType(ScoreDisplay), findsOneWidget);
   });
 }
