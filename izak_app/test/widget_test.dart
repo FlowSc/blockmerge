@@ -1,10 +1,10 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:izak_app/app.dart';
 
 void main() {
-  testWidgets('App renders game screen with title and board',
+  testWidgets('Home screen renders title and buttons',
       (WidgetTester tester) async {
     await tester.pumpWidget(
       const ProviderScope(
@@ -13,6 +13,50 @@ void main() {
     );
 
     expect(find.text('IZAK'), findsOneWidget);
+    expect(find.text('Block Merge Puzzle'), findsOneWidget);
+    expect(find.text('시작하기'), findsOneWidget);
+    expect(find.text('설정'), findsOneWidget);
+  });
+
+  testWidgets('Tapping start navigates to game with countdown overlay',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: IzakApp(),
+      ),
+    );
+
+    await tester.tap(find.text('시작하기'));
+    await tester.pumpAndSettle();
+
+    // Game screen is visible behind countdown overlay
+    expect(find.text('Game Board'), findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
+  });
+
+  testWidgets('Countdown on game screen: 3 -> 2 -> 1 -> game starts',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: IzakApp(),
+      ),
+    );
+
+    await tester.tap(find.text('시작하기'));
+    await tester.pumpAndSettle();
+    expect(find.text('3'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('2'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('1'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+
+    // Countdown gone, game board visible
+    expect(find.text('3'), findsNothing);
     expect(find.text('Game Board'), findsOneWidget);
     expect(find.text('Score: 0'), findsOneWidget);
   });

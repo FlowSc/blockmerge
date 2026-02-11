@@ -74,6 +74,11 @@ Key rules:
 - Use `const` constructors wherever possible for performance
 - 모든 새 기능에는 flutter_test 단위 테스트를 포함할 것
 
+## Verification
+
+- 검증은 `flutter analyze`, `flutter test`, `flutter run`까지 실행할 것 (izak_app/ 디렉토리에서)
+- 시뮬레이터에서 스크린샷 캡처나 터치 시뮬레이션 등 수동 UI 테스트는 하지 않는다 — 사용자가 직접 수행
+
 ## Dart Standards
 
 - Analysis options: `strict-casts: true`, `strict-raw-types: true`
