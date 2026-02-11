@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/constants/game_constants.dart';
 import '../models/board.dart';
@@ -11,6 +12,8 @@ import '../models/merge_result.dart';
 import '../models/position.dart';
 
 part 'game_notifier.g.dart';
+
+const String _highScoreKey = 'high_score';
 
 @riverpod
 class GameNotifier extends _$GameNotifier {
@@ -22,6 +25,7 @@ class GameNotifier extends _$GameNotifier {
   GameState build() {
     ref.onDispose(_disposeTimers);
     _rng = Random();
+    _loadHighScore();
     return GameState(
       grid: Board.empty(),
       currentBlock: null,
@@ -31,6 +35,19 @@ class GameNotifier extends _$GameNotifier {
       status: GameStatus.idle,
       lastMergeChain: null,
     );
+  }
+
+  Future<void> _loadHighScore() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int saved = prefs.getInt(_highScoreKey) ?? 0;
+    if (saved > state.highScore) {
+      state = state.copyWith(highScore: saved);
+    }
+  }
+
+  Future<void> _saveHighScore(int score) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_highScoreKey, score);
   }
 
   void _disposeTimers() {
@@ -153,6 +170,10 @@ class GameNotifier extends _$GameNotifier {
       final int newScore = state.score + result.totalScore;
       final int newHighScore =
           newScore > state.highScore ? newScore : state.highScore;
+
+      if (newHighScore > state.highScore) {
+        _saveHighScore(newHighScore);
+      }
 
       state = state.copyWith(
         grid: finalGrid,
@@ -338,6 +359,10 @@ class GameNotifier extends _$GameNotifier {
   void _finishMergeChain() {
     final int newHighScore =
         state.score > state.highScore ? state.score : state.highScore;
+
+    if (newHighScore > state.highScore) {
+      _saveHighScore(newHighScore);
+    }
 
     state = state.copyWith(
       highScore: newHighScore,

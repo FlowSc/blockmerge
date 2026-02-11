@@ -1,12 +1,16 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:izak_app/features/game/models/game_state.dart';
 import 'package:izak_app/features/game/providers/game_notifier.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   late ProviderContainer container;
 
   setUp(() {
+    WidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
     container = ProviderContainer();
   });
 
