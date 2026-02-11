@@ -15,6 +15,12 @@ abstract final class GameConstants {
   static const int speedIncreasePerLevel = 50;
   static const int pointsPerLevel = 500;
 
+  // Lock delay (milliseconds): time to move after touching ground
+  static const int lockDelayMs = 500;
+
+  // Maximum total lock time (milliseconds): hard cap for lock resets
+  static const int maxLockMs = 2000;
+
   // Block type weights (cumulative probability out of 100)
   static const int weightSingle = 30; // 30%
   static const int weightPair = 55; // +25%

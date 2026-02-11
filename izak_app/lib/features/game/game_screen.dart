@@ -109,45 +109,52 @@ class _GameScreenState extends ConsumerState<GameScreen>
         automaticallyImplyLeading: false,
         title: const Text('IZAK'),
       ),
-      body: Stack(
+      body: Column(
         children: [
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  const SizedBox(height: 8),
-                  const ScoreDisplay(
-                    center: NextBlockPreview(),
-                  ),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: GestureDetector(
-                      onPanStart: _onPanStart,
-                      onPanUpdate: _onPanUpdate,
-                      onPanEnd: _onPanEnd,
-                      onTap: _onTap,
-                      behavior: HitTestBehavior.opaque,
-                      child: const GameBoardWidget(),
+          Expanded(
+            child: Stack(
+              children: [
+                SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 8),
+                        const ScoreDisplay(
+                          center: NextBlockPreview(),
+                        ),
+                        const SizedBox(height: 8),
+                        Expanded(
+                          child: GestureDetector(
+                            onPanStart: _onPanStart,
+                            onPanUpdate: _onPanUpdate,
+                            onPanEnd: _onPanEnd,
+                            onTap: _onTap,
+                            behavior: HitTestBehavior.opaque,
+                            child: const GameBoardWidget(),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const BannerAdWidget(),
-                ],
-              ),
+                ),
+                // Combo overlay: centered on screen, no layout impact
+                const Positioned.fill(
+                  child: ComboDisplay(),
+                ),
+                const NewBestNotification(),
+                if (status == GameStatus.paused) const PauseOverlay(),
+                if (status == GameStatus.gameOver) const GameOverOverlay(),
+                if (_showCountdown)
+                  CountdownOverlay(
+                    onComplete: _onCountdownComplete,
+                  ),
+              ],
             ),
           ),
-          // Combo overlay: centered on screen, no layout impact
-          const Positioned.fill(
-            child: ComboDisplay(),
-          ),
-          const NewBestNotification(),
-          if (status == GameStatus.paused) const PauseOverlay(),
-          if (status == GameStatus.gameOver) const GameOverOverlay(),
-          if (_showCountdown)
-            CountdownOverlay(
-              onComplete: _onCountdownComplete,
-            ),
+          const BannerAdWidget(),
         ],
       ),
     );

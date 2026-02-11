@@ -22,6 +22,9 @@ class GameNotifier extends _$GameNotifier {
   late Random _rng;
   Timer? _tickTimer;
   Timer? _animTimer;
+  Timer? _lockTimer;
+  bool _isLocking = false;
+  DateTime? _lockStartedAt;
 
   @override
   GameState build() {
@@ -57,10 +60,67 @@ class GameNotifier extends _$GameNotifier {
     _tickTimer = null;
     _animTimer?.cancel();
     _animTimer = null;
+    _lockTimer?.cancel();
+    _lockTimer = null;
+    _isLocking = false;
+    _lockStartedAt = null;
   }
 
   bool get _canAcceptInput =>
       state.status == GameStatus.playing && !state.isAnimating;
+
+  /// After a successful move during lock delay, reset the lock timer.
+  void _resetLockIfNeeded() {
+    if (!_isLocking) return;
+
+    // Hard cap: if total lock time exceeded, don't reset
+    if (_lockStartedAt != null) {
+      final int elapsed =
+          DateTime.now().difference(_lockStartedAt!).inMilliseconds;
+      if (elapsed >= GameConstants.maxLockMs) return;
+    }
+
+    _lockTimer?.cancel();
+    // Check if block is still grounded after the move
+    final FallingBlock? block = state.currentBlock;
+    if (block != null && !Board.canPlace(state.grid, block.move(1, 0))) {
+      _restartLockTimer();
+    } else {
+      // Block is no longer grounded — cancel lock, resume normal tick
+      _isLocking = false;
+      _lockStartedAt = null;
+      _startTicker();
+    }
+  }
+
+  void _startLockDelay() {
+    _lockTimer?.cancel();
+    _isLocking = true;
+    _lockStartedAt = DateTime.now();
+    _restartLockTimer();
+  }
+
+  void _restartLockTimer() {
+    _lockTimer?.cancel();
+
+    // Clamp remaining time to not exceed the hard cap
+    int delayMs = GameConstants.lockDelayMs;
+    if (_lockStartedAt != null) {
+      final int elapsed =
+          DateTime.now().difference(_lockStartedAt!).inMilliseconds;
+      final int remaining = GameConstants.maxLockMs - elapsed;
+      delayMs = delayMs.clamp(0, remaining);
+    }
+
+    _lockTimer = Timer(
+      Duration(milliseconds: delayMs),
+      () {
+        _isLocking = false;
+        _lockStartedAt = null;
+        _placeAndMerge();
+      },
+    );
+  }
 
   void _haptic() {
     final bool enabled =
@@ -101,6 +161,7 @@ class GameNotifier extends _$GameNotifier {
     final FallingBlock moved = block.move(0, -1);
     if (Board.canPlace(state.grid, moved)) {
       state = state.copyWith(currentBlock: () => moved);
+      _resetLockIfNeeded();
     }
   }
 
@@ -112,6 +173,7 @@ class GameNotifier extends _$GameNotifier {
     final FallingBlock moved = block.move(0, 1);
     if (Board.canPlace(state.grid, moved)) {
       state = state.copyWith(currentBlock: () => moved);
+      _resetLockIfNeeded();
     }
   }
 
@@ -142,6 +204,7 @@ class GameNotifier extends _$GameNotifier {
       final FallingBlock shifted = rotated.move(kick[0], kick[1]);
       if (Board.canPlace(state.grid, shifted)) {
         state = state.copyWith(currentBlock: () => shifted);
+        _resetLockIfNeeded();
         return;
       }
     }
@@ -152,6 +215,10 @@ class GameNotifier extends _$GameNotifier {
     if (!_canAcceptInput) return;
     final FallingBlock? block = state.currentBlock;
     if (block == null) return;
+
+    // Cancel lock delay if active
+    _lockTimer?.cancel();
+    _isLocking = false;
 
     FallingBlock current = block;
     while (true) {
@@ -174,6 +241,8 @@ class GameNotifier extends _$GameNotifier {
     if (state.status != GameStatus.playing) return;
     _tickTimer?.cancel();
     _animTimer?.cancel();
+    _lockTimer?.cancel();
+    _isLocking = false;
 
     if (state.isAnimating) {
       // Complete remaining merges instantly
@@ -230,6 +299,7 @@ class GameNotifier extends _$GameNotifier {
 
   void _tick() {
     if (state.status != GameStatus.playing || state.isAnimating) return;
+    if (_isLocking) return; // Lock delay in progress — skip tick
     final FallingBlock? block = state.currentBlock;
     if (block == null) return;
 
@@ -237,12 +307,16 @@ class GameNotifier extends _$GameNotifier {
     if (Board.canPlace(state.grid, moved)) {
       state = state.copyWith(currentBlock: () => moved);
     } else {
-      _placeAndMerge();
+      // Block touched ground — start lock delay instead of instant place
+      _tickTimer?.cancel();
+      _startLockDelay();
     }
   }
 
   void _placeAndMerge() {
     _tickTimer?.cancel();
+    _lockTimer?.cancel();
+    _isLocking = false;
 
     final FallingBlock? block = state.currentBlock;
     if (block == null) return;
