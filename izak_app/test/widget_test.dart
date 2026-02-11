@@ -1,11 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:izak_app/app.dart';
 import 'package:izak_app/features/game/widgets/game_board_widget.dart';
 import 'package:izak_app/features/game/widgets/score_display.dart';
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({'tutorial_seen': true});
+  });
+
   testWidgets('Home screen renders title and buttons',
       (WidgetTester tester) async {
     await tester.pumpWidget(
@@ -27,6 +32,8 @@ void main() {
         child: IzakApp(),
       ),
     );
+    // Allow async settings load to complete
+    await tester.pump();
 
     await tester.tap(find.text('시작하기'));
     await tester.pumpAndSettle();
@@ -43,6 +50,8 @@ void main() {
         child: IzakApp(),
       ),
     );
+    // Allow async settings load to complete
+    await tester.pump();
 
     await tester.tap(find.text('시작하기'));
     await tester.pumpAndSettle();

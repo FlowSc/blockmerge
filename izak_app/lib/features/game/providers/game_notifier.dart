@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/constants/game_constants.dart';
+import '../../settings/providers/settings_notifier.dart';
 import '../models/board.dart';
 import '../models/falling_block.dart';
 import '../models/game_state.dart';
@@ -59,6 +61,14 @@ class GameNotifier extends _$GameNotifier {
 
   bool get _canAcceptInput =>
       state.status == GameStatus.playing && !state.isAnimating;
+
+  void _haptic() {
+    final bool enabled =
+        ref.read(settingsNotifierProvider).vibrationEnabled;
+    if (enabled) {
+      HapticFeedback.mediumImpact();
+    }
+  }
 
   // --- Public API ---
 
@@ -152,6 +162,7 @@ class GameNotifier extends _$GameNotifier {
     }
 
     state = state.copyWith(currentBlock: () => current);
+    _haptic();
     _placeAndMerge();
   }
 
@@ -312,6 +323,7 @@ class GameNotifier extends _$GameNotifier {
       final int multiplier = GameConstants.chainMultiplier(chainLevel);
       final int stepScore = target.newValue * multiplier;
 
+      _haptic();
       final List<List<int?>> mergedGrid =
           Board.applyMerges(grid, singlePair);
 

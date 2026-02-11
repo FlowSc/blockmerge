@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class HomeScreen extends StatelessWidget {
+import '../settings/providers/settings_notifier.dart';
+
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bool tutorialSeen =
+        ref.watch(settingsNotifierProvider.select((s) => s.tutorialSeen));
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -32,7 +38,13 @@ class HomeScreen extends StatelessWidget {
                 width: 220,
                 height: 56,
                 child: FilledButton(
-                  onPressed: () => context.go('/game'),
+                  onPressed: () {
+                    if (tutorialSeen) {
+                      context.go('/game');
+                    } else {
+                      context.push('/tutorial');
+                    }
+                  },
                   style: FilledButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     shape: RoundedRectangleBorder(
@@ -51,9 +63,7 @@ class HomeScreen extends StatelessWidget {
                 width: 220,
                 height: 56,
                 child: OutlinedButton(
-                  onPressed: () {
-                    // TODO: navigate to settings
-                  },
+                  onPressed: () => context.push('/settings'),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
                       color: Theme.of(context)

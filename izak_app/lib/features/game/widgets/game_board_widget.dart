@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/game_constants.dart';
+import '../../settings/providers/settings_notifier.dart';
 import '../models/falling_block.dart';
 import '../models/position.dart';
 import '../models/tile.dart' as game;
@@ -42,9 +43,12 @@ class GameBoardWidget extends ConsumerWidget {
     }
 
     // Compute ghost (hard drop preview) positions
+    final bool showGhost = ref.watch(
+      settingsNotifierProvider.select((s) => s.showGhost),
+    );
     Set<Position>? ghostPositions;
     Map<Position, int>? ghostValues;
-    if (currentBlock != null) {
+    if (showGhost && currentBlock != null) {
       FallingBlock ghost = currentBlock;
       while (true) {
         final FallingBlock next = ghost.move(1, 0);
