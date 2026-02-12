@@ -820,11 +820,11 @@ class GameNotifier extends _$GameNotifier {
   }
 
   /// Compute animation delay scaled by chain level.
-  /// Higher chains play faster: 0.85^chainLevel, clamped to 40% minimum.
+  /// Higher chains play faster: 0.92^chainLevel, clamped to 60% minimum.
   int _chainDelayMs(int baseMs, int chainLevel) {
     if (chainLevel <= 0) return baseMs;
     final double multiplier =
-        pow(0.85, chainLevel).toDouble().clamp(0.4, 1.0);
+        pow(0.92, chainLevel).toDouble().clamp(0.6, 1.0);
     return (baseMs * multiplier).round();
   }
 
