@@ -3,6 +3,7 @@ import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/providers/ad_provider.dart';
 import '../providers/game_notifier.dart';
 
 class PauseOverlay extends ConsumerWidget {
@@ -68,6 +69,7 @@ class PauseOverlay extends ConsumerWidget {
                 );
                 if (confirmed == true && context.mounted) {
                   ref.read(gameNotifierProvider.notifier).clearSavedGame();
+                  ref.read(adNotifierProvider.notifier).showInterstitial();
                   context.go('/home');
                 }
               },

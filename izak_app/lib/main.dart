@@ -31,6 +31,11 @@ Future<void> main() async {
     await AppTrackingTransparency.requestTrackingAuthorization();
   }
 
+  // Print IDFA for AdMob test device registration.
+  final String idfa =
+      await AppTrackingTransparency.getAdvertisingIdentifier();
+  debugPrint('=== IDFA: $idfa ===');
+
   await MobileAds.instance.initialize();
 
   runApp(
