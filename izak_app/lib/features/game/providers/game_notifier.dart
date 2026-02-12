@@ -396,6 +396,7 @@ class GameNotifier extends _$GameNotifier {
         isAnimating: false,
         highlightedPositions: () => null,
         newMergedPositions: () => null,
+        slidingMerge: () => null,
         lastMergeChain: () => null,
       );
     } else {
@@ -450,6 +451,7 @@ class GameNotifier extends _$GameNotifier {
           isAnimating: false,
           highlightedPositions: () => null,
           newMergedPositions: () => null,
+          slidingMerge: () => null,
         );
       } else {
         state = state.copyWith(remainingSeconds: next);
@@ -780,55 +782,75 @@ class GameNotifier extends _$GameNotifier {
       highlightedPositions: () => highlights,
     );
 
-    // Phase 2: After glow, apply merge
-    _animTimer = Timer(const Duration(milliseconds: 300), () {
-      final int multiplier = GameConstants.chainMultiplier(chainLevel);
-      final int stepScore = target.newValue * multiplier;
+    // Determine which tile slides and which stays
+    final Position stayPos = target.to;
+    final Position slidePos =
+        target.to == target.from1 ? target.from2 : target.from1;
+    final int tileValue = target.newValue ~/ 2;
 
-      _haptic(chainLevel);
-      ref.read(sfxNotifierProvider.notifier).playMerge(chainLevel);
-      final List<List<int?>> mergedGrid =
-          Board.applyMerges(grid, singlePair);
-
-      // Build progressive chain result for combo display
-      final List<MergeStep> prevSteps =
-          state.lastMergeChain?.steps ?? const [];
-      final int prevTotal = state.lastMergeChain?.totalScore ?? 0;
-      final MergeChainResult chainResult = MergeChainResult(
-        steps: [
-          ...prevSteps,
-          MergeStep(
-            mergedPairs: singlePair,
-            chainLevel: chainLevel,
-            scoreGained: stepScore,
-          ),
-        ],
-        totalScore: prevTotal + stepScore,
-      );
-
+    // Phase 2: After glow, start sliding animation
+    _animTimer = Timer(const Duration(milliseconds: 200), () {
       state = state.copyWith(
-        grid: mergedGrid,
         highlightedPositions: () => null,
-        newMergedPositions: () => {target.to},
-        score: state.score + stepScore,
-        lastMergeChain: () => chainResult,
-        totalMerges: state.totalMerges + 1,
-        maxChainLevel: max(state.maxChainLevel, chainLevel),
-        currentChainLevel: chainLevel,
+        slidingMerge: () => SlidingMerge(
+          from: slidePos,
+          to: stayPos,
+          stayPosition: stayPos,
+          tileValue: tileValue,
+        ),
       );
 
-      // Phase 3: After showing merged tile, apply gravity
-      _animTimer = Timer(const Duration(milliseconds: 200), () {
-        final List<List<int?>> gravityGrid = Board.applyGravity(mergedGrid);
+      // Phase 3: After slide completes, apply merge
+      _animTimer = Timer(const Duration(milliseconds: 250), () {
+        final int multiplier = GameConstants.chainMultiplier(chainLevel);
+        final int stepScore = target.newValue * multiplier;
 
-        state = state.copyWith(
-          grid: gravityGrid,
-          newMergedPositions: () => null,
+        _haptic(chainLevel);
+        ref.read(sfxNotifierProvider.notifier).playMerge(chainLevel);
+        final List<List<int?>> mergedGrid =
+            Board.applyMerges(grid, singlePair);
+
+        // Build progressive chain result for combo display
+        final List<MergeStep> prevSteps =
+            state.lastMergeChain?.steps ?? const [];
+        final int prevTotal = state.lastMergeChain?.totalScore ?? 0;
+        final MergeChainResult chainResult = MergeChainResult(
+          steps: [
+            ...prevSteps,
+            MergeStep(
+              mergedPairs: singlePair,
+              chainLevel: chainLevel,
+              scoreGained: stepScore,
+            ),
+          ],
+          totalScore: prevTotal + stepScore,
         );
 
-        // Phase 4: After gravity settles, check for next merge
-        _animTimer = Timer(const Duration(milliseconds: 150), () {
-          _animateMergeChain(gravityGrid, chainLevel + 1);
+        state = state.copyWith(
+          grid: mergedGrid,
+          slidingMerge: () => null,
+          newMergedPositions: () => {target.to},
+          score: state.score + stepScore,
+          lastMergeChain: () => chainResult,
+          totalMerges: state.totalMerges + 1,
+          maxChainLevel: max(state.maxChainLevel, chainLevel),
+          currentChainLevel: chainLevel,
+        );
+
+        // Phase 4: After showing merged tile, apply gravity
+        _animTimer = Timer(const Duration(milliseconds: 200), () {
+          final List<List<int?>> gravityGrid =
+              Board.applyGravity(mergedGrid);
+
+          state = state.copyWith(
+            grid: gravityGrid,
+            newMergedPositions: () => null,
+          );
+
+          // Phase 5: After gravity settles, check for next merge
+          _animTimer = Timer(const Duration(milliseconds: 150), () {
+            _animateMergeChain(gravityGrid, chainLevel + 1);
+          });
         });
       });
     });
@@ -858,6 +880,7 @@ class GameNotifier extends _$GameNotifier {
           isAnimating: false,
           highlightedPositions: () => null,
           newMergedPositions: () => null,
+          slidingMerge: () => null,
           currentChainLevel: 0,
           status: GameStatus.victory,
         );
@@ -870,6 +893,7 @@ class GameNotifier extends _$GameNotifier {
       isAnimating: false,
       highlightedPositions: () => null,
       newMergedPositions: () => null,
+      slidingMerge: () => null,
       currentChainLevel: 0,
     );
 

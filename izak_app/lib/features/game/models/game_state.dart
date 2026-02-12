@@ -5,6 +5,30 @@ import 'game_mode.dart';
 import 'merge_result.dart';
 import 'position.dart';
 
+/// Data for the sliding merge animation.
+/// Contains the merge pair info needed by the widget layer.
+@immutable
+final class SlidingMerge {
+  const SlidingMerge({
+    required this.from,
+    required this.to,
+    required this.stayPosition,
+    required this.tileValue,
+  });
+
+  /// Position the sliding tile is moving FROM.
+  final Position from;
+
+  /// Position the sliding tile is moving TO (same as stayPosition).
+  final Position to;
+
+  /// Position of the tile that stays in place.
+  final Position stayPosition;
+
+  /// Value of the source tiles (before merge).
+  final int tileValue;
+}
+
 enum GameStatus { idle, playing, paused, gameOver, victory }
 
 @immutable
@@ -26,6 +50,7 @@ final class GameState {
     this.hasReachedVictory = false,
     this.gameMode = GameMode.classic,
     this.remainingSeconds = 0,
+    this.slidingMerge,
   });
 
   /// 12 rows x 6 columns. null = empty cell, int = tile value.
@@ -67,6 +92,9 @@ final class GameState {
   /// Seconds remaining in time attack mode. 0 for classic.
   final int remainingSeconds;
 
+  /// Sliding merge animation data. Non-null while a tile is sliding.
+  final SlidingMerge? slidingMerge;
+
   GameState copyWith({
     List<List<int?>>? grid,
     FallingBlock? Function()? currentBlock,
@@ -84,6 +112,7 @@ final class GameState {
     bool? hasReachedVictory,
     GameMode? gameMode,
     int? remainingSeconds,
+    SlidingMerge? Function()? slidingMerge,
   }) {
     return GameState(
       grid: grid ?? this.grid,
@@ -108,6 +137,8 @@ final class GameState {
       hasReachedVictory: hasReachedVictory ?? this.hasReachedVictory,
       gameMode: gameMode ?? this.gameMode,
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
+      slidingMerge:
+          slidingMerge != null ? slidingMerge() : this.slidingMerge,
     );
   }
 }

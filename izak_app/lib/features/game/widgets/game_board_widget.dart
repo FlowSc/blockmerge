@@ -76,6 +76,7 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
     final Set<Position>? highlighted = gameState.highlightedPositions;
     final Set<Position>? newMerged = gameState.newMergedPositions;
     final int chainLevel = gameState.currentChainLevel;
+    final SlidingMerge? slidingMerge = gameState.slidingMerge;
 
     // Trigger shake when chainLevel reaches threshold and there are new merges.
     ref.listen<int>(
@@ -227,7 +228,21 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
                   cellSize,
                   highlighted: highlighted,
                   newMerged: newMerged,
+                  slidingMerge: slidingMerge,
                 ),
+                // Sliding merge tile
+                if (slidingMerge != null)
+                  _SlidingTile(
+                    key: ValueKey(
+                      'slide_${slidingMerge.from.row}_${slidingMerge.from.col}',
+                    ),
+                    fromRow: slidingMerge.from.row,
+                    fromCol: slidingMerge.from.col,
+                    toRow: slidingMerge.to.row,
+                    toCol: slidingMerge.to.col,
+                    value: slidingMerge.tileValue,
+                    cellSize: cellSize,
+                  ),
                 // High-value merge glow effects (64+)
                 if (newMerged != null)
                   ..._buildHighValueEffects(
@@ -276,13 +291,26 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
     double cellSize, {
     Set<Position>? highlighted,
     Set<Position>? newMerged,
+    SlidingMerge? slidingMerge,
   }) {
+    // The sliding tile's source position should be hidden from the grid
+    // (it's rendered as an animated overlay instead).
+    final Position? hiddenPos = slidingMerge?.from;
+
     final List<Widget> widgets = [];
     for (int row = 0; row < GameConstants.rows; row++) {
       for (int col = 0; col < GameConstants.columns; col++) {
         final int? value = grid[row][col];
         if (value != null) {
           final Position pos = Position(row: row, col: col);
+
+          // Skip the tile that is being animated as a sliding overlay
+          if (hiddenPos != null &&
+              pos.row == hiddenPos.row &&
+              pos.col == hiddenPos.col) {
+            continue;
+          }
+
           final bool isHighlighted = highlighted?.contains(pos) ?? false;
           final bool isNewMerge = newMerged?.contains(pos) ?? false;
 
@@ -401,6 +429,85 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
       );
     }
     return widgets;
+  }
+}
+
+class _SlidingTile extends StatefulWidget {
+  const _SlidingTile({
+    super.key,
+    required this.fromRow,
+    required this.fromCol,
+    required this.toRow,
+    required this.toCol,
+    required this.value,
+    required this.cellSize,
+  });
+
+  final int fromRow;
+  final int fromCol;
+  final int toRow;
+  final int toCol;
+  final int value;
+  final double cellSize;
+
+  @override
+  State<_SlidingTile> createState() => _SlidingTileState();
+}
+
+class _SlidingTileState extends State<_SlidingTile>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<Offset> _positionAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 250),
+      vsync: this,
+    );
+
+    final Offset from = Offset(
+      widget.fromCol * widget.cellSize + 1,
+      widget.fromRow * widget.cellSize + 1,
+    );
+    final Offset to = Offset(
+      widget.toCol * widget.cellSize + 1,
+      widget.toRow * widget.cellSize + 1,
+    );
+
+    _positionAnimation = Tween<Offset>(begin: from, end: to).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInQuart),
+    );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (BuildContext context, Widget? child) {
+        return Transform.translate(
+          offset: _positionAnimation.value,
+          child: child,
+        );
+      },
+      child: SizedBox(
+        width: widget.cellSize - 2,
+        height: widget.cellSize - 2,
+        child: TileWidget(
+          value: widget.value,
+          size: widget.cellSize - 2,
+        ),
+      ),
+    );
   }
 }
 

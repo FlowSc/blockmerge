@@ -75,41 +75,22 @@ class _MergeAnimationState extends State<_MergeAnimation>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _scaleAnimation;
-  late final Animation<double> _opacityAnimation;
-  late final Animation<double> _flashAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 350),
+      duration: const Duration(milliseconds: 200),
       vsync: this,
     );
 
-    // Scale: start small, overshoot, settle
+    // Scale: slight overshoot pop then settle
     _scaleAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.2), weight: 50),
-      TweenSequenceItem(tween: Tween(begin: 1.2, end: 0.95), weight: 25),
-      TweenSequenceItem(tween: Tween(begin: 0.95, end: 1.0), weight: 25),
+      TweenSequenceItem(tween: Tween(begin: 1.15, end: 0.95), weight: 50),
+      TweenSequenceItem(tween: Tween(begin: 0.95, end: 1.0), weight: 50),
     ]).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOut,
-    ));
-
-    // Opacity: fade in quickly
-    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.3, curve: Curves.easeIn),
-      ),
-    );
-
-    // Flash: bright white overlay that fades out
-    _flashAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.6, end: 0.0), weight: 100),
-    ]).animate(CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
     ));
 
     _controller.forward();
@@ -126,28 +107,9 @@ class _MergeAnimationState extends State<_MergeAnimation>
     return AnimatedBuilder(
       animation: _controller,
       builder: (BuildContext context, Widget? child) {
-        return Opacity(
-          opacity: _opacityAnimation.value,
-          child: Transform.scale(
-            scale: _scaleAnimation.value,
-            child: Stack(
-              children: [
-                child!,
-                // White flash overlay
-                if (_flashAnimation.value > 0.01)
-                  Positioned.fill(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(
-                          alpha: _flashAnimation.value,
-                        ),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: child,
         );
       },
       child: widget.child,
