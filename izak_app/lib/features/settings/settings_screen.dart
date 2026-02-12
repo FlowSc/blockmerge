@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,18 +12,19 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsNotifierProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('설정'),
+        title: Text(l10n.settings),
       ),
       body: ListView(
         children: [
           const SizedBox(height: 8),
           _SettingsTile(
             icon: settings.soundEnabled ? Icons.volume_up : Icons.volume_off,
-            title: '사운드',
-            subtitle: '효과음 및 배경음악',
+            title: l10n.sound,
+            subtitle: l10n.soundDesc,
             value: settings.soundEnabled,
             onChanged: (_) {
               ref.read(settingsNotifierProvider.notifier).toggleSound();
@@ -30,8 +32,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           _SettingsTile(
             icon: Icons.vibration,
-            title: '진동',
-            subtitle: '병합 및 드롭 시 햅틱 피드백',
+            title: l10n.vibration,
+            subtitle: l10n.vibrationDesc,
             value: settings.vibrationEnabled,
             onChanged: (_) {
               ref.read(settingsNotifierProvider.notifier).toggleVibration();
@@ -40,8 +42,8 @@ class SettingsScreen extends ConsumerWidget {
           _SettingsTile(
             icon:
                 settings.showGhost ? Icons.visibility : Icons.visibility_off,
-            title: '고스트 블록',
-            subtitle: '블록 착지 위치 미리보기',
+            title: l10n.ghostBlock,
+            subtitle: l10n.ghostBlockDesc,
             value: settings.showGhost,
             onChanged: (_) {
               ref.read(settingsNotifierProvider.notifier).toggleGhost();
@@ -50,9 +52,9 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(height: 32),
           ListTile(
             leading: const Icon(Icons.person_outline),
-            title: const Text('닉네임'),
+            title: Text(l10n.nickname),
             subtitle: Text(
-              settings.nickname ?? '미설정',
+              settings.nickname ?? l10n.nicknameNotSet,
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.5),
                 fontSize: 12,
@@ -63,7 +65,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.school_outlined),
-            title: const Text('튜토리얼 다시보기'),
+            title: Text(l10n.reviewTutorial),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/tutorial'),
           ),
@@ -71,19 +73,19 @@ class SettingsScreen extends ConsumerWidget {
           _AdRemovalTile(isAdFree: settings.isAdFree),
           ListTile(
             leading: const Icon(Icons.restore),
-            title: const Text('구매 복원'),
+            title: Text(l10n.restorePurchases),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               ref.read(purchaseNotifierProvider.notifier).restorePurchases();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('구매 복원 중...')),
+                SnackBar(content: Text(l10n.restoringPurchases)),
               );
             },
           ),
           const SizedBox(height: 48),
           Center(
             child: Text(
-              'IZAK v1.0.0',
+              'Drop Merge v1.0.0',
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.3),
                 fontSize: 12,
@@ -108,23 +110,25 @@ void _showNicknameDialog(
   showDialog<void>(
     context: context,
     builder: (BuildContext ctx) {
+      final l10n = AppLocalizations.of(ctx)!;
+
       return AlertDialog(
-        title: const Text('닉네임 설정'),
+        title: Text(l10n.setNickname),
         content: Form(
           key: formKey,
           child: TextFormField(
             controller: controller,
             autofocus: true,
             maxLength: 10,
-            decoration: const InputDecoration(
-              hintText: '2~10자 닉네임',
+            decoration: InputDecoration(
+              hintText: l10n.nicknameHint,
             ),
             validator: (String? value) {
               if (value == null || value.trim().length < 2) {
-                return '최소 2자 이상 입력하세요';
+                return l10n.nicknameMinError;
               }
               if (value.trim().length > 10) {
-                return '최대 10자까지 가능합니다';
+                return l10n.nicknameMaxError;
               }
               return null;
             },
@@ -133,7 +137,7 @@ void _showNicknameDialog(
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('취소'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () {
@@ -144,7 +148,7 @@ void _showNicknameDialog(
                 Navigator.of(ctx).pop();
               }
             },
-            child: const Text('저장'),
+            child: Text(l10n.save),
           ),
         ],
       );
@@ -162,6 +166,7 @@ class _AdRemovalTile extends ConsumerWidget {
     final PurchaseState purchaseState = ref.watch(purchaseNotifierProvider);
     final bool isLoading =
         purchaseState.loadingState == PurchaseLoadingState.loading;
+    final l10n = AppLocalizations.of(context)!;
 
     if (isAdFree) {
       return ListTile(
@@ -169,9 +174,9 @@ class _AdRemovalTile extends ConsumerWidget {
           Icons.check_circle,
           color: Colors.green.withValues(alpha: 0.7),
         ),
-        title: const Text('광고 제거'),
+        title: Text(l10n.removeAds),
         subtitle: Text(
-          '구매 완료',
+          l10n.purchased,
           style: TextStyle(
             color: Colors.green.withValues(alpha: 0.7),
             fontSize: 12,
@@ -183,9 +188,9 @@ class _AdRemovalTile extends ConsumerWidget {
 
     return ListTile(
       leading: const Icon(Icons.block),
-      title: const Text('광고 제거'),
+      title: Text(l10n.removeAds),
       subtitle: Text(
-        purchaseState.removeAdsPrice ?? '영구적으로 모든 광고를 제거합니다',
+        purchaseState.removeAdsPrice ?? l10n.removeAdsDesc,
         style: TextStyle(
           color: Colors.white.withValues(alpha: 0.5),
           fontSize: 12,
@@ -212,24 +217,26 @@ class _AdRemovalTile extends ConsumerWidget {
     showDialog<void>(
       context: context,
       builder: (BuildContext ctx) {
+        final l10n = AppLocalizations.of(ctx)!;
+
         return AlertDialog(
-          title: const Text('광고 제거'),
+          title: Text(l10n.removeAds),
           content: Text(
             price != null
-                ? '$price로 모든 광고를 영구적으로 제거하시겠습니까?'
-                : '모든 광고를 영구적으로 제거하시겠습니까?',
+                ? l10n.removeAdsConfirm(price)
+                : l10n.removeAdsConfirmDefault,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('취소'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () {
                 Navigator.of(ctx).pop();
                 ref.read(purchaseNotifierProvider.notifier).buyRemoveAds();
               },
-              child: const Text('구매'),
+              child: Text(l10n.purchase),
             ),
           ],
         );

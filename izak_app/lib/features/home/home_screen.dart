@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../game/providers/game_notifier.dart';
 import '../settings/providers/settings_notifier.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -11,6 +13,9 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bool tutorialSeen =
         ref.watch(settingsNotifierProvider.select((s) => s.tutorialSeen));
+    final AsyncValue<bool> hasSaved = ref.watch(hasSavedGameProvider);
+    final bool showContinue = hasSaved.valueOrNull ?? false;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: SafeArea(
@@ -20,7 +25,7 @@ class HomeScreen extends ConsumerWidget {
             children: [
               const Spacer(flex: 3),
               Text(
-                'IZAK',
+                l10n.appTitle,
                 style: TextStyle(
                   fontSize: 64,
                   fontWeight: FontWeight.bold,
@@ -30,10 +35,39 @@ class HomeScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Block Merge Puzzle',
+                l10n.subtitle,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const Spacer(flex: 2),
+              if (showContinue) ...[
+                SizedBox(
+                  width: 220,
+                  height: 56,
+                  child: FilledButton(
+                    onPressed: () async {
+                      final bool restored = await ref
+                          .read(gameNotifierProvider.notifier)
+                          .restoreGame();
+                      if (restored && context.mounted) {
+                        context.go('/game?continue=true');
+                      }
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFFFFD700),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    child: Text(l10n.continueGame),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
               SizedBox(
                 width: 220,
                 height: 56,
@@ -55,7 +89,7 @@ class HomeScreen extends ConsumerWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  child: const Text('시작하기'),
+                  child: Text(l10n.start),
                 ),
               ),
               const SizedBox(height: 16),
@@ -76,7 +110,7 @@ class HomeScreen extends ConsumerWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  child: const Text('리더보드'),
+                  child: Text(l10n.leaderboard),
                 ),
               ),
               const SizedBox(height: 16),
@@ -100,7 +134,7 @@ class HomeScreen extends ConsumerWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  child: const Text('설정'),
+                  child: Text(l10n.settings),
                 ),
               ),
               const Spacer(flex: 2),

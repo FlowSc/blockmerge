@@ -15,7 +15,9 @@ import 'widgets/victory_overlay.dart';
 import '../../shared/widgets/banner_ad_widget.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
-  const GameScreen({super.key});
+  const GameScreen({this.isContinue = false, super.key});
+
+  final bool isContinue;
 
   @override
   ConsumerState<GameScreen> createState() => _GameScreenState();
@@ -23,7 +25,7 @@ class GameScreen extends ConsumerStatefulWidget {
 
 class _GameScreenState extends ConsumerState<GameScreen>
     with WidgetsBindingObserver {
-  bool _showCountdown = true;
+  late bool _showCountdown;
 
   // Gesture tracking
   Offset? _dragStart;
@@ -33,6 +35,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
   @override
   void initState() {
     super.initState();
+    _showCountdown = !widget.isContinue;
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -47,7 +50,9 @@ class _GameScreenState extends ConsumerState<GameScreen>
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.inactive ||
         state == AppLifecycleState.paused) {
-      ref.read(gameNotifierProvider.notifier).pause();
+      final GameNotifier notifier = ref.read(gameNotifierProvider.notifier);
+      notifier.pause();
+      notifier.saveGame();
     }
   }
 

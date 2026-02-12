@@ -16,6 +16,16 @@ final class Tile {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'value': value,
+        'position': position.toJson(),
+      };
+
+  static Tile fromJson(Map<String, dynamic> json) => Tile(
+        value: json['value'] as int,
+        position: Position.fromJson(json['position'] as Map<String, dynamic>),
+      );
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

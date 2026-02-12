@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/game_state.dart';
@@ -48,6 +49,8 @@ class _NewBestNotificationState extends ConsumerState<NewBestNotification>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     ref.listen<GameStatus>(
       gameNotifierProvider.select((s) => s.status),
       (GameStatus? prev, GameStatus next) {
@@ -91,9 +94,9 @@ class _NewBestNotificationState extends ConsumerState<NewBestNotification>
                         ),
                       ],
                     ),
-                    child: const Text(
-                      'NEW BEST!',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.newBest,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.w900,

@@ -10,8 +10,12 @@ import '../models/game_state.dart';
 import '../models/position.dart';
 import '../models/tile.dart' as game;
 import '../providers/game_notifier.dart';
+import 'high_value_merge_effect.dart';
 import 'mega_merge_effect.dart';
 import 'tile_widget.dart';
+
+/// Minimum tile value that triggers the high-value merge glow effect.
+const int _highValueThreshold = 64;
 
 /// Minimum chain level that triggers the mega merge screen effect.
 const int _megaComboThreshold = 4; // chainLevel 4 = 5th combo
@@ -174,6 +178,13 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
                   highlighted: highlighted,
                   newMerged: newMerged,
                 ),
+                // High-value merge glow effects (64+)
+                if (newMerged != null)
+                  ..._buildHighValueEffects(
+                    newMerged,
+                    displayGrid,
+                    cellSize,
+                  ),
                 // Mega merge particle effects
                 if (newMerged != null && chainLevel >= _megaComboThreshold)
                   ..._buildMegaEffects(
@@ -264,6 +275,43 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
                 color: Colors.white.withValues(alpha: 0.2),
                 width: 1,
               ),
+            ),
+          ),
+        ),
+      );
+    }
+    return widgets;
+  }
+
+  List<Widget> _buildHighValueEffects(
+    Set<Position> mergedPositions,
+    List<List<int?>> grid,
+    double cellSize,
+  ) {
+    final List<Widget> widgets = [];
+    for (final Position pos in mergedPositions) {
+      final int? value = grid[pos.row][pos.col];
+      if (value == null || value < _highValueThreshold) continue;
+
+      // Scale effect size with tile value: 64→1.8x, 128→2.2x, … 2048→4.2x
+      final double tier = (log(value) / ln2) - 5; // 64→1, 128→2, …
+      final double sizeMultiplier = 1.4 + tier * 0.4;
+      final double effectSize = cellSize * sizeMultiplier;
+      final double offset = (effectSize - cellSize) / 2;
+
+      final Color color =
+          GameConstants.tileColors[value] ?? const Color(0xFFEDC22E);
+
+      widgets.add(
+        Positioned(
+          key: ValueKey('hv_effect_${pos.row}_${pos.col}'),
+          left: pos.col * cellSize + 1 - offset,
+          top: pos.row * cellSize + 1 - offset,
+          child: IgnorePointer(
+            child: HighValueMergeEffect(
+              size: effectSize,
+              color: color,
+              tileValue: value,
             ),
           ),
         ),

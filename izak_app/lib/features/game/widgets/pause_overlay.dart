@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,6 +10,8 @@ class PauseOverlay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       color: Colors.black.withValues(alpha: 0.8),
       child: Center(
@@ -21,9 +24,9 @@ class PauseOverlay extends ConsumerWidget {
               size: 64,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'PAUSED',
-              style: TextStyle(
+            Text(
+              l10n.paused,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 32,
                 fontWeight: FontWeight.w900,
@@ -32,7 +35,7 @@ class PauseOverlay extends ConsumerWidget {
             ),
             const SizedBox(height: 40),
             _MenuButton(
-              label: '계속하기',
+              label: l10n.resume,
               icon: Icons.play_arrow,
               color: const Color(0xFF6C5CE7),
               onPressed: () {
@@ -41,10 +44,11 @@ class PauseOverlay extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             _MenuButton(
-              label: '나가기',
+              label: l10n.quit,
               icon: Icons.exit_to_app,
               color: const Color(0xFF636e72),
               onPressed: () {
+                ref.read(gameNotifierProvider.notifier).clearSavedGame();
                 context.go('/');
               },
             ),

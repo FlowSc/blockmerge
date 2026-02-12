@@ -19,6 +19,18 @@ final class FallingBlock {
   final List<Tile> tiles;
   final BlockType type;
 
+  Map<String, dynamic> toJson() => {
+        'tiles': tiles.map((Tile t) => t.toJson()).toList(),
+        'type': type.name,
+      };
+
+  static FallingBlock fromJson(Map<String, dynamic> json) => FallingBlock(
+        tiles: (json['tiles'] as List<dynamic>)
+            .map((dynamic t) => Tile.fromJson(t as Map<String, dynamic>))
+            .toList(),
+        type: BlockType.values.byName(json['type'] as String),
+      );
+
   int get leftCol =>
       tiles.map((Tile t) => t.position.col).reduce((int a, int b) => a < b ? a : b);
 

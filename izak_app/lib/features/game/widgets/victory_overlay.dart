@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -86,7 +87,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
       if (mounted) {
         setState(() => _submitting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('점수 제출에 실패했습니다')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.scoreSubmitFailed)),
         );
       }
     }
@@ -100,6 +101,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
         ref.watch(gameNotifierProvider.select((s) => s.totalMerges));
     final int maxChainLevel =
         ref.watch(gameNotifierProvider.select((s) => s.maxChainLevel));
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       color: Colors.black.withValues(alpha: 0.8),
@@ -131,9 +133,9 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'YOU WIN!',
-                style: TextStyle(
+              Text(
+                l10n.youWin,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 28,
                   fontWeight: FontWeight.w900,
@@ -142,7 +144,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
               ),
               const SizedBox(height: 20),
               Text(
-                'Score: $score',
+                l10n.scoreValue(score),
                 style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 24,
@@ -153,10 +155,10 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _StatChip(label: 'Merges', value: '$totalMerges'),
+                  _StatChip(label: l10n.merges, value: '$totalMerges'),
                   const SizedBox(width: 16),
                   _StatChip(
-                    label: 'Max Chain',
+                    label: l10n.maxChain,
                     value: 'x${maxChainLevel + 1}',
                   ),
                 ],
@@ -178,7 +180,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
-                    'Score submitted!',
+                    l10n.scoreSubmitted,
                     style: TextStyle(
                       color: const Color(0xFF00D2FF).withValues(alpha: 0.8),
                       fontSize: 13,
@@ -190,7 +192,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                 TextButton(
                   onPressed: _submitScore,
                   child: Text(
-                    'Submit Score',
+                    l10n.submitScore,
                     style: TextStyle(
                       color: const Color(0xFFFFD700).withValues(alpha: 0.8),
                       fontSize: 13,
@@ -213,9 +215,9 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'HOME',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.home,
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
@@ -239,9 +241,9 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'RANK',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.rank,
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
@@ -264,9 +266,9 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'RETRY',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.retry,
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,

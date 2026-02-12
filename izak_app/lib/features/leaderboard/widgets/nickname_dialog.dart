@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../settings/providers/settings_notifier.dart';
@@ -15,23 +16,25 @@ Future<String?> showNicknameDialog(BuildContext context, WidgetRef ref) async {
     context: context,
     barrierDismissible: false,
     builder: (BuildContext ctx) {
+      final l10n = AppLocalizations.of(ctx)!;
+
       return AlertDialog(
-        title: const Text('닉네임 입력'),
+        title: Text(l10n.enterNickname),
         content: Form(
           key: formKey,
           child: TextFormField(
             controller: controller,
             autofocus: true,
             maxLength: 10,
-            decoration: const InputDecoration(
-              hintText: '리더보드에 표시될 이름 (2~10자)',
+            decoration: InputDecoration(
+              hintText: l10n.nicknameDialogHint,
             ),
             validator: (String? value) {
               if (value == null || value.trim().length < 2) {
-                return '최소 2자 이상 입력하세요';
+                return l10n.nicknameMinError;
               }
               if (value.trim().length > 10) {
-                return '최대 10자까지 가능합니다';
+                return l10n.nicknameMaxError;
               }
               return null;
             },
@@ -40,7 +43,7 @@ Future<String?> showNicknameDialog(BuildContext context, WidgetRef ref) async {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(null),
-            child: const Text('취소'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () {
@@ -52,7 +55,7 @@ Future<String?> showNicknameDialog(BuildContext context, WidgetRef ref) async {
                 Navigator.of(ctx).pop(nickname);
               }
             },
-            child: const Text('확인'),
+            child: Text(l10n.confirm),
           ),
         ],
       );

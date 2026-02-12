@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -55,7 +56,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
       if (mounted) {
         setState(() => _submitting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('점수 제출에 실패했습니다')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.scoreSubmitFailed)),
         );
       }
     }
@@ -80,6 +81,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
         ref.watch(gameNotifierProvider.select((s) => s.totalMerges));
     final int maxChainLevel =
         ref.watch(gameNotifierProvider.select((s) => s.maxChainLevel));
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       color: Colors.black.withValues(alpha: 0.75),
@@ -87,9 +89,9 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'GAME OVER',
-              style: TextStyle(
+            Text(
+              l10n.gameOver,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 36,
                 fontWeight: FontWeight.w900,
@@ -98,7 +100,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Score: $score',
+              l10n.scoreValue(score),
               style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 24,
@@ -109,10 +111,10 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _StatChip(label: 'Merges', value: '$totalMerges'),
+                _StatChip(label: l10n.merges, value: '$totalMerges'),
                 const SizedBox(width: 16),
                 _StatChip(
-                  label: 'Max Chain',
+                  label: l10n.maxChain,
                   value: 'x${maxChainLevel + 1}',
                 ),
               ],
@@ -134,7 +136,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(
-                  'Score submitted!',
+                  l10n.scoreSubmitted,
                   style: TextStyle(
                     color: const Color(0xFF00D2FF).withValues(alpha: 0.8),
                     fontSize: 13,
@@ -146,7 +148,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
               TextButton(
                 onPressed: _submitScore,
                 child: Text(
-                  'Submit Score',
+                  l10n.submitScore,
                   style: TextStyle(
                     color: const Color(0xFFFFD700).withValues(alpha: 0.8),
                     fontSize: 13,
@@ -169,9 +171,9 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'HOME',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.home,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
@@ -194,9 +196,9 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'RANK',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.rank,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
@@ -219,9 +221,9 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'RETRY',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.retry,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,

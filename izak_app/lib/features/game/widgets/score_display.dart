@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/game_constants.dart';
@@ -12,6 +13,7 @@ class ScoreDisplay extends ConsumerWidget {
     final int score =
         ref.watch(gameNotifierProvider.select((s) => s.score));
     final int level = score ~/ GameConstants.pointsPerLevel;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -26,7 +28,7 @@ class ScoreDisplay extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'SCORE',
+            l10n.scoreLabel,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.5),
               fontSize: 10,
@@ -45,7 +47,7 @@ class ScoreDisplay extends ConsumerWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            'LV.$level',
+            l10n.levelLabel(level),
             style: TextStyle(
               color: const Color(0xFF00D2FF).withValues(alpha: 0.8),
               fontSize: 10,

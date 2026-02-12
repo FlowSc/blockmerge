@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/utils/device_id.dart';
@@ -32,10 +33,11 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
   Widget build(BuildContext context) {
     final AsyncValue<List<LeaderboardEntry>> entriesAsync =
         ref.watch(leaderboardNotifierProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('리더보드'),
+        title: Text(l10n.leaderboard),
       ),
       body: entriesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -46,7 +48,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
               const Icon(Icons.error_outline, size: 48, color: Colors.white38),
               const SizedBox(height: 12),
               Text(
-                '불러오기 실패',
+                l10n.loadFailed,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 16,
@@ -56,7 +58,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
               FilledButton(
                 onPressed: () =>
                     ref.read(leaderboardNotifierProvider.notifier).loadTopScores(),
-                child: const Text('다시 시도'),
+                child: Text(l10n.tryAgain),
               ),
             ],
           ),
@@ -65,7 +67,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
           if (entries.isEmpty) {
             return Center(
               child: Text(
-                '아직 기록이 없습니다',
+                l10n.noRecords,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.5),
                   fontSize: 16,
@@ -111,6 +113,7 @@ class _LeaderboardTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final Color rankColor = switch (rank) {
       1 => const Color(0xFFFFD700),
       2 => const Color(0xFFC0C0C0),
@@ -161,7 +164,10 @@ class _LeaderboardTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Merges: ${entry.totalMerges} | Chain: x${entry.maxChainLevel + 1}',
+                  l10n.leaderboardEntry(
+                    entry.totalMerges,
+                    entry.maxChainLevel + 1,
+                  ),
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.4),
                     fontSize: 11,

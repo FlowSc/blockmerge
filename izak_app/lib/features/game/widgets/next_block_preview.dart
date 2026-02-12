@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/falling_block.dart';
@@ -18,6 +19,7 @@ class NextBlockPreview extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final FallingBlock? nextBlock =
         ref.watch(gameNotifierProvider.select((s) => s.nextBlock));
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -32,7 +34,7 @@ class NextBlockPreview extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'NEXT',
+            l10n.next,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.5),
               fontSize: 10,

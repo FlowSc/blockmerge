@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/merge_result.dart';
@@ -62,6 +63,8 @@ class _ComboDisplayState extends ConsumerState<ComboDisplay>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     ref.listen<MergeChainResult?>(
       gameNotifierProvider.select((s) => s.lastMergeChain),
       (MergeChainResult? prev, MergeChainResult? next) {
@@ -75,7 +78,7 @@ class _ComboDisplayState extends ConsumerState<ComboDisplay>
     if (_currentChain == null) return const SizedBox.shrink();
 
     final int chainLevel = _currentChain!.maxChainLevel;
-    final String label = _comboLabel(chainLevel);
+    final String label = _comboLabel(chainLevel, l10n);
     final Color color = _comboColor(chainLevel);
 
     return IgnorePointer(
@@ -132,12 +135,17 @@ class _ComboDisplayState extends ConsumerState<ComboDisplay>
     );
   }
 
-  String _comboLabel(int chainLevel) {
+  String _comboLabel(int chainLevel, AppLocalizations l10n) {
+    final int count = chainLevel + 1;
     return switch (chainLevel) {
-      0 => 'MERGE!',
-      1 => 'CHAIN x2!',
-      2 => 'CHAIN x3!',
-      _ => 'MEGA x${chainLevel + 1}!',
+      0 => l10n.merge,
+      1 => l10n.chainX2,
+      2 => l10n.chainX3,
+      3 || 4 => l10n.megaChain(count),
+      5 || 6 => l10n.superChain(count),
+      7 || 8 => l10n.amazingChain(count),
+      9 || 10 => l10n.spectacularChain(count),
+      _ => l10n.legendaryChain(count),
     };
   }
 
@@ -146,7 +154,11 @@ class _ComboDisplayState extends ConsumerState<ComboDisplay>
       0 => const Color(0xFF00D2FF),
       1 => const Color(0xFF00FF88),
       2 => const Color(0xFFFFD700),
-      _ => const Color(0xFFFF4444),
+      3 || 4 => const Color(0xFFFF4444),
+      5 || 6 => const Color(0xFFFF6B6B),
+      7 || 8 => const Color(0xFFE040FB),
+      9 || 10 => const Color(0xFFFF9100),
+      _ => const Color(0xFFFFD700),
     };
   }
 }

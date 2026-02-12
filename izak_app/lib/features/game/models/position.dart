@@ -31,6 +31,11 @@ final class Position {
   @override
   int get hashCode => Object.hash(row, col);
 
+  Map<String, int> toJson() => {'row': row, 'col': col};
+
+  static Position fromJson(Map<String, dynamic> json) =>
+      Position(row: json['row'] as int, col: json['col'] as int);
+
   @override
   String toString() => 'Position($row, $col)';
 }

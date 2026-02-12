@@ -18,11 +18,12 @@ void main() {
         child: IzakApp(),
       ),
     );
+    await tester.pumpAndSettle();
 
-    expect(find.text('IZAK'), findsOneWidget);
+    expect(find.text('Drop Merge'), findsOneWidget);
     expect(find.text('Block Merge Puzzle'), findsOneWidget);
-    expect(find.text('시작하기'), findsOneWidget);
-    expect(find.text('설정'), findsOneWidget);
+    expect(find.text('START'), findsOneWidget);
+    expect(find.text('Settings'), findsOneWidget);
   });
 
   testWidgets('Tapping start navigates to game with countdown overlay',
@@ -35,7 +36,7 @@ void main() {
     // Allow async settings load to complete
     await tester.pump();
 
-    await tester.tap(find.text('시작하기'));
+    await tester.tap(find.text('START'));
     await tester.pumpAndSettle();
 
     // Game screen is visible behind countdown overlay
@@ -53,7 +54,7 @@ void main() {
     // Allow async settings load to complete
     await tester.pump();
 
-    await tester.tap(find.text('시작하기'));
+    await tester.tap(find.text('START'));
     await tester.pumpAndSettle();
     expect(find.text('3'), findsOneWidget);
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/theme/app_theme.dart';
@@ -20,7 +21,9 @@ GoRouter _createRouter() => GoRouter(
     GoRoute(
       path: '/game',
       builder: (BuildContext context, GoRouterState state) {
-        return const GameScreen();
+        final bool isContinue =
+            state.uri.queryParameters['continue'] == 'true';
+        return GameScreen(isContinue: isContinue);
       },
     ),
     GoRoute(
@@ -63,10 +66,12 @@ class _IzakAppState extends State<IzakApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'IZAK',
+      title: 'Drop Merge',
       theme: AppTheme.darkTheme,
       routerConfig: _router,
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }

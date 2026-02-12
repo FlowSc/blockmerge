@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -30,6 +31,8 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -40,7 +43,7 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
               child: TextButton(
                 onPressed: _onDone,
                 child: Text(
-                  '건너뛰기',
+                  l10n.skip,
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.5),
                   ),
@@ -54,11 +57,11 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
                 onPageChanged: (int index) {
                   setState(() => _currentPage = index);
                 },
-                children: const [
-                  _IntroPage(),
-                  _ControlsPage(),
-                  _ChainPage(),
-                  _StartPage(),
+                children: [
+                  _IntroPage(l10n: l10n),
+                  _ControlsPage(l10n: l10n),
+                  _ChainPage(l10n: l10n),
+                  _StartPage(l10n: l10n),
                 ],
               ),
             ),
@@ -95,9 +98,9 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
                               vertical: 12,
                             ),
                           ),
-                          child: const Text(
-                            '시작하기',
-                            style: TextStyle(
+                          child: Text(
+                            l10n.start,
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -125,66 +128,70 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
 // --- Tutorial Pages ---
 
 class _IntroPage extends StatelessWidget {
-  const _IntroPage();
+  const _IntroPage({required this.l10n});
+
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
-    return const _TutorialPageLayout(
+    return _TutorialPageLayout(
       icon: Icons.grid_4x4,
-      iconColor: Color(0xFF6C5CE7),
-      title: '블록을 떨어뜨려\n같은 숫자를 합쳐라!',
-      description: '위에서 내려오는 블록을 배치하고\n같은 숫자 타일이 만나면 자동으로 병합됩니다.',
+      iconColor: const Color(0xFF6C5CE7),
+      title: l10n.tutorialIntroTitle,
+      description: l10n.tutorialIntroDesc,
     );
   }
 }
 
 class _ControlsPage extends StatelessWidget {
-  const _ControlsPage();
+  const _ControlsPage({required this.l10n});
+
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 32),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.touch_app,
             size: 64,
             color: Color(0xFF00D2FF),
           ),
-          SizedBox(height: 32),
+          const SizedBox(height: 32),
           Text(
-            '조작법',
-            style: TextStyle(
+            l10n.tutorialControls,
+            style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
-          SizedBox(height: 32),
+          const SizedBox(height: 32),
           _ControlRow(
             icon: Icons.swipe,
-            label: '좌/우 스와이프',
-            description: '블록 이동',
+            label: l10n.swipeLeftRight,
+            description: l10n.moveBlock,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           _ControlRow(
             icon: Icons.touch_app,
-            label: '탭',
-            description: '블록 회전',
+            label: l10n.tap,
+            description: l10n.rotateBlock,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           _ControlRow(
             icon: Icons.keyboard_double_arrow_down,
-            label: '빠른 아래 스와이프',
-            description: '즉시 낙하',
+            label: l10n.swipeDownFast,
+            description: l10n.hardDrop,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           _ControlRow(
             icon: Icons.arrow_downward,
-            label: '아래 스와이프',
-            description: '빠르게 내리기',
+            label: l10n.swipeDown,
+            description: l10n.softDrop,
           ),
         ],
       ),
@@ -237,7 +244,9 @@ class _ControlRow extends StatelessWidget {
 }
 
 class _ChainPage extends StatelessWidget {
-  const _ChainPage();
+  const _ChainPage({required this.l10n});
+
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -252,9 +261,9 @@ class _ChainPage extends StatelessWidget {
             color: Color(0xFFFFD93D),
           ),
           const SizedBox(height: 32),
-          const Text(
-            '체인 병합',
-            style: TextStyle(
+          Text(
+            l10n.tutorialChainTitle,
+            style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -285,7 +294,7 @@ class _ChainPage extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            '연쇄 병합이 일어나면\n점수가 폭발적으로 증가합니다!',
+            l10n.tutorialChainDesc,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.7),
@@ -300,9 +309,9 @@ class _ChainPage extends StatelessWidget {
               color: const Color(0xFFFFD93D).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Text(
-              'CHAIN x3  x7  x15 !',
-              style: TextStyle(
+            child: Text(
+              l10n.tutorialChainExample,
+              style: const TextStyle(
                 color: Color(0xFFFFD93D),
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -345,15 +354,17 @@ class _NumberBox extends StatelessWidget {
 }
 
 class _StartPage extends StatelessWidget {
-  const _StartPage();
+  const _StartPage({required this.l10n});
+
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
-    return const _TutorialPageLayout(
+    return _TutorialPageLayout(
       icon: Icons.emoji_events,
-      iconColor: Color(0xFFFFD93D),
-      title: '최고 점수에\n도전하세요!',
-      description: '블록이 꼭대기까지 쌓이면 게임 오버.\n전략적으로 배치하고 체인을 노려보세요!',
+      iconColor: const Color(0xFFFFD93D),
+      title: l10n.tutorialGoTitle,
+      description: l10n.tutorialGoDesc,
     );
   }
 }

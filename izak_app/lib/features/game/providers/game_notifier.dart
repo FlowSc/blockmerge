@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/services.dart';
@@ -16,6 +17,14 @@ import '../models/position.dart';
 part 'game_notifier.g.dart';
 
 const String _highScoreKey = 'high_score';
+const String _savedGameKey = 'saved_game';
+
+@riverpod
+// ignore: deprecated_member_use_from_same_package
+Future<bool> hasSavedGame(HasSavedGameRef ref) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.containsKey(_savedGameKey);
+}
 
 @riverpod
 class GameNotifier extends _$GameNotifier {
@@ -53,6 +62,89 @@ class GameNotifier extends _$GameNotifier {
   Future<void> _saveHighScore(int score) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_highScoreKey, score);
+  }
+
+  /// Save current game state to SharedPreferences for crash/termination recovery.
+  Future<void> saveGame() async {
+    if (state.status != GameStatus.paused &&
+        state.status != GameStatus.playing) {
+      return;
+    }
+    final Map<String, dynamic> json = {
+      'grid': state.grid,
+      'score': state.score,
+      'highScore': state.highScore,
+      'totalMerges': state.totalMerges,
+      'maxChainLevel': state.maxChainLevel,
+    };
+    if (state.currentBlock != null) {
+      json['currentBlock'] = state.currentBlock!.toJson();
+    }
+    if (state.nextBlock != null) {
+      json['nextBlock'] = state.nextBlock!.toJson();
+    }
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_savedGameKey, jsonEncode(json));
+  }
+
+  /// Restore a previously saved game. Returns true if successful.
+  Future<bool> restoreGame() async {
+    _disposeTimers();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? raw = prefs.getString(_savedGameKey);
+    if (raw == null) return false;
+
+    try {
+      final Map<String, dynamic> json =
+          jsonDecode(raw) as Map<String, dynamic>;
+
+      final List<List<int?>> grid = (json['grid'] as List<dynamic>)
+          .map((dynamic row) => (row as List<dynamic>)
+              .map((dynamic v) => v as int?)
+              .toList())
+          .toList();
+
+      FallingBlock? currentBlock;
+      if (json['currentBlock'] != null) {
+        currentBlock = FallingBlock.fromJson(
+            json['currentBlock'] as Map<String, dynamic>);
+      }
+      FallingBlock? nextBlock;
+      if (json['nextBlock'] != null) {
+        nextBlock =
+            FallingBlock.fromJson(json['nextBlock'] as Map<String, dynamic>);
+      }
+
+      state = GameState(
+        grid: grid,
+        currentBlock: currentBlock,
+        nextBlock: nextBlock,
+        score: json['score'] as int,
+        highScore: json['highScore'] as int,
+        status: GameStatus.playing,
+        lastMergeChain: null,
+        totalMerges: json['totalMerges'] as int,
+        maxChainLevel: json['maxChainLevel'] as int,
+      );
+
+      _rng = Random();
+      if (currentBlock != null) {
+        _startTicker();
+      } else {
+        _spawnNext();
+      }
+
+      await clearSavedGame();
+      return true;
+    } catch (_) {
+      await clearSavedGame();
+      return false;
+    }
+  }
+
+  Future<void> clearSavedGame() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_savedGameKey);
   }
 
   void _disposeTimers() {
@@ -163,6 +255,7 @@ class GameNotifier extends _$GameNotifier {
       maxChainLevel: 0,
     );
 
+    clearSavedGame();
     _startTicker();
   }
 
@@ -625,6 +718,7 @@ class GameNotifier extends _$GameNotifier {
 
     if (hasWinTile) {
       _tickTimer?.cancel();
+      clearSavedGame();
       state = state.copyWith(
         highScore: newHighScore,
         isAnimating: false,
@@ -649,6 +743,7 @@ class GameNotifier extends _$GameNotifier {
 
   void _spawnNext() {
     if (Board.isSpawnBlocked(state.grid)) {
+      clearSavedGame();
       state = state.copyWith(
         status: GameStatus.gameOver,
         currentBlock: () => null,
@@ -660,6 +755,7 @@ class GameNotifier extends _$GameNotifier {
     final FallingBlock upcoming = FallingBlock.spawn(_rng);
 
     if (!Board.canPlace(state.grid, next)) {
+      clearSavedGame();
       state = state.copyWith(
         status: GameStatus.gameOver,
         currentBlock: () => null,
