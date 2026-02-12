@@ -5,11 +5,36 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../core/providers/ad_provider.dart';
 import '../../features/settings/providers/settings_notifier.dart';
 
-class BannerAdWidget extends ConsumerWidget {
+class BannerAdWidget extends ConsumerStatefulWidget {
   const BannerAdWidget({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BannerAdWidget> createState() => _BannerAdWidgetState();
+}
+
+class _BannerAdWidgetState extends ConsumerState<BannerAdWidget> {
+  bool _adRequested = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_adRequested) {
+      _adRequested = true;
+      _loadAdaptiveBanner();
+    }
+  }
+
+  Future<void> _loadAdaptiveBanner() async {
+    final int width = MediaQuery.of(context).size.width.truncate();
+    final AnchoredAdaptiveBannerAdSize? adSize =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);
+    if (adSize == null || !mounted) return;
+
+    ref.read(adNotifierProvider.notifier).loadBannerAd(adSize: adSize);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final bool isAdFree =
         ref.watch(settingsNotifierProvider.select((s) => s.isAdFree));
 
@@ -18,24 +43,25 @@ class BannerAdWidget extends ConsumerWidget {
     }
 
     final AdState adState = ref.watch(adNotifierProvider);
+    final double bottomPadding = MediaQuery.of(context).padding.bottom;
 
     if (!adState.isBannerLoaded || adState.bannerAd == null) {
-      // Placeholder: reserve space so layout doesn't jump when ad loads
       return Container(
         width: double.infinity,
-        height: 50,
+        height: 60 + bottomPadding,
         color: Colors.black,
       );
     }
 
+    final double adHeight = adState.bannerAd!.size.height.toDouble();
+
     return Container(
       width: double.infinity,
-      height: adState.bannerAd!.size.height.toDouble(),
       color: Colors.black,
-      alignment: Alignment.center,
+      padding: EdgeInsets.only(bottom: bottomPadding),
       child: SizedBox(
         width: adState.bannerAd!.size.width.toDouble(),
-        height: adState.bannerAd!.size.height.toDouble(),
+        height: adHeight,
         child: AdWidget(ad: adState.bannerAd!),
       ),
     );

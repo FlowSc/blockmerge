@@ -54,7 +54,7 @@ class AdNotifier extends _$AdNotifier {
 
     ref.onDispose(_disposeAds);
 
-    loadBannerAd();
+    // Banner ad is loaded from BannerAdWidget with adaptive size.
     loadInterstitialAd();
     loadRewardedAd();
 
@@ -67,14 +67,16 @@ class AdNotifier extends _$AdNotifier {
     state.rewardedAd?.dispose();
   }
 
-  void loadBannerAd() {
+  void loadBannerAd({AdSize? adSize}) {
     final bool isAdFree =
         ref.read(settingsNotifierProvider.select((s) => s.isAdFree));
     if (isAdFree) return;
 
+    final AdSize size = adSize ?? AdSize.banner;
+
     final BannerAd banner = BannerAd(
       adUnitId: AdConstants.bannerAdUnitId,
-      size: AdSize.banner,
+      size: size,
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {

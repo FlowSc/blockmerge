@@ -72,8 +72,12 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Show interstitial ad on game over
-      ref.read(adNotifierProvider.notifier).showInterstitial();
+      // Show interstitial ad after a short delay so the overlay is visible first.
+      Future<void>.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          ref.read(adNotifierProvider.notifier).showInterstitial();
+        }
+      });
       // Auto-submit if nickname exists
       _submitScore();
     });
