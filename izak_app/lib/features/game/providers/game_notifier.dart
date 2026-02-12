@@ -427,6 +427,11 @@ class GameNotifier extends _$GameNotifier {
     final FallingBlock? block = state.currentBlock;
     if (block == null) return;
 
+    // Track positions of newly placed tiles (before gravity).
+    final Set<Position> newPositions = {
+      for (final tile in block.tiles) tile.position,
+    };
+
     // Place block on grid synchronously
     final List<List<int?>> grid = Board.placeBlock(state.grid, block);
 
@@ -440,24 +445,74 @@ class GameNotifier extends _$GameNotifier {
     // Apply initial gravity so unsupported tiles fall first
     _animTimer = Timer(const Duration(milliseconds: 120), () {
       final List<List<int?>> settledGrid = Board.applyGravity(grid);
+
+      // Adjust new-tile positions after gravity compaction.
+      final Set<Position> adjustedNew =
+          _adjustPositionsAfterGravity(grid, newPositions);
+
       state = state.copyWith(grid: settledGrid);
 
       // Then start merge chain after gravity settles
       _animTimer = Timer(const Duration(milliseconds: 150), () {
-        _animateMergeChain(settledGrid, 0);
+        _animateMergeChain(settledGrid, 0, newTilePositions: adjustedNew);
       });
     });
   }
 
+  /// Re-map [positions] from [gridBeforeGravity] to their post-gravity rows.
+  /// Gravity compacts each column downward, preserving relative order.
+  Set<Position> _adjustPositionsAfterGravity(
+    List<List<int?>> gridBeforeGravity,
+    Set<Position> positions,
+  ) {
+    final Set<Position> adjusted = {};
+    for (int col = 0; col < GameConstants.columns; col++) {
+      final List<bool> isNew = [];
+      for (int row = 0; row < GameConstants.rows; row++) {
+        if (gridBeforeGravity[row][col] != null) {
+          isNew.add(positions.contains(Position(row: row, col: col)));
+        }
+      }
+      final int tileCount = isNew.length;
+      for (int i = 0; i < tileCount; i++) {
+        if (isNew[i]) {
+          adjusted.add(Position(
+            row: GameConstants.rows - tileCount + i,
+            col: col,
+          ));
+        }
+      }
+    }
+    return adjusted;
+  }
+
   /// Pick the best pair to merge.
-  /// Priority: bottom-most pair first, then best direction (via chain
-  /// simulation including gravity), chain simulation as tiebreaker
-  /// when multiple bottom pairs exist.
+  /// Priority: pre-existing tiles first, then bottom-most, then best
+  /// direction (via chain simulation including gravity).
   MergedPair _selectBestPair(
     List<List<int?>> grid,
-    List<MergedPair> pairs,
-  ) {
+    List<MergedPair> pairs, {
+    Set<Position>? newTilePositions,
+  }) {
     if (pairs.length == 1) return _chooseBestDirection(grid, pairs.first);
+
+    // Prefer pairs involving only pre-existing (non-new) tiles.
+    if (newTilePositions != null && newTilePositions.isNotEmpty) {
+      int newCount(MergedPair p) {
+        int c = 0;
+        if (newTilePositions.contains(p.from1)) c++;
+        if (newTilePositions.contains(p.from2)) c++;
+        return c;
+      }
+
+      final int fewest = pairs.map(newCount).reduce(min);
+      final List<MergedPair> preferred =
+          pairs.where((MergedPair p) => newCount(p) == fewest).toList();
+      if (preferred.length == 1) {
+        return _chooseBestDirection(grid, preferred.first);
+      }
+      pairs = preferred;
+    }
 
     // Group by bottom-ness (highest max row = closest to base)
     int pairBottomRow(MergedPair p) => max(p.from1.row, p.from2.row);
@@ -631,7 +686,11 @@ class GameNotifier extends _$GameNotifier {
     return best;
   }
 
-  void _animateMergeChain(List<List<int?>> grid, int chainLevel) {
+  void _animateMergeChain(
+    List<List<int?>> grid,
+    int chainLevel, {
+    Set<Position>? newTilePositions,
+  }) {
     final List<MergedPair> allPairs = Board.findMergeablePairs(grid);
     if (allPairs.isEmpty) {
       _finishMergeChain();
@@ -639,7 +698,11 @@ class GameNotifier extends _$GameNotifier {
     }
 
     // Process one pair at a time, choosing the best for chain potential.
-    final MergedPair target = _selectBestPair(grid, allPairs);
+    final MergedPair target = _selectBestPair(
+      grid,
+      allPairs,
+      newTilePositions: newTilePositions,
+    );
     final List<MergedPair> singlePair = [target];
 
     // Phase 1: Highlight the pair about to merge (glow effect)
