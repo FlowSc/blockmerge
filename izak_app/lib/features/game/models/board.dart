@@ -64,17 +64,17 @@ abstract final class Board {
     final List<MergedPair> pairs = [];
     final Set<Position> used = {};
 
+    // Priority: vertical (bottom) > horizontal (right/left).
     // Scan bottom-to-top so base (lower) tiles are paired first.
-    // This ensures stacked identical tiles merge from the bottom up.
 
-    // Horizontal pairs — right-to-left so rightmost pair is preferred
-    for (int row = GameConstants.rows - 1; row >= 0; row--) {
-      for (int col = GameConstants.columns - 2; col >= 0; col--) {
-        final Position pos1 = Position(row: row, col: col);
-        final Position pos2 = Position(row: row, col: col + 1);
+    // Vertical pairs first — bottom merges get highest priority
+    for (int row = GameConstants.rows - 1; row > 0; row--) {
+      for (int col = 0; col < GameConstants.columns; col++) {
+        final Position pos1 = Position(row: row - 1, col: col);
+        final Position pos2 = Position(row: row, col: col);
         if (used.contains(pos1) || used.contains(pos2)) continue;
-        final int? val1 = grid[row][col];
-        final int? val2 = grid[row][col + 1];
+        final int? val1 = grid[row - 1][col];
+        final int? val2 = grid[row][col];
         if (val1 != null && val1 == val2) {
           pairs.add(MergedPair(
             from1: pos1,
@@ -88,14 +88,14 @@ abstract final class Board {
       }
     }
 
-    // Vertical pairs — bottom-to-top
-    for (int row = GameConstants.rows - 1; row > 0; row--) {
-      for (int col = 0; col < GameConstants.columns; col++) {
-        final Position pos1 = Position(row: row - 1, col: col);
-        final Position pos2 = Position(row: row, col: col);
+    // Horizontal pairs — right-to-left so rightmost pair is preferred
+    for (int row = GameConstants.rows - 1; row >= 0; row--) {
+      for (int col = GameConstants.columns - 2; col >= 0; col--) {
+        final Position pos1 = Position(row: row, col: col);
+        final Position pos2 = Position(row: row, col: col + 1);
         if (used.contains(pos1) || used.contains(pos2)) continue;
-        final int? val1 = grid[row - 1][col];
-        final int? val2 = grid[row][col];
+        final int? val1 = grid[row][col];
+        final int? val2 = grid[row][col + 1];
         if (val1 != null && val1 == val2) {
           pairs.add(MergedPair(
             from1: pos1,
