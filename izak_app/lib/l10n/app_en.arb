@@ -145,5 +145,7 @@
   "enterNickname": "Enter Nickname",
   "nicknameDialogHint": "Name for leaderboard (2-10 chars)",
   "continueGame": "CONTINUE",
-  "keepGoing": "KEEP GOING"
+  "keepGoing": "KEEP GOING",
+  "quitConfirmTitle": "Quit Game?",
+  "quitConfirmMessage": "Your current progress will be lost."
 }

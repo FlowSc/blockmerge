@@ -267,4 +267,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get keepGoing => 'KEEP GOING';
+
+  @override
+  String get quitConfirmTitle => 'Quit Game?';
+
+  @override
+  String get quitConfirmMessage => 'Your current progress will be lost.';
 }

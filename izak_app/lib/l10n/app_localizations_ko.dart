@@ -266,4 +266,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get keepGoing => '계속하기';
+
+  @override
+  String get quitConfirmTitle => '게임 종료';
+
+  @override
+  String get quitConfirmMessage => '현재까지의 진행사항이 사라집니다.';
 }

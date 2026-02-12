@@ -577,6 +577,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'KEEP GOING'**
   String get keepGoing;
+
+  /// No description provided for @quitConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quit Game?'**
+  String get quitConfirmTitle;
+
+  /// No description provided for @quitConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your current progress will be lost.'**
+  String get quitConfirmMessage;
 }
 
 class _AppLocalizationsDelegate

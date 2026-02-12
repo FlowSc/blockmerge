@@ -47,9 +47,28 @@ class PauseOverlay extends ConsumerWidget {
               label: l10n.quit,
               icon: Icons.exit_to_app,
               color: const Color(0xFF636e72),
-              onPressed: () {
-                ref.read(gameNotifierProvider.notifier).clearSavedGame();
-                context.go('/');
+              onPressed: () async {
+                final bool? confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (BuildContext ctx) => AlertDialog(
+                    title: Text(l10n.quitConfirmTitle),
+                    content: Text(l10n.quitConfirmMessage),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: Text(l10n.cancel),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: Text(l10n.confirm),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirmed == true && context.mounted) {
+                  ref.read(gameNotifierProvider.notifier).clearSavedGame();
+                  context.go('/');
+                }
               },
             ),
           ],
