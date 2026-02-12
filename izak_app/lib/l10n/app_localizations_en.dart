@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Drop Merge';
+  String get appTitle => 'Merge Chain Blast';
 
   @override
   String get subtitle => 'Block Merge Puzzle';

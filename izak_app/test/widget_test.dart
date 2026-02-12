@@ -20,7 +20,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Drop Merge'), findsOneWidget);
+    expect(find.text('Merge Chain Blast'), findsOneWidget);
     expect(find.text('Block Merge Puzzle'), findsOneWidget);
     expect(find.text('START'), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);

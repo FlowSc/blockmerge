@@ -96,7 +96,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 48),
           Center(
             child: Text(
-              'Drop Merge v1.0.0',
+              'Merge Chain Blast v1.0.0',
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.3),
                 fontSize: 12,

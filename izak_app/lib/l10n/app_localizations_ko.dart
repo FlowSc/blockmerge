@@ -9,7 +9,7 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
-  String get appTitle => 'Drop Merge';
+  String get appTitle => 'Merge Chain Blast';
 
   @override
   String get subtitle => 'Block Merge Puzzle';

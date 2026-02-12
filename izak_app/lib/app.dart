@@ -78,7 +78,7 @@ class _IzakAppState extends ConsumerState<IzakApp> {
     ref.watch(bgmNotifierProvider);
 
     return MaterialApp.router(
-      title: 'Drop Merge',
+      title: 'Merge Chain Blast',
       theme: AppTheme.darkTheme,
       routerConfig: _router,
       debugShowCheckedModeBanner: false,
