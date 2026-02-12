@@ -405,14 +405,23 @@ class GameNotifier extends _$GameNotifier {
       newValue: pair.newValue,
     );
 
-    // Primary: toward strictly-bigger neighbor (adjacency is king)
+    // Primary: immediate chain — merged value matches an adjacent tile.
+    final int mergedValue = pair.newValue;
+    final bool chain1 =
+        _hasMatchingNeighbor(grid, pair.from1, pair.from2, mergedValue);
+    final bool chain2 =
+        _hasMatchingNeighbor(grid, pair.from2, pair.from1, mergedValue);
+    if (chain1 && !chain2) return toPos1;
+    if (chain2 && !chain1) return toPos2;
+
+    // Secondary: toward strictly-bigger neighbor.
     final int tileValue = pair.newValue ~/ 2;
     final int n1 = _maxStrictNeighbor(grid, pair.from1, pair.from2, tileValue);
     final int n2 = _maxStrictNeighbor(grid, pair.from2, pair.from1, tileValue);
     if (n1 > n2) return toPos1;
     if (n2 > n1) return toPos2;
 
-    // Secondary: simulate chain — but only if neither side has a big neighbor
+    // Tertiary: simulate chain.
     final (int merges1, int score1) = _simulateChain(grid, toPos1);
     final (int merges2, int score2) = _simulateChain(grid, toPos2);
 
@@ -443,6 +452,21 @@ class GameNotifier extends _$GameNotifier {
     return (totalMerges, totalScore);
   }
 
+  /// Whether [pos] has a neighbor with value equal to [value], excluding [exclude].
+  bool _hasMatchingNeighbor(
+    List<List<int?>> grid,
+    Position pos,
+    Position exclude,
+    int value,
+  ) {
+    for (final Position n in pos.neighbors) {
+      if (n == exclude) continue;
+      if (!Board.inBounds(n)) continue;
+      if (grid[n.row][n.col] == value) return true;
+    }
+    return false;
+  }
+
   /// Max neighbor value strictly greater than [tileValue], excluding [exclude].
   int _maxStrictNeighbor(
     List<List<int?>> grid,
@@ -465,30 +489,46 @@ class GameNotifier extends _$GameNotifier {
     List<MergedPair> candidates,
   ) {
     MergedPair best = candidates.first;
+    bool bestHasChain = false;
     int bestNeighbor = -1;
     int bestMerges = -1;
     int bestScore = -1;
 
     for (final MergedPair candidate in candidates) {
+      final Position other =
+          candidate.to == candidate.from1 ? candidate.from2 : candidate.from1;
+      final bool hasChain = _hasMatchingNeighbor(
+        grid,
+        candidate.to,
+        other,
+        candidate.newValue,
+      );
       final int tileValue = candidate.newValue ~/ 2;
       final int neighborVal = _maxStrictNeighbor(
         grid,
         candidate.to,
-        candidate.to == candidate.from1 ? candidate.from2 : candidate.from1,
+        other,
         tileValue,
       );
       final (int totalMerges, int totalScore) =
           _simulateChain(grid, candidate);
 
-      // Primary: bigger neighbor adjacency
-      // Secondary: more chain merges
-      // Tertiary: higher score
-      if (neighborVal > bestNeighbor ||
-          (neighborVal == bestNeighbor && totalMerges > bestMerges) ||
-          (neighborVal == bestNeighbor &&
+      // Primary: immediate chain adjacency
+      // Secondary: bigger neighbor
+      // Tertiary: more chain merges / higher score
+      final bool isBetter = (hasChain && !bestHasChain) ||
+          (hasChain == bestHasChain && neighborVal > bestNeighbor) ||
+          (hasChain == bestHasChain &&
+              neighborVal == bestNeighbor &&
+              totalMerges > bestMerges) ||
+          (hasChain == bestHasChain &&
+              neighborVal == bestNeighbor &&
               totalMerges == bestMerges &&
-              totalScore > bestScore)) {
+              totalScore > bestScore);
+
+      if (isBetter) {
         best = candidate;
+        bestHasChain = hasChain;
         bestNeighbor = neighborVal;
         bestMerges = totalMerges;
         bestScore = totalScore;

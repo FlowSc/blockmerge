@@ -121,6 +121,24 @@ abstract final class Board {
     Position pos2,
     int tileValue,
   ) {
+    final int mergedValue = tileValue * 2;
+
+    // Primary: immediate chain — merged value matches an adjacent tile.
+    bool hasMatchingNeighbor(Position pos, Position exclude) {
+      for (final Position n in pos.neighbors) {
+        if (n == exclude) continue;
+        if (!inBounds(n)) continue;
+        if (grid[n.row][n.col] == mergedValue) return true;
+      }
+      return false;
+    }
+
+    final bool match1 = hasMatchingNeighbor(pos1, pos2);
+    final bool match2 = hasMatchingNeighbor(pos2, pos1);
+    if (match1 && !match2) return pos1;
+    if (match2 && !match1) return pos2;
+
+    // Secondary: toward strictly-bigger neighbor.
     int maxStrictNeighbor(Position pos, Position exclude) {
       int maxVal = 0;
       for (final Position n in pos.neighbors) {
