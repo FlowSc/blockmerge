@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
-import 'core/providers/bgm_notifier.dart';
 import 'core/theme/app_theme.dart';
 import 'features/game/game_screen.dart';
 import 'features/game/models/game_mode.dart';
 import 'features/home/home_screen.dart';
 import 'features/leaderboard/leaderboard_screen.dart';
 import 'features/settings/settings_screen.dart';
+import 'features/splash/splash_screen.dart';
 import 'features/tutorial/tutorial_screen.dart';
 
 GoRouter _createRouter() => GoRouter(
@@ -17,6 +16,12 @@ GoRouter _createRouter() => GoRouter(
   routes: <RouteBase>[
     GoRoute(
       path: '/',
+      builder: (BuildContext context, GoRouterState state) {
+        return const SplashScreen();
+      },
+    ),
+    GoRoute(
+      path: '/home',
       builder: (BuildContext context, GoRouterState state) {
         return const HomeScreen();
       },
@@ -56,14 +61,14 @@ GoRouter _createRouter() => GoRouter(
   ],
 );
 
-class IzakApp extends ConsumerStatefulWidget {
+class IzakApp extends StatefulWidget {
   const IzakApp({super.key});
 
   @override
-  ConsumerState<IzakApp> createState() => _IzakAppState();
+  State<IzakApp> createState() => _IzakAppState();
 }
 
-class _IzakAppState extends ConsumerState<IzakApp> {
+class _IzakAppState extends State<IzakApp> {
   late final GoRouter _router = _createRouter();
 
   @override
@@ -74,9 +79,6 @@ class _IzakAppState extends ConsumerState<IzakApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Activate BGM provider so music plays from app start.
-    ref.watch(bgmNotifierProvider);
-
     return MaterialApp.router(
       title: 'Merge Chain Blast',
       theme: AppTheme.darkTheme,

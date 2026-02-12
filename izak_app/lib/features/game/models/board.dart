@@ -1,5 +1,6 @@
 import '../../../core/constants/game_constants.dart';
 import 'falling_block.dart';
+import 'game_state.dart';
 import 'merge_result.dart';
 import 'position.dart';
 import 'tile.dart';
@@ -215,6 +216,29 @@ abstract final class Board {
       newGrid[pair.to.row][pair.to.col] = pair.newValue;
     }
     return newGrid;
+  }
+
+  /// Compute which tiles will drop and how far due to gravity.
+  /// Returns only tiles that actually move (fromRow != toRow).
+  static List<TileDrop> computeGravityDrops(List<List<int?>> grid) {
+    final List<TileDrop> drops = [];
+    for (int col = 0; col < GameConstants.columns; col++) {
+      int writeRow = GameConstants.rows - 1;
+      for (int row = GameConstants.rows - 1; row >= 0; row--) {
+        if (grid[row][col] != null) {
+          if (writeRow != row) {
+            drops.add(TileDrop(
+              col: col,
+              fromRow: row,
+              toRow: writeRow,
+              value: grid[row][col]!,
+            ));
+          }
+          writeRow--;
+        }
+      }
+    }
+    return drops;
   }
 
   /// Apply gravity: tiles fall down to fill empty spaces.

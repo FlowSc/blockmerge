@@ -21,6 +21,37 @@ class LeaderboardRepository {
     return data.map(LeaderboardEntry.fromJson).toList();
   }
 
+  /// Returns the user's best score entry for the given game mode, or null.
+  Future<LeaderboardEntry?> getMyBestScore({
+    required String deviceId,
+    String gameMode = 'classic',
+  }) async {
+    final List<Map<String, dynamic>> data = await _client
+        .from('leaderboard')
+        .select()
+        .eq('device_id', deviceId)
+        .eq('game_mode', gameMode)
+        .order('score', ascending: false)
+        .limit(1);
+
+    if (data.isEmpty) return null;
+    return LeaderboardEntry.fromJson(data.first);
+  }
+
+  /// Returns the rank (1-based) of a given score in the leaderboard.
+  Future<int> getRank({
+    required int score,
+    String gameMode = 'classic',
+  }) async {
+    final List<Map<String, dynamic>> data = await _client
+        .from('leaderboard')
+        .select('id')
+        .eq('game_mode', gameMode)
+        .gt('score', score);
+
+    return data.length + 1;
+  }
+
   Future<void> submitScore({
     required String nickname,
     required int score,

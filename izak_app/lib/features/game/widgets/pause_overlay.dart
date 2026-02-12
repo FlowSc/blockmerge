@@ -68,7 +68,7 @@ class PauseOverlay extends ConsumerWidget {
                 );
                 if (confirmed == true && context.mounted) {
                   ref.read(gameNotifierProvider.notifier).clearSavedGame();
-                  context.go('/');
+                  context.go('/home');
                 }
               },
             ),

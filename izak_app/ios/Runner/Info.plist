@@ -47,6 +47,8 @@
 	<true/>
 	<key>GCSupportsGameMode</key>
 	<true/>
+	<key>LSSupportsGameMode</key>
+	<true/>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>This app uses advertising tracking to provide personalized ads.</string>
 	<key>GADApplicationIdentifier</key>

@@ -29,6 +29,22 @@ final class SlidingMerge {
   final int tileValue;
 }
 
+/// Data for a single tile dropping due to gravity.
+@immutable
+final class TileDrop {
+  const TileDrop({
+    required this.col,
+    required this.fromRow,
+    required this.toRow,
+    required this.value,
+  });
+
+  final int col;
+  final int fromRow;
+  final int toRow;
+  final int value;
+}
+
 enum GameStatus { idle, playing, paused, gameOver, victory }
 
 @immutable
@@ -52,6 +68,7 @@ final class GameState {
     this.remainingSeconds = 0,
     this.slidingMerge,
     this.hasUsedContinue = false,
+    this.gravityDrops,
   });
 
   /// 12 rows x 6 columns. null = empty cell, int = tile value.
@@ -99,6 +116,9 @@ final class GameState {
   /// Whether the player has used the rewarded-ad continue this game.
   final bool hasUsedContinue;
 
+  /// Tiles currently dropping due to gravity. Non-null during gravity animation.
+  final List<TileDrop>? gravityDrops;
+
   GameState copyWith({
     List<List<int?>>? grid,
     FallingBlock? Function()? currentBlock,
@@ -118,6 +138,7 @@ final class GameState {
     int? remainingSeconds,
     SlidingMerge? Function()? slidingMerge,
     bool? hasUsedContinue,
+    List<TileDrop>? Function()? gravityDrops,
   }) {
     return GameState(
       grid: grid ?? this.grid,
@@ -145,6 +166,8 @@ final class GameState {
       slidingMerge:
           slidingMerge != null ? slidingMerge() : this.slidingMerge,
       hasUsedContinue: hasUsedContinue ?? this.hasUsedContinue,
+      gravityDrops:
+          gravityDrops != null ? gravityDrops() : this.gravityDrops,
     );
   }
 }

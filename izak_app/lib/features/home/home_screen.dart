@@ -3,6 +3,7 @@ import '../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/providers/bgm_notifier.dart';
 import '../game/providers/game_notifier.dart';
 import '../settings/providers/settings_notifier.dart';
 
@@ -11,6 +12,9 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Activate BGM from home screen onward.
+    ref.watch(bgmNotifierProvider);
+
     final bool tutorialSeen =
         ref.watch(settingsNotifierProvider.select((s) => s.tutorialSeen));
     final AsyncValue<bool> hasSaved = ref.watch(hasSavedGameProvider);

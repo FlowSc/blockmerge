@@ -238,7 +238,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   OutlinedButton(
-                    onPressed: () => context.go('/'),
+                    onPressed: () => context.go('/home'),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.white38),
                       padding: const EdgeInsets.symmetric(

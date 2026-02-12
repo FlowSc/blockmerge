@@ -27,14 +27,17 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
   String? _classicError;
   String? _timeAttackError;
 
+  LeaderboardEntry? _myClassicBest;
+  LeaderboardEntry? _myTimeAttackBest;
+  int? _myClassicRank;
+  int? _myTimeAttackRank;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _repository = LeaderboardRepository(Supabase.instance.client);
-    _loadDeviceId();
-    _loadClassic();
-    _loadTimeAttack();
+    _init();
   }
 
   @override
@@ -43,11 +46,12 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
     super.dispose();
   }
 
-  Future<void> _loadDeviceId() async {
+  Future<void> _init() async {
     final String id = await getDeviceId();
     if (mounted) {
       setState(() => _myDeviceId = id);
     }
+    await Future.wait([_loadClassic(), _loadTimeAttack()]);
   }
 
   Future<void> _loadClassic() async {
@@ -58,9 +62,27 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
     try {
       final List<LeaderboardEntry> entries =
           await _repository.getTopScores(gameMode: 'classic');
+
+      LeaderboardEntry? myBest;
+      int? myRank;
+      if (_myDeviceId != null) {
+        myBest = await _repository.getMyBestScore(
+          deviceId: _myDeviceId!,
+          gameMode: 'classic',
+        );
+        if (myBest != null) {
+          myRank = await _repository.getRank(
+            score: myBest.score,
+            gameMode: 'classic',
+          );
+        }
+      }
+
       if (mounted) {
         setState(() {
           _classicEntries = entries;
+          _myClassicBest = myBest;
+          _myClassicRank = myRank;
           _classicLoading = false;
         });
       }
@@ -82,9 +104,27 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
     try {
       final List<LeaderboardEntry> entries =
           await _repository.getTopScores(gameMode: 'time_attack');
+
+      LeaderboardEntry? myBest;
+      int? myRank;
+      if (_myDeviceId != null) {
+        myBest = await _repository.getMyBestScore(
+          deviceId: _myDeviceId!,
+          gameMode: 'time_attack',
+        );
+        if (myBest != null) {
+          myRank = await _repository.getRank(
+            score: myBest.score,
+            gameMode: 'time_attack',
+          );
+        }
+      }
+
       if (mounted) {
         setState(() {
           _timeAttackEntries = entries;
+          _myTimeAttackBest = myBest;
+          _myTimeAttackRank = myRank;
           _timeAttackLoading = false;
         });
       }
@@ -114,25 +154,61 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
           indicatorColor: const Color(0xFFFFD700),
           labelColor: const Color(0xFFFFD700),
           unselectedLabelColor: Colors.white54,
+          labelStyle: const TextStyle(
+            fontFamily: 'PressStart2P',
+            fontSize: 8,
+            fontWeight: FontWeight.bold,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontFamily: 'PressStart2P',
+            fontSize: 8,
+          ),
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildList(
+          _buildTab(
             entries: _classicEntries,
             loading: _classicLoading,
             error: _classicError,
             onRefresh: _loadClassic,
+            myBest: _myClassicBest,
+            myRank: _myClassicRank,
           ),
-          _buildList(
+          _buildTab(
             entries: _timeAttackEntries,
             loading: _timeAttackLoading,
             error: _timeAttackError,
             onRefresh: _loadTimeAttack,
+            myBest: _myTimeAttackBest,
+            myRank: _myTimeAttackRank,
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildTab({
+    required List<LeaderboardEntry> entries,
+    required bool loading,
+    required String? error,
+    required Future<void> Function() onRefresh,
+    required LeaderboardEntry? myBest,
+    required int? myRank,
+  }) {
+    return Column(
+      children: [
+        Expanded(
+          child: _buildList(
+            entries: entries,
+            loading: loading,
+            error: error,
+            onRefresh: onRefresh,
+          ),
+        ),
+        _MyBestBar(entry: myBest, rank: myRank),
+      ],
     );
   }
 
@@ -158,14 +234,21 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
             Text(
               l10n.loadFailed,
               style: TextStyle(
+                fontFamily: 'PressStart2P',
                 color: Colors.white.withValues(alpha: 0.7),
-                fontSize: 16,
+                fontSize: 9,
               ),
             ),
             const SizedBox(height: 12),
             FilledButton(
               onPressed: onRefresh,
-              child: Text(l10n.tryAgain),
+              child: Text(
+                l10n.tryAgain,
+                style: const TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 8,
+                ),
+              ),
             ),
           ],
         ),
@@ -177,8 +260,9 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
         child: Text(
           l10n.noRecords,
           style: TextStyle(
+            fontFamily: 'PressStart2P',
             color: Colors.white.withValues(alpha: 0.5),
-            fontSize: 16,
+            fontSize: 8,
           ),
         ),
       );
@@ -199,6 +283,102 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
             isMe: isMe,
           );
         },
+      ),
+    );
+  }
+}
+
+class _MyBestBar extends StatelessWidget {
+  const _MyBestBar({required this.entry, required this.rank});
+
+  final LeaderboardEntry? entry;
+  final int? rank;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1C1C3A),
+        border: Border(
+          top: BorderSide(
+            color: const Color(0xFF00E5FF).withValues(alpha: 0.4),
+            width: 1,
+          ),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: SafeArea(
+        top: false,
+        child: entry != null
+            ? Row(
+                children: [
+                  SizedBox(
+                    width: 36,
+                    child: Text(
+                      rank != null ? '#$rank' : '-',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'PressStart2P',
+                        color: Color(0xFF00E5FF),
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00E5FF).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    child: Text(
+                      l10n.myBest,
+                      style: const TextStyle(
+                        fontFamily: 'PressStart2P',
+                        color: Color(0xFF00E5FF),
+                        fontSize: 6,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      entry!.nickname,
+                      style: const TextStyle(
+                        fontFamily: 'PressStart2P',
+                        color: Color(0xFF00E5FF),
+                        fontSize: 9,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Text(
+                    '${entry!.score}',
+                    style: const TextStyle(
+                      fontFamily: 'PressStart2P',
+                      color: Color(0xFF00E5FF),
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )
+            : Center(
+                child: Text(
+                  l10n.noRecord,
+                  style: TextStyle(
+                    fontFamily: 'PressStart2P',
+                    color: Colors.white.withValues(alpha: 0.3),
+                    fontSize: 7,
+                  ),
+                ),
+              ),
       ),
     );
   }
@@ -275,8 +455,9 @@ class _LeaderboardTile extends StatelessWidget {
                     entry.maxChainLevel + 1,
                   ),
                   style: TextStyle(
+                    fontFamily: 'PressStart2P',
                     color: Colors.white.withValues(alpha: 0.4),
-                    fontSize: 11,
+                    fontSize: 6,
                   ),
                 ),
               ],

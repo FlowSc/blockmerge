@@ -291,4 +291,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get classic => 'CLASSIC';
+
+  @override
+  String get myBest => 'MY BEST';
+
+  @override
+  String get noRecord => 'No record yet';
 }

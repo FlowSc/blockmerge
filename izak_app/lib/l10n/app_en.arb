@@ -153,5 +153,7 @@
   "quitConfirmMessage": "Your current progress will be lost.",
   "timeAttack": "TIME ATTACK",
   "timeUp": "TIME'S UP!",
-  "classic": "CLASSIC"
+  "classic": "CLASSIC",
+  "myBest": "MY BEST",
+  "noRecord": "No record yet"
 }

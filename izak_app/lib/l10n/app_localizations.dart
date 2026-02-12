@@ -625,6 +625,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'CLASSIC'**
   String get classic;
+
+  /// No description provided for @myBest.
+  ///
+  /// In en, this message translates to:
+  /// **'MY BEST'**
+  String get myBest;
+
+  /// No description provided for @noRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'No record yet'**
+  String get noRecord;
 }
 
 class _AppLocalizationsDelegate

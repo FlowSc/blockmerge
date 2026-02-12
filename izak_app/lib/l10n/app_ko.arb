@@ -86,5 +86,7 @@
   "quitConfirmMessage": "현재까지의 진행사항이 사라집니다.",
   "timeAttack": "타임어택",
   "timeUp": "시간 종료!",
-  "classic": "클래식"
+  "classic": "클래식",
+  "myBest": "내 최고",
+  "noRecord": "기록 없음"
 }

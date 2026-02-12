@@ -290,4 +290,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get classic => '클래식';
+
+  @override
+  String get myBest => '내 최고';
+
+  @override
+  String get noRecord => '기록 없음';
 }

@@ -397,6 +397,7 @@ class GameNotifier extends _$GameNotifier {
         highlightedPositions: () => null,
         newMergedPositions: () => null,
         slidingMerge: () => null,
+        gravityDrops: () => null,
         lastMergeChain: () => null,
       );
     } else {
@@ -426,6 +427,7 @@ class GameNotifier extends _$GameNotifier {
       highlightedPositions: () => null,
       newMergedPositions: () => null,
       slidingMerge: () => null,
+        gravityDrops: () => null,
     );
 
     if (state.gameMode == GameMode.timeAttack) {
@@ -487,6 +489,7 @@ class GameNotifier extends _$GameNotifier {
           highlightedPositions: () => null,
           newMergedPositions: () => null,
           slidingMerge: () => null,
+        gravityDrops: () => null,
         );
       } else {
         state = state.copyWith(remainingSeconds: next);
@@ -549,17 +552,32 @@ class GameNotifier extends _$GameNotifier {
 
     // Apply initial gravity so unsupported tiles fall first
     _animTimer = Timer(const Duration(milliseconds: 120), () {
-      final List<List<int?>> settledGrid = Board.applyGravity(grid);
+      final List<TileDrop> initialDrops = Board.computeGravityDrops(grid);
 
-      // Adjust new-tile positions after gravity compaction.
-      final Set<Position> adjustedNew =
-          _adjustPositionsAfterGravity(grid, newPositions);
+      if (initialDrops.isEmpty) {
+        // No gravity needed
+        _animTimer = Timer(const Duration(milliseconds: 100), () {
+          _animateMergeChain(grid, 0, newTilePositions: newPositions);
+        });
+        return;
+      }
 
-      state = state.copyWith(grid: settledGrid);
+      // Animate initial gravity drop
+      state = state.copyWith(gravityDrops: () => initialDrops);
 
-      // Then start merge chain after gravity settles
-      _animTimer = Timer(const Duration(milliseconds: 150), () {
-        _animateMergeChain(settledGrid, 0, newTilePositions: adjustedNew);
+      _animTimer = Timer(const Duration(milliseconds: 200), () {
+        final List<List<int?>> settledGrid = Board.applyGravity(grid);
+        final Set<Position> adjustedNew =
+            _adjustPositionsAfterGravity(grid, newPositions);
+
+        state = state.copyWith(
+          grid: settledGrid,
+          gravityDrops: () => null,
+        );
+
+        _animTimer = Timer(const Duration(milliseconds: 80), () {
+          _animateMergeChain(settledGrid, 0, newTilePositions: adjustedNew);
+        });
       });
     });
   }
@@ -881,6 +899,7 @@ class GameNotifier extends _$GameNotifier {
         state = state.copyWith(
           grid: mergedGrid,
           slidingMerge: () => null,
+        gravityDrops: () => null,
           newMergedPositions: () => {target.to},
           score: state.score + stepScore,
           lastMergeChain: () => chainResult,
@@ -889,19 +908,42 @@ class GameNotifier extends _$GameNotifier {
           currentChainLevel: chainLevel,
         );
 
-        // Phase 4: After showing merged tile, apply gravity
+        // Phase 4: After showing merged tile, animate gravity drop
         _animTimer = Timer(const Duration(milliseconds: 200), () {
-          final List<List<int?>> gravityGrid =
-              Board.applyGravity(mergedGrid);
+          final List<TileDrop> drops =
+              Board.computeGravityDrops(mergedGrid);
 
+          if (drops.isEmpty) {
+            // No gravity needed — go straight to next merge check
+            state = state.copyWith(
+              newMergedPositions: () => null,
+            );
+            _animTimer = Timer(const Duration(milliseconds: 100), () {
+              _animateMergeChain(mergedGrid, chainLevel + 1);
+            });
+            return;
+          }
+
+          // Set gravity drops for widget animation (grid stays pre-gravity)
           state = state.copyWith(
-            grid: gravityGrid,
             newMergedPositions: () => null,
+            gravityDrops: () => drops,
           );
 
-          // Phase 5: After gravity settles, check for next merge
-          _animTimer = Timer(const Duration(milliseconds: 150), () {
-            _animateMergeChain(gravityGrid, chainLevel + 1);
+          // Phase 5: After gravity animation, apply actual gravity
+          _animTimer = Timer(const Duration(milliseconds: 200), () {
+            final List<List<int?>> gravityGrid =
+                Board.applyGravity(mergedGrid);
+
+            state = state.copyWith(
+              grid: gravityGrid,
+              gravityDrops: () => null,
+            );
+
+            // Phase 6: After gravity settles, check for next merge
+            _animTimer = Timer(const Duration(milliseconds: 80), () {
+              _animateMergeChain(gravityGrid, chainLevel + 1);
+            });
           });
         });
       });
@@ -933,6 +975,7 @@ class GameNotifier extends _$GameNotifier {
           highlightedPositions: () => null,
           newMergedPositions: () => null,
           slidingMerge: () => null,
+        gravityDrops: () => null,
           currentChainLevel: 0,
           status: GameStatus.victory,
         );
@@ -946,6 +989,7 @@ class GameNotifier extends _$GameNotifier {
       highlightedPositions: () => null,
       newMergedPositions: () => null,
       slidingMerge: () => null,
+        gravityDrops: () => null,
       currentChainLevel: 0,
     );
 

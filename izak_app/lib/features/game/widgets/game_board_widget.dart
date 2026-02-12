@@ -77,6 +77,7 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
     final Set<Position>? newMerged = gameState.newMergedPositions;
     final int chainLevel = gameState.currentChainLevel;
     final SlidingMerge? slidingMerge = gameState.slidingMerge;
+    final List<TileDrop>? gravityDrops = gameState.gravityDrops;
 
     // Trigger shake when chainLevel reaches threshold and there are new merges.
     ref.listen<int>(
@@ -188,8 +189,8 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
         final double boardHeight = cellSize * GameConstants.rows;
 
         Widget board = SizedBox(
-          width: boardWidth + 2,
-          height: boardHeight + 2,
+          width: boardWidth + _borderH,
+          height: boardHeight + _borderV,
           child: AnimatedBuilder(
             animation: _borderColorController,
             builder: (BuildContext context, Widget? child) {
@@ -229,6 +230,7 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
                   highlighted: highlighted,
                   newMerged: newMerged,
                   slidingMerge: slidingMerge,
+                  gravityDrops: gravityDrops,
                 ),
                 // Sliding merge tile
                 if (slidingMerge != null)
@@ -243,6 +245,18 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
                     value: slidingMerge.tileValue,
                     cellSize: cellSize,
                   ),
+                // Gravity drop animated tiles
+                if (gravityDrops != null)
+                  ...gravityDrops.map((TileDrop drop) => _GravityTile(
+                        key: ValueKey(
+                          'gdrop_${drop.fromRow}_${drop.col}_${drop.value}',
+                        ),
+                        fromRow: drop.fromRow,
+                        toRow: drop.toRow,
+                        col: drop.col,
+                        value: drop.value,
+                        cellSize: cellSize,
+                      )),
                 // High-value merge glow effects (64+)
                 if (newMerged != null)
                   ..._buildHighValueEffects(
@@ -280,9 +294,14 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
     );
   }
 
+  static const double _borderH = 4; // left 2 + right 2
+  static const double _borderV = 6; // top 2 + bottom 4
+
   double _calculateCellSize(BoxConstraints constraints) {
-    final double maxCellWidth = constraints.maxWidth / GameConstants.columns;
-    final double maxCellHeight = constraints.maxHeight / GameConstants.rows;
+    final double maxCellWidth =
+        (constraints.maxWidth - _borderH) / GameConstants.columns;
+    final double maxCellHeight =
+        (constraints.maxHeight - _borderV) / GameConstants.rows;
     return min(maxCellWidth, maxCellHeight);
   }
 
@@ -292,10 +311,19 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
     Set<Position>? highlighted,
     Set<Position>? newMerged,
     SlidingMerge? slidingMerge,
+    List<TileDrop>? gravityDrops,
   }) {
     // The sliding tile's source position should be hidden from the grid
     // (it's rendered as an animated overlay instead).
     final Position? hiddenPos = slidingMerge?.from;
+
+    // Positions of tiles being animated by gravity drop
+    final Set<String> droppingKeys = {};
+    if (gravityDrops != null) {
+      for (final TileDrop drop in gravityDrops) {
+        droppingKeys.add('${drop.fromRow}_${drop.col}');
+      }
+    }
 
     final List<Widget> widgets = [];
     for (int row = 0; row < GameConstants.rows; row++) {
@@ -308,6 +336,11 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
           if (hiddenPos != null &&
               pos.row == hiddenPos.row &&
               pos.col == hiddenPos.col) {
+            continue;
+          }
+
+          // Skip tiles being animated by gravity drop
+          if (droppingKeys.contains('${row}_$col')) {
             continue;
           }
 
@@ -478,6 +511,83 @@ class _SlidingTileState extends State<_SlidingTile>
 
     _positionAnimation = Tween<Offset>(begin: from, end: to).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInQuart),
+    );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (BuildContext context, Widget? child) {
+        return Transform.translate(
+          offset: _positionAnimation.value,
+          child: child,
+        );
+      },
+      child: SizedBox(
+        width: widget.cellSize - 2,
+        height: widget.cellSize - 2,
+        child: TileWidget(
+          value: widget.value,
+          size: widget.cellSize - 2,
+        ),
+      ),
+    );
+  }
+}
+
+class _GravityTile extends StatefulWidget {
+  const _GravityTile({
+    super.key,
+    required this.fromRow,
+    required this.toRow,
+    required this.col,
+    required this.value,
+    required this.cellSize,
+  });
+
+  final int fromRow;
+  final int toRow;
+  final int col;
+  final int value;
+  final double cellSize;
+
+  @override
+  State<_GravityTile> createState() => _GravityTileState();
+}
+
+class _GravityTileState extends State<_GravityTile>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<Offset> _positionAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+
+    final Offset from = Offset(
+      widget.col * widget.cellSize + 1,
+      widget.fromRow * widget.cellSize + 1,
+    );
+    final Offset to = Offset(
+      widget.col * widget.cellSize + 1,
+      widget.toRow * widget.cellSize + 1,
+    );
+
+    _positionAnimation = Tween<Offset>(begin: from, end: to).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInQuad),
     );
 
     _controller.forward();
