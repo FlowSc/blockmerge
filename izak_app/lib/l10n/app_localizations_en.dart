@@ -264,4 +264,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get continueGame => 'CONTINUE';
+
+  @override
+  String get keepGoing => 'KEEP GOING';
 }

@@ -263,4 +263,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get continueGame => '이어하기';
+
+  @override
+  String get keepGoing => '계속하기';
 }

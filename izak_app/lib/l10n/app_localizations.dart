@@ -571,6 +571,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'CONTINUE'**
   String get continueGame;
+
+  /// No description provided for @keepGoing.
+  ///
+  /// In en, this message translates to:
+  /// **'KEEP GOING'**
+  String get keepGoing;
 }
 
 class _AppLocalizationsDelegate

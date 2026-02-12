@@ -78,5 +78,6 @@
   "leaderboardEntry": "Merges: {merges} | Chain: x{chain}",
   "enterNickname": "닉네임 입력",
   "nicknameDialogHint": "리더보드에 표시될 이름 (2~10자)",
-  "continueGame": "이어하기"
+  "continueGame": "이어하기",
+  "keepGoing": "계속하기"
 }

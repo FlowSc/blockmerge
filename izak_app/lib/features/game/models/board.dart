@@ -56,16 +56,11 @@ abstract final class Board {
     return newGrid;
   }
 
-  /// Find all mergeable pairs of adjacent tiles with the same value.
-  /// Scans bottom-to-top so base tiles are paired first.
-  /// Merge direction: toward the adjacent bigger number.
+  /// Find non-overlapping mergeable pairs (for batch processing).
   /// Each tile participates in at most one pair per step.
   static List<MergedPair> findMergeablePairs(List<List<int?>> grid) {
     final List<MergedPair> pairs = [];
     final Set<Position> used = {};
-
-    // Priority: vertical (bottom) > horizontal (right/left).
-    // Scan bottom-to-top so base (lower) tiles are paired first.
 
     // Vertical pairs first — bottom merges get highest priority
     for (int row = GameConstants.rows - 1; row > 0; row--) {
@@ -105,6 +100,50 @@ abstract final class Board {
           ));
           used.add(pos1);
           used.add(pos2);
+        }
+      }
+    }
+
+    return pairs;
+  }
+
+  /// Find ALL adjacent same-value pairs (may share tiles).
+  /// Used by animated merge to let the selector pick the best pair.
+  static List<MergedPair> findAllAdjacentPairs(List<List<int?>> grid) {
+    final List<MergedPair> pairs = [];
+
+    // Vertical pairs
+    for (int row = GameConstants.rows - 1; row > 0; row--) {
+      for (int col = 0; col < GameConstants.columns; col++) {
+        final int? val1 = grid[row - 1][col];
+        final int? val2 = grid[row][col];
+        if (val1 != null && val1 == val2) {
+          final Position pos1 = Position(row: row - 1, col: col);
+          final Position pos2 = Position(row: row, col: col);
+          pairs.add(MergedPair(
+            from1: pos1,
+            from2: pos2,
+            to: _chooseMergeTo(grid, pos1, pos2, val1),
+            newValue: val1 * 2,
+          ));
+        }
+      }
+    }
+
+    // Horizontal pairs
+    for (int row = GameConstants.rows - 1; row >= 0; row--) {
+      for (int col = 0; col < GameConstants.columns - 1; col++) {
+        final int? val1 = grid[row][col];
+        final int? val2 = grid[row][col + 1];
+        if (val1 != null && val1 == val2) {
+          final Position pos1 = Position(row: row, col: col);
+          final Position pos2 = Position(row: row, col: col + 1);
+          pairs.add(MergedPair(
+            from1: pos1,
+            from2: pos2,
+            to: _chooseMergeTo(grid, pos1, pos2, val1),
+            newValue: val1 * 2,
+          ));
         }
       }
     }

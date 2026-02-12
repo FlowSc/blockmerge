@@ -76,6 +76,7 @@ class GameNotifier extends _$GameNotifier {
       'highScore': state.highScore,
       'totalMerges': state.totalMerges,
       'maxChainLevel': state.maxChainLevel,
+      'hasReachedVictory': state.hasReachedVictory,
     };
     if (state.currentBlock != null) {
       json['currentBlock'] = state.currentBlock!.toJson();
@@ -125,6 +126,7 @@ class GameNotifier extends _$GameNotifier {
         lastMergeChain: null,
         totalMerges: json['totalMerges'] as int,
         maxChainLevel: json['maxChainLevel'] as int,
+        hasReachedVictory: json['hasReachedVictory'] as bool? ?? false,
       );
 
       _rng = Random();
@@ -376,6 +378,16 @@ class GameNotifier extends _$GameNotifier {
     } else {
       state = state.copyWith(status: GameStatus.paused);
     }
+  }
+
+  /// Continue playing after reaching 2048 (endless mode).
+  void continueAfterVictory() {
+    if (state.status != GameStatus.victory) return;
+    state = state.copyWith(
+      status: GameStatus.playing,
+      hasReachedVictory: true,
+    );
+    _spawnNext();
   }
 
   void resume() {
@@ -691,7 +703,7 @@ class GameNotifier extends _$GameNotifier {
     int chainLevel, {
     Set<Position>? newTilePositions,
   }) {
-    final List<MergedPair> allPairs = Board.findMergeablePairs(grid);
+    final List<MergedPair> allPairs = Board.findAllAdjacentPairs(grid);
     if (allPairs.isEmpty) {
       _finishMergeChain();
       return;
@@ -773,24 +785,26 @@ class GameNotifier extends _$GameNotifier {
       _saveHighScore(newHighScore);
     }
 
-    // Check for win condition (2048 tile).
-    final bool hasWinTile = state.grid.any(
-      (List<int?> row) =>
-          row.any((int? v) => v != null && v >= GameConstants.winTileValue),
-    );
-
-    if (hasWinTile) {
-      _tickTimer?.cancel();
-      clearSavedGame();
-      state = state.copyWith(
-        highScore: newHighScore,
-        isAnimating: false,
-        highlightedPositions: () => null,
-        newMergedPositions: () => null,
-        currentChainLevel: 0,
-        status: GameStatus.victory,
+    // Check for win condition (2048 tile) — skip if already in endless mode.
+    if (!state.hasReachedVictory) {
+      final bool hasWinTile = state.grid.any(
+        (List<int?> row) =>
+            row.any((int? v) => v != null && v >= GameConstants.winTileValue),
       );
-      return;
+
+      if (hasWinTile) {
+        _tickTimer?.cancel();
+        clearSavedGame();
+        state = state.copyWith(
+          highScore: newHighScore,
+          isAnimating: false,
+          highlightedPositions: () => null,
+          newMergedPositions: () => null,
+          currentChainLevel: 0,
+          status: GameStatus.victory,
+        );
+        return;
+      }
     }
 
     state = state.copyWith(

@@ -25,7 +25,8 @@ class GameScreen extends ConsumerStatefulWidget {
 
 class _GameScreenState extends ConsumerState<GameScreen>
     with WidgetsBindingObserver {
-  late bool _showCountdown;
+  bool _showCountdown = true;
+  bool _pendingResume = false;
 
   // Gesture tracking
   Offset? _dragStart;
@@ -35,7 +36,6 @@ class _GameScreenState extends ConsumerState<GameScreen>
   @override
   void initState() {
     super.initState();
-    _showCountdown = !widget.isContinue;
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -56,11 +56,29 @@ class _GameScreenState extends ConsumerState<GameScreen>
     }
   }
 
-  void _onCountdownComplete() {
+  void _onCountdownComplete() async {
     setState(() {
       _showCountdown = false;
     });
-    ref.read(gameNotifierProvider.notifier).startGame();
+    if (_pendingResume) {
+      _pendingResume = false;
+      ref.read(gameNotifierProvider.notifier).resume();
+    } else if (widget.isContinue) {
+      final bool restored =
+          await ref.read(gameNotifierProvider.notifier).restoreGame();
+      if (!restored && mounted) {
+        ref.read(gameNotifierProvider.notifier).startGame();
+      }
+    } else {
+      ref.read(gameNotifierProvider.notifier).startGame();
+    }
+  }
+
+  void _onResume() {
+    setState(() {
+      _pendingResume = true;
+      _showCountdown = true;
+    });
   }
 
   void _onPanStart(DragStartDetails details) {
@@ -154,7 +172,8 @@ class _GameScreenState extends ConsumerState<GameScreen>
               child: ComboDisplay(),
             ),
             const NewBestNotification(),
-            if (status == GameStatus.paused) const PauseOverlay(),
+            if (status == GameStatus.paused && !_showCountdown)
+              PauseOverlay(onResume: _onResume),
             if (status == GameStatus.victory) const VictoryOverlay(),
             if (status == GameStatus.gameOver) const GameOverOverlay(),
             if (_showCountdown)

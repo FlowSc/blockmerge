@@ -6,7 +6,9 @@ import 'package:go_router/go_router.dart';
 import '../providers/game_notifier.dart';
 
 class PauseOverlay extends ConsumerWidget {
-  const PauseOverlay({super.key});
+  const PauseOverlay({required this.onResume, super.key});
+
+  final VoidCallback onResume;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,9 +40,7 @@ class PauseOverlay extends ConsumerWidget {
               label: l10n.resume,
               icon: Icons.play_arrow,
               color: const Color(0xFF6C5CE7),
-              onPressed: () {
-                ref.read(gameNotifierProvider.notifier).resume();
-              },
+              onPressed: onResume,
             ),
             const SizedBox(height: 16),
             _MenuButton(

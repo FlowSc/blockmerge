@@ -22,6 +22,7 @@ final class GameState {
     this.totalMerges = 0,
     this.maxChainLevel = 0,
     this.currentChainLevel = 0,
+    this.hasReachedVictory = false,
   });
 
   /// 12 rows x 6 columns. null = empty cell, int = tile value.
@@ -54,6 +55,9 @@ final class GameState {
   /// Chain level of the merge that just happened (for screen effects).
   final int currentChainLevel;
 
+  /// True after the player chose to continue past the 2048 victory.
+  final bool hasReachedVictory;
+
   GameState copyWith({
     List<List<int?>>? grid,
     FallingBlock? Function()? currentBlock,
@@ -68,6 +72,7 @@ final class GameState {
     int? totalMerges,
     int? maxChainLevel,
     int? currentChainLevel,
+    bool? hasReachedVictory,
   }) {
     return GameState(
       grid: grid ?? this.grid,
@@ -89,6 +94,7 @@ final class GameState {
       totalMerges: totalMerges ?? this.totalMerges,
       maxChainLevel: maxChainLevel ?? this.maxChainLevel,
       currentChainLevel: currentChainLevel ?? this.currentChainLevel,
+      hasReachedVictory: hasReachedVictory ?? this.hasReachedVictory,
     );
   }
 }

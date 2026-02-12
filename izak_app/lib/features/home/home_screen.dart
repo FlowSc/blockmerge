@@ -46,13 +46,8 @@ class HomeScreen extends ConsumerWidget {
                   width: 220,
                   height: 56,
                   child: FilledButton(
-                    onPressed: () async {
-                      final bool restored = await ref
-                          .read(gameNotifierProvider.notifier)
-                          .restoreGame();
-                      if (restored && context.mounted) {
-                        context.go('/game?continue=true');
-                      }
+                    onPressed: () {
+                      context.go('/game?continue=true');
                     },
                     style: FilledButton.styleFrom(
                       backgroundColor: const Color(0xFFFFD700),
