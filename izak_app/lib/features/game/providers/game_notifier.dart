@@ -616,6 +616,24 @@ class GameNotifier extends _$GameNotifier {
       _saveHighScore(newHighScore);
     }
 
+    // Check for win condition (2048 tile).
+    final bool hasWinTile = state.grid.any(
+      (List<int?> row) =>
+          row.any((int? v) => v != null && v >= GameConstants.winTileValue),
+    );
+
+    if (hasWinTile) {
+      _tickTimer?.cancel();
+      state = state.copyWith(
+        highScore: newHighScore,
+        isAnimating: false,
+        highlightedPositions: () => null,
+        newMergedPositions: () => null,
+        status: GameStatus.victory,
+      );
+      return;
+    }
+
     state = state.copyWith(
       highScore: newHighScore,
       isAnimating: false,

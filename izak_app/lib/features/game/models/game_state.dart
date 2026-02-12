@@ -4,7 +4,7 @@ import 'falling_block.dart';
 import 'merge_result.dart';
 import 'position.dart';
 
-enum GameStatus { idle, playing, paused, gameOver }
+enum GameStatus { idle, playing, paused, gameOver, victory }
 
 @immutable
 final class GameState {

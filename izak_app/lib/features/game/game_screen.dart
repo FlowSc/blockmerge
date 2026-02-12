@@ -11,6 +11,7 @@ import 'widgets/new_best_notification.dart';
 import 'widgets/next_block_preview.dart';
 import 'widgets/pause_overlay.dart';
 import 'widgets/score_display.dart';
+import 'widgets/victory_overlay.dart';
 import '../../shared/widgets/banner_ad_widget.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
@@ -149,6 +150,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
             ),
             const NewBestNotification(),
             if (status == GameStatus.paused) const PauseOverlay(),
+            if (status == GameStatus.victory) const VictoryOverlay(),
             if (status == GameStatus.gameOver) const GameOverOverlay(),
             if (_showCountdown)
               CountdownOverlay(

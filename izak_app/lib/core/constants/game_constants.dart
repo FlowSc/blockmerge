@@ -15,6 +15,9 @@ abstract final class GameConstants {
   static const int speedIncreasePerLevel = 50;
   static const int pointsPerLevel = 500;
 
+  // Win condition
+  static const int winTileValue = 2048;
+
   // Lock delay (milliseconds): time to move after touching ground
   static const int lockDelayMs = 500;
 
