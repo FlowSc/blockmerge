@@ -269,6 +269,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nicknameDialogHint => 'A-Z, 0-9, _ only (2-10 chars)';
 
   @override
+  String get watchAdContinue => 'WATCH AD';
+
+  @override
   String get continueGame => 'CONTINUE';
 
   @override

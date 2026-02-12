@@ -404,6 +404,41 @@ class GameNotifier extends _$GameNotifier {
     }
   }
 
+  /// Continue after watching a rewarded ad (clear top rows, resume play).
+  /// Only allowed once per game.
+  void continueAfterAd() {
+    if (state.status != GameStatus.gameOver) return;
+    if (state.hasUsedContinue) return;
+
+    final List<List<int?>> grid = Board.copyGrid(state.grid);
+    // Clear top 3 rows to make room for new blocks.
+    for (int row = 0; row < 3; row++) {
+      for (int col = 0; col < GameConstants.columns; col++) {
+        grid[row][col] = null;
+      }
+    }
+
+    state = state.copyWith(
+      grid: grid,
+      status: GameStatus.playing,
+      hasUsedContinue: true,
+      isAnimating: false,
+      highlightedPositions: () => null,
+      newMergedPositions: () => null,
+      slidingMerge: () => null,
+    );
+
+    if (state.gameMode == GameMode.timeAttack) {
+      // Give 30 extra seconds in time attack mode
+      state = state.copyWith(
+        remainingSeconds: state.remainingSeconds + 30,
+      );
+      _startCountdownTimer();
+    }
+
+    _spawnNext();
+  }
+
   /// Continue playing after reaching 2048 (endless mode).
   void continueAfterVictory() {
     if (state.status != GameStatus.victory) return;
@@ -768,11 +803,28 @@ class GameNotifier extends _$GameNotifier {
     }
 
     // Process one pair at a time, choosing the best for chain potential.
-    final MergedPair target = _selectBestPair(
+    MergedPair target = _selectBestPair(
       grid,
       allPairs,
       newTilePositions: newTilePositions,
     );
+
+    // For vertical pairs, always merge to the lower position (higher row)
+    // so the slide animation goes top→bottom (consistent with gravity).
+    if (target.from1.col == target.from2.col) {
+      final Position lowerPos = target.from1.row > target.from2.row
+          ? target.from1
+          : target.from2;
+      if (target.to != lowerPos) {
+        target = MergedPair(
+          from1: target.from1,
+          from2: target.from2,
+          to: lowerPos,
+          newValue: target.newValue,
+        );
+      }
+    }
+
     final List<MergedPair> singlePair = [target];
 
     // Phase 1: Highlight the pair about to merge (glow effect)

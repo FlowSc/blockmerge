@@ -51,6 +51,7 @@ final class GameState {
     this.gameMode = GameMode.classic,
     this.remainingSeconds = 0,
     this.slidingMerge,
+    this.hasUsedContinue = false,
   });
 
   /// 12 rows x 6 columns. null = empty cell, int = tile value.
@@ -95,6 +96,9 @@ final class GameState {
   /// Sliding merge animation data. Non-null while a tile is sliding.
   final SlidingMerge? slidingMerge;
 
+  /// Whether the player has used the rewarded-ad continue this game.
+  final bool hasUsedContinue;
+
   GameState copyWith({
     List<List<int?>>? grid,
     FallingBlock? Function()? currentBlock,
@@ -113,6 +117,7 @@ final class GameState {
     GameMode? gameMode,
     int? remainingSeconds,
     SlidingMerge? Function()? slidingMerge,
+    bool? hasUsedContinue,
   }) {
     return GameState(
       grid: grid ?? this.grid,
@@ -139,6 +144,7 @@ final class GameState {
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
       slidingMerge:
           slidingMerge != null ? slidingMerge() : this.slidingMerge,
+      hasUsedContinue: hasUsedContinue ?? this.hasUsedContinue,
     );
   }
 }

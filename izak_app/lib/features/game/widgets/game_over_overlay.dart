@@ -21,6 +21,7 @@ class GameOverOverlay extends ConsumerStatefulWidget {
 class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
   bool _submitted = false;
   bool _submitting = false;
+  bool _adContinueUsed = false;
 
   Future<void> _submitScore() async {
     if (_submitted || _submitting) return;
@@ -170,7 +171,48 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                   ),
                 ),
               ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
+            // TODO: Rewarded ad continue button (disabled for now)
+            // if (!_adContinueUsed &&
+            //     !ref.watch(gameNotifierProvider
+            //         .select((s) => s.hasUsedContinue)))
+            //   Padding(
+            //     padding: const EdgeInsets.only(bottom: 12),
+            //     child: SizedBox(
+            //       width: 220,
+            //       child: ElevatedButton.icon(
+            //         onPressed: () {
+            //           ref
+            //               .read(adNotifierProvider.notifier)
+            //               .showRewardedAd(onRewarded: () {
+            //             ref
+            //                 .read(gameNotifierProvider.notifier)
+            //                 .continueAfterAd();
+            //             setState(() => _adContinueUsed = true);
+            //           });
+            //         },
+            //         icon: const Icon(Icons.play_circle_outline, size: 16),
+            //         label: Text(
+            //           l10n.watchAdContinue,
+            //           style: const TextStyle(
+            //             fontFamily: 'PressStart2P',
+            //             fontSize: 8,
+            //             fontWeight: FontWeight.bold,
+            //             letterSpacing: 2,
+            //             color: Colors.black,
+            //           ),
+            //         ),
+            //         style: ElevatedButton.styleFrom(
+            //           backgroundColor: const Color(0xFFFF6EC7),
+            //           foregroundColor: Colors.black,
+            //           padding: const EdgeInsets.symmetric(vertical: 14),
+            //           shape: RoundedRectangleBorder(
+            //             borderRadius: BorderRadius.circular(4),
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [

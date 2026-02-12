@@ -13,22 +13,30 @@ final class AdState {
     this.bannerAd,
     this.isBannerLoaded = false,
     this.interstitialAd,
+    this.rewardedAd,
+    this.isRewardedAdReady = false,
   });
 
   final BannerAd? bannerAd;
   final bool isBannerLoaded;
   final InterstitialAd? interstitialAd;
+  final RewardedAd? rewardedAd;
+  final bool isRewardedAdReady;
 
   AdState copyWith({
     BannerAd? Function()? bannerAd,
     bool? isBannerLoaded,
     InterstitialAd? Function()? interstitialAd,
+    RewardedAd? Function()? rewardedAd,
+    bool? isRewardedAdReady,
   }) {
     return AdState(
       bannerAd: bannerAd != null ? bannerAd() : this.bannerAd,
       isBannerLoaded: isBannerLoaded ?? this.isBannerLoaded,
       interstitialAd:
           interstitialAd != null ? interstitialAd() : this.interstitialAd,
+      rewardedAd: rewardedAd != null ? rewardedAd() : this.rewardedAd,
+      isRewardedAdReady: isRewardedAdReady ?? this.isRewardedAdReady,
     );
   }
 }
@@ -48,6 +56,7 @@ class AdNotifier extends _$AdNotifier {
 
     loadBannerAd();
     loadInterstitialAd();
+    loadRewardedAd();
 
     return const AdState();
   }
@@ -55,6 +64,7 @@ class AdNotifier extends _$AdNotifier {
   void _disposeAds() {
     state.bannerAd?.dispose();
     state.interstitialAd?.dispose();
+    state.rewardedAd?.dispose();
   }
 
   void loadBannerAd() {
@@ -153,5 +163,66 @@ class AdNotifier extends _$AdNotifier {
         },
       ),
     );
+  }
+
+  void loadRewardedAd() {
+    final bool isAdFree =
+        ref.read(settingsNotifierProvider.select((s) => s.isAdFree));
+    if (isAdFree) return;
+
+    RewardedAd.load(
+      adUnitId: AdConstants.rewardedAdUnitId,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (RewardedAd ad) {
+          state = state.copyWith(
+            rewardedAd: () => ad,
+            isRewardedAdReady: true,
+          );
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          state = state.copyWith(
+            rewardedAd: () => null,
+            isRewardedAdReady: false,
+          );
+        },
+      ),
+    );
+  }
+
+  /// Show rewarded ad. Calls [onRewarded] when the user earns the reward.
+  void showRewardedAd({required void Function() onRewarded}) {
+    final bool isAdFree =
+        ref.read(settingsNotifierProvider.select((s) => s.isAdFree));
+    if (isAdFree) {
+      onRewarded();
+      return;
+    }
+
+    final RewardedAd? ad = state.rewardedAd;
+    if (ad == null) return;
+
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (RewardedAd ad) {
+        ad.dispose();
+        state = state.copyWith(
+          rewardedAd: () => null,
+          isRewardedAdReady: false,
+        );
+        loadRewardedAd();
+      },
+      onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
+        ad.dispose();
+        state = state.copyWith(
+          rewardedAd: () => null,
+          isRewardedAdReady: false,
+        );
+        loadRewardedAd();
+      },
+    );
+
+    ad.show(onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
+      onRewarded();
+    });
   }
 }

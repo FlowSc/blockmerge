@@ -80,14 +80,15 @@ class _MergeAnimationState extends State<_MergeAnimation>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 280),
       vsync: this,
     );
 
-    // Scale: slight overshoot pop then settle
+    // Scale: pop up, squeeze, settle — punchy merge impact
     _scaleAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 1.15, end: 0.95), weight: 50),
-      TweenSequenceItem(tween: Tween(begin: 0.95, end: 1.0), weight: 50),
+      TweenSequenceItem(tween: Tween(begin: 1.3, end: 0.88), weight: 45),
+      TweenSequenceItem(tween: Tween(begin: 0.88, end: 1.05), weight: 30),
+      TweenSequenceItem(tween: Tween(begin: 1.05, end: 1.0), weight: 25),
     ]).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOut,

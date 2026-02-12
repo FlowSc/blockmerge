@@ -578,6 +578,12 @@ abstract class AppLocalizations {
   /// **'A-Z, 0-9, _ only (2-10 chars)'**
   String get nicknameDialogHint;
 
+  /// No description provided for @watchAdContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'WATCH AD'**
+  String get watchAdContinue;
+
   /// No description provided for @continueGame.
   ///
   /// In en, this message translates to:

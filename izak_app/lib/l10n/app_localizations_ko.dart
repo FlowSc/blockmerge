@@ -268,6 +268,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get nicknameDialogHint => '리더보드에 표시될 이름 (2~10자)';
 
   @override
+  String get watchAdContinue => 'WATCH AD';
+
+  @override
   String get continueGame => '이어하기';
 
   @override
