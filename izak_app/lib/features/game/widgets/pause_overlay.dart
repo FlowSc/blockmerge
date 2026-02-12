@@ -4,6 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/ad_provider.dart';
+import '../../../core/utils/device_id.dart';
+import '../../leaderboard/providers/leaderboard_notifier.dart';
+import '../../leaderboard/widgets/nickname_dialog.dart';
+import '../../settings/providers/settings_notifier.dart';
+import '../models/game_mode.dart';
 import '../providers/game_notifier.dart';
 
 class PauseOverlay extends ConsumerWidget {
@@ -68,6 +73,38 @@ class PauseOverlay extends ConsumerWidget {
                   ),
                 );
                 if (confirmed == true && context.mounted) {
+                  // Submit score to leaderboard before quitting
+                  final gameState = ref.read(gameNotifierProvider);
+                  if (gameState.score > 0) {
+                    String? nickname =
+                        ref.read(settingsNotifierProvider).nickname;
+                    if ((nickname == null || nickname.isEmpty) &&
+                        context.mounted) {
+                      nickname = await showNicknameDialog(context, ref);
+                    }
+                    if (nickname != null && nickname.isNotEmpty) {
+                      try {
+                        final String deviceId = await getDeviceId();
+                        final String gameMode =
+                            gameState.gameMode == GameMode.timeAttack
+                                ? 'time_attack'
+                                : 'classic';
+                        await ref
+                            .read(leaderboardNotifierProvider.notifier)
+                            .submitScore(
+                              nickname: nickname,
+                              score: gameState.score,
+                              deviceId: deviceId,
+                              totalMerges: gameState.totalMerges,
+                              maxChainLevel: gameState.maxChainLevel,
+                              gameMode: gameMode,
+                            );
+                      } catch (_) {
+                        // Silent fail — don't block quit
+                      }
+                    }
+                  }
+                  if (!context.mounted) return;
                   ref.read(gameNotifierProvider.notifier).clearSavedGame();
                   ref.read(adNotifierProvider.notifier).showInterstitial();
                   context.go('/home');

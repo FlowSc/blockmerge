@@ -87,12 +87,13 @@ final class FallingBlock {
     }
   }
 
-  /// Generate a random tile value using weighted probabilities.
-  static int _randomValue(Random rng) {
+  /// Generate a random tile value using level-based weighted probabilities.
+  static int _randomValue(Random rng, int level) {
+    final weights = GameConstants.tileWeights(level);
     final int roll = rng.nextInt(100);
-    if (roll < GameConstants.weight2) return 2;
-    if (roll < GameConstants.weight4) return 4;
-    if (roll < GameConstants.weight8) return 8;
+    if (roll < weights.w2) return 2;
+    if (roll < weights.w4) return 4;
+    if (roll < weights.w8) return 8;
     return 16;
   }
 
@@ -100,29 +101,54 @@ final class FallingBlock {
   static const int _c = GameConstants.spawnColumn;
 
   /// Spawn a random block at the top center of the board.
-  static FallingBlock spawn(Random rng) {
+  static FallingBlock spawn(Random rng, {int level = 0}) {
+    final weights = GameConstants.blockWeights(level);
     final int roll = rng.nextInt(100);
-    if (roll < GameConstants.weightSingle) return _spawnSingle(rng);
-    if (roll < GameConstants.weightPair) return _spawnPair(rng);
-    if (roll < GameConstants.weightLShape) return _spawnLShape(rng);
-    if (roll < GameConstants.weightJShape) return _spawnJShape(rng);
-    return _spawnTShape(rng);
+    if (roll < weights.single) return _spawnSingle(rng, level);
+    if (roll < weights.pair) return _spawnPair(rng, level);
+    if (roll < weights.lShape) return _spawnLShape(rng, level);
+    if (roll < weights.jShape) return _spawnJShape(rng, level);
+    return _spawnTShape(rng, level);
   }
 
-  static FallingBlock _spawnSingle(Random rng) {
+  static FallingBlock _spawnSingle(Random rng, int level) {
     return FallingBlock(
       tiles: [
-        Tile(value: _randomValue(rng), position: const Position(row: _r, col: _c)),
+        Tile(value: _randomValue(rng, level), position: const Position(row: _r, col: _c)),
       ],
       type: BlockType.single,
     );
   }
 
-  static FallingBlock _spawnPair(Random rng) {
+  /// Generate tile values for a multi-tile block.
+  /// With [sameValueChance] probability, most tiles share the same value
+  /// but one tile is guaranteed to be different.
+  static List<int> _multiTileValues(Random rng, int level, int count) {
+    final int baseValue = _randomValue(rng, level);
+    if (rng.nextInt(100) < GameConstants.sameValueChance(level)) {
+      final List<int> values = List<int>.filled(count, baseValue);
+      final int diffIndex = rng.nextInt(count);
+      values[diffIndex] = _differentValue(rng, level, baseValue);
+      return values;
+    }
+    return [baseValue, for (int i = 1; i < count; i++) _randomValue(rng, level)];
+  }
+
+  /// Return a random tile value that is different from [exclude].
+  static int _differentValue(Random rng, int level, int exclude) {
+    for (int i = 0; i < 10; i++) {
+      final int v = _randomValue(rng, level);
+      if (v != exclude) return v;
+    }
+    return exclude == 2 ? 4 : 2;
+  }
+
+  static FallingBlock _spawnPair(Random rng, int level) {
+    final List<int> values = _multiTileValues(rng, level, 2);
     return FallingBlock(
       tiles: [
-        Tile(value: _randomValue(rng), position: const Position(row: _r, col: _c)),
-        Tile(value: _randomValue(rng), position: const Position(row: _r + 1, col: _c)),
+        Tile(value: values[0], position: const Position(row: _r, col: _c)),
+        Tile(value: values[1], position: const Position(row: _r + 1, col: _c)),
       ],
       type: BlockType.pair,
     );
@@ -133,12 +159,13 @@ final class FallingBlock {
   /// X X
   /// X .
   /// ```
-  static FallingBlock _spawnLShape(Random rng) {
+  static FallingBlock _spawnLShape(Random rng, int level) {
+    final List<int> values = _multiTileValues(rng, level, 3);
     return FallingBlock(
       tiles: [
-        Tile(value: _randomValue(rng), position: const Position(row: _r, col: _c)),
-        Tile(value: _randomValue(rng), position: const Position(row: _r, col: _c + 1)),
-        Tile(value: _randomValue(rng), position: const Position(row: _r + 1, col: _c)),
+        Tile(value: values[0], position: const Position(row: _r, col: _c)),
+        Tile(value: values[1], position: const Position(row: _r, col: _c + 1)),
+        Tile(value: values[2], position: const Position(row: _r + 1, col: _c)),
       ],
       type: BlockType.lShape,
     );
@@ -149,12 +176,13 @@ final class FallingBlock {
   /// X X
   /// . X
   /// ```
-  static FallingBlock _spawnJShape(Random rng) {
+  static FallingBlock _spawnJShape(Random rng, int level) {
+    final List<int> values = _multiTileValues(rng, level, 3);
     return FallingBlock(
       tiles: [
-        Tile(value: _randomValue(rng), position: const Position(row: _r, col: _c)),
-        Tile(value: _randomValue(rng), position: const Position(row: _r, col: _c + 1)),
-        Tile(value: _randomValue(rng), position: const Position(row: _r + 1, col: _c + 1)),
+        Tile(value: values[0], position: const Position(row: _r, col: _c)),
+        Tile(value: values[1], position: const Position(row: _r, col: _c + 1)),
+        Tile(value: values[2], position: const Position(row: _r + 1, col: _c + 1)),
       ],
       type: BlockType.jShape,
     );
@@ -165,13 +193,14 @@ final class FallingBlock {
   /// . X .
   /// X X X
   /// ```
-  static FallingBlock _spawnTShape(Random rng) {
+  static FallingBlock _spawnTShape(Random rng, int level) {
+    final List<int> values = _multiTileValues(rng, level, 4);
     return FallingBlock(
       tiles: [
-        Tile(value: _randomValue(rng), position: const Position(row: _r, col: _c + 1)),
-        Tile(value: _randomValue(rng), position: const Position(row: _r + 1, col: _c)),
-        Tile(value: _randomValue(rng), position: const Position(row: _r + 1, col: _c + 1)),
-        Tile(value: _randomValue(rng), position: const Position(row: _r + 1, col: _c + 2)),
+        Tile(value: values[0], position: const Position(row: _r, col: _c + 1)),
+        Tile(value: values[1], position: const Position(row: _r + 1, col: _c)),
+        Tile(value: values[2], position: const Position(row: _r + 1, col: _c + 1)),
+        Tile(value: values[3], position: const Position(row: _r + 1, col: _c + 2)),
       ],
       type: BlockType.tShape,
     );

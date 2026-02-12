@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/constants/game_constants.dart';
 import '../models/game_mode.dart';
 import '../providers/game_notifier.dart';
 
@@ -17,7 +16,7 @@ class ScoreDisplay extends ConsumerWidget {
         ref.watch(gameNotifierProvider.select((s) => s.gameMode));
     final int remainingSeconds =
         ref.watch(gameNotifierProvider.select((s) => s.remainingSeconds));
-    final int level = score ~/ GameConstants.pointsPerLevel;
+    final int level = ref.watch(gameNotifierProvider.select((s) => s.level));
     final l10n = AppLocalizations.of(context)!;
 
     final bool isTimeAttack = gameMode == GameMode.timeAttack;

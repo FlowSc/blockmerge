@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../../../core/constants/game_constants.dart';
 import 'falling_block.dart';
 import 'game_mode.dart';
 import 'merge_result.dart';
@@ -118,6 +119,8 @@ final class GameState {
 
   /// Tiles currently dropping due to gravity. Non-null during gravity animation.
   final List<TileDrop>? gravityDrops;
+
+  int get level => score ~/ GameConstants.pointsPerLevel;
 
   GameState copyWith({
     List<List<int?>>? grid,

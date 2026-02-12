@@ -31,6 +31,7 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
     with TickerProviderStateMixin {
   late AnimationController _shakeController;
   late Animation<double> _shakeAnimation;
+  double _shakeIntensity = 1.0;
 
   late AnimationController _borderColorController;
   Color _borderColorFrom = const Color(0xFF00E5FF);
@@ -79,12 +80,13 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
     final SlidingMerge? slidingMerge = gameState.slidingMerge;
     final List<TileDrop>? gravityDrops = gameState.gravityDrops;
 
-    // Trigger shake when chainLevel reaches threshold and there are new merges.
+    // Trigger shake when chainLevel >= 2 (3rd combo onwards) with scaling intensity.
     ref.listen<int>(
       gameNotifierProvider.select((GameState s) => s.currentChainLevel),
       (int? prev, int next) {
-        if (next >= _megaComboThreshold &&
+        if (next >= 2 &&
             ref.read(gameNotifierProvider).newMergedPositions != null) {
+          _shakeIntensity = _shakeIntensityForChain(next);
           _shakeController.forward(from: 0);
         }
       },
@@ -277,12 +279,16 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
           ),
         );
 
-        // Wrap with shake animation for 5+ combos
+        // Wrap with shake animation (intensity scales with chain level)
         board = AnimatedBuilder(
           animation: _shakeController,
           builder: (BuildContext context, Widget? child) {
+            final double dx = _shakeAnimation.value * _shakeIntensity;
+            final double dy = _shakeIntensity >= 0.7
+                ? _shakeAnimation.value * _shakeIntensity * 0.4
+                : 0;
             return Transform.translate(
-              offset: Offset(_shakeAnimation.value, 0),
+              offset: Offset(dx, dy),
               child: child,
             );
           },
@@ -292,6 +298,14 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
         return Center(child: board);
       },
     );
+  }
+
+  static double _shakeIntensityForChain(int chainLevel) {
+    if (chainLevel <= 1) return 0.0;
+    if (chainLevel == 2) return 0.5;
+    if (chainLevel == 3) return 0.7;
+    if (chainLevel == 4) return 1.0;
+    return 1.0 + (chainLevel - 4) * 0.2;
   }
 
   static const double _borderH = 4; // left 2 + right 2

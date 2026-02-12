@@ -257,8 +257,8 @@ class GameNotifier extends _$GameNotifier {
   void startGame({GameMode mode = GameMode.classic}) {
     _disposeTimers();
     _rng = Random();
-    final FallingBlock first = FallingBlock.spawn(_rng);
-    final FallingBlock next = FallingBlock.spawn(_rng);
+    final FallingBlock first = FallingBlock.spawn(_rng, level: 0);
+    final FallingBlock next = FallingBlock.spawn(_rng, level: 0);
 
     state = GameState(
       grid: Board.empty(),
@@ -499,7 +499,7 @@ class GameNotifier extends _$GameNotifier {
 
   void _startTicker() {
     _tickTimer?.cancel();
-    final int level = state.score ~/ GameConstants.pointsPerLevel;
+    final int level = state.level;
     final int tickMs = (GameConstants.initialTickMs -
             level * GameConstants.speedIncreasePerLevel)
         .clamp(GameConstants.minTickMs, GameConstants.initialTickMs);
@@ -819,6 +819,15 @@ class GameNotifier extends _$GameNotifier {
     return best;
   }
 
+  /// Compute animation delay scaled by chain level.
+  /// Higher chains play faster: 0.85^chainLevel, clamped to 40% minimum.
+  int _chainDelayMs(int baseMs, int chainLevel) {
+    if (chainLevel <= 0) return baseMs;
+    final double multiplier =
+        pow(0.85, chainLevel).toDouble().clamp(0.4, 1.0);
+    return (baseMs * multiplier).round();
+  }
+
   void _animateMergeChain(
     List<List<int?>> grid,
     int chainLevel, {
@@ -869,7 +878,7 @@ class GameNotifier extends _$GameNotifier {
     final int tileValue = target.newValue ~/ 2;
 
     // Phase 2: After glow, start sliding animation
-    _animTimer = Timer(const Duration(milliseconds: 200), () {
+    _animTimer = Timer(Duration(milliseconds: _chainDelayMs(200, chainLevel)), () {
       state = state.copyWith(
         highlightedPositions: () => null,
         slidingMerge: () => SlidingMerge(
@@ -881,7 +890,7 @@ class GameNotifier extends _$GameNotifier {
       );
 
       // Phase 3: After slide completes, apply merge
-      _animTimer = Timer(const Duration(milliseconds: 250), () {
+      _animTimer = Timer(Duration(milliseconds: _chainDelayMs(250, chainLevel)), () {
         final int multiplier = GameConstants.chainMultiplier(chainLevel);
         final int stepScore = target.newValue * multiplier;
 
@@ -919,7 +928,7 @@ class GameNotifier extends _$GameNotifier {
         );
 
         // Phase 4: After showing merged tile, animate gravity drop
-        _animTimer = Timer(const Duration(milliseconds: 200), () {
+        _animTimer = Timer(Duration(milliseconds: _chainDelayMs(200, chainLevel)), () {
           final List<TileDrop> drops =
               Board.computeGravityDrops(mergedGrid);
 
@@ -928,7 +937,7 @@ class GameNotifier extends _$GameNotifier {
             state = state.copyWith(
               newMergedPositions: () => null,
             );
-            _animTimer = Timer(const Duration(milliseconds: 100), () {
+            _animTimer = Timer(Duration(milliseconds: _chainDelayMs(100, chainLevel)), () {
               _animateMergeChain(mergedGrid, chainLevel + 1);
             });
             return;
@@ -941,7 +950,7 @@ class GameNotifier extends _$GameNotifier {
           );
 
           // Phase 5: After gravity animation, apply actual gravity
-          _animTimer = Timer(const Duration(milliseconds: 200), () {
+          _animTimer = Timer(Duration(milliseconds: _chainDelayMs(200, chainLevel)), () {
             final List<List<int?>> gravityGrid =
                 Board.applyGravity(mergedGrid);
 
@@ -951,7 +960,7 @@ class GameNotifier extends _$GameNotifier {
             );
 
             // Phase 6: After gravity settles, check for next merge
-            _animTimer = Timer(const Duration(milliseconds: 80), () {
+            _animTimer = Timer(Duration(milliseconds: _chainDelayMs(80, chainLevel)), () {
               _animateMergeChain(gravityGrid, chainLevel + 1);
             });
           });
@@ -1016,8 +1025,8 @@ class GameNotifier extends _$GameNotifier {
       return;
     }
 
-    final FallingBlock next = state.nextBlock ?? FallingBlock.spawn(_rng);
-    final FallingBlock upcoming = FallingBlock.spawn(_rng);
+    final FallingBlock next = state.nextBlock ?? FallingBlock.spawn(_rng, level: state.level);
+    final FallingBlock upcoming = FallingBlock.spawn(_rng, level: state.level);
 
     if (!Board.canPlace(state.grid, next)) {
       clearSavedGame();

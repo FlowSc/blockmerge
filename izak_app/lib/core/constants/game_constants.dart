@@ -11,9 +11,9 @@ abstract final class GameConstants {
 
   // Drop speed (milliseconds per tick)
   static const int initialTickMs = 800;
-  static const int minTickMs = 200;
-  static const int speedIncreasePerLevel = 50;
-  static const int pointsPerLevel = 500;
+  static const int minTickMs = 250;
+  static const int speedIncreasePerLevel = 30;
+  static const int pointsPerLevel = 1000;
 
   // Win condition
   static const int winTileValue = 2048;
@@ -39,6 +39,31 @@ abstract final class GameConstants {
   static const int weight4 = 80; // 50 + 30
   static const int weight8 = 95; // 80 + 15
   // remaining 5% = 16
+
+  // Level-based same-value chance (0~100) for multi-tile blocks
+  static int sameValueChance(int level) {
+    if (level <= 4) return 50;
+    if (level <= 9) return 35;
+    if (level <= 14) return 25;
+    return 15;
+  }
+
+  // Level-based tile value weights (cumulative probability out of 100)
+  static ({int w2, int w4, int w8}) tileWeights(int level) {
+    if (level <= 2) return (w2: 70, w4: 100, w8: 100);
+    if (level <= 5) return (w2: 55, w4: 85, w8: 100);
+    if (level <= 9) return (w2: 45, w4: 75, w8: 95);
+    return (w2: 40, w4: 70, w8: 90);
+  }
+
+  // Level-based block type weights (cumulative probability out of 100)
+  static ({int single, int pair, int lShape, int jShape}) blockWeights(
+      int level) {
+    if (level <= 2) return (single: 45, pair: 75, lShape: 85, jShape: 95);
+    if (level <= 5) return (single: 35, pair: 60, lShape: 75, jShape: 90);
+    if (level <= 9) return (single: 25, pair: 50, lShape: 65, jShape: 80);
+    return (single: 20, pair: 40, lShape: 60, jShape: 80);
+  }
 
   // Chain score multipliers
   static const List<int> chainMultipliers = [1, 3, 7, 15];
