@@ -20,13 +20,24 @@ class BannerAdWidget extends ConsumerWidget {
     final AdState adState = ref.watch(adNotifierProvider);
 
     if (!adState.isBannerLoaded || adState.bannerAd == null) {
-      return const SizedBox(height: 50);
+      // Placeholder: reserve space so layout doesn't jump when ad loads
+      return Container(
+        width: double.infinity,
+        height: 50,
+        color: Colors.black,
+      );
     }
 
-    return SizedBox(
-      width: adState.bannerAd!.size.width.toDouble(),
+    return Container(
+      width: double.infinity,
       height: adState.bannerAd!.size.height.toDouble(),
-      child: AdWidget(ad: adState.bannerAd!),
+      color: Colors.black,
+      alignment: Alignment.center,
+      child: SizedBox(
+        width: adState.bannerAd!.size.width.toDouble(),
+        height: adState.bannerAd!.size.height.toDouble(),
+        child: AdWidget(ad: adState.bannerAd!),
+      ),
     );
   }
 }

@@ -97,66 +97,67 @@ class _GameScreenState extends ConsumerState<GameScreen>
         ref.watch(gameNotifierProvider.select((s) => s.status));
 
     return Scaffold(
-      appBar: AppBar(
-        leading: (status == GameStatus.playing || status == GameStatus.paused)
-            ? IconButton(
-                icon: const Icon(Icons.pause),
-                onPressed: () {
-                  ref.read(gameNotifierProvider.notifier).pause();
-                },
-              )
-            : null,
-        automaticallyImplyLeading: false,
-        title: const Text('IZAK'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Stack(
+      body: SafeArea(
+        bottom: false,
+        child: Stack(
+          children: [
+            Column(
               children: [
-                SafeArea(
-                  bottom: false,
+                // Header: [Pause] [NEXT block] --- [SCORE]
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 8, 16, 4),
+                  child: Row(
+                    children: [
+                      if (status == GameStatus.playing ||
+                          status == GameStatus.paused)
+                        IconButton(
+                          icon: const Icon(Icons.pause, color: Colors.white),
+                          onPressed: () {
+                            ref.read(gameNotifierProvider.notifier).pause();
+                          },
+                        )
+                      else
+                        const SizedBox(width: 48),
+                      const SizedBox(width: 4),
+                      const NextBlockPreview(),
+                      const Spacer(),
+                      const ScoreDisplay(),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                // Game board
+                Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 8),
-                        const ScoreDisplay(
-                          center: NextBlockPreview(),
-                        ),
-                        const SizedBox(height: 8),
-                        Expanded(
-                          child: GestureDetector(
-                            onPanStart: _onPanStart,
-                            onPanUpdate: _onPanUpdate,
-                            onPanEnd: _onPanEnd,
-                            onTap: _onTap,
-                            behavior: HitTestBehavior.opaque,
-                            child: const GameBoardWidget(),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                      ],
+                    child: GestureDetector(
+                      onPanStart: _onPanStart,
+                      onPanUpdate: _onPanUpdate,
+                      onPanEnd: _onPanEnd,
+                      onTap: _onTap,
+                      behavior: HitTestBehavior.opaque,
+                      child: const GameBoardWidget(),
                     ),
                   ),
                 ),
-                // Combo overlay: centered on screen, no layout impact
-                const Positioned.fill(
-                  child: ComboDisplay(),
-                ),
-                const NewBestNotification(),
-                if (status == GameStatus.paused) const PauseOverlay(),
-                if (status == GameStatus.gameOver) const GameOverOverlay(),
-                if (_showCountdown)
-                  CountdownOverlay(
-                    onComplete: _onCountdownComplete,
-                  ),
+                const SizedBox(height: 8),
               ],
             ),
-          ),
-          const BannerAdWidget(),
-        ],
+            // Combo overlay: centered on screen, no layout impact
+            const Positioned.fill(
+              child: ComboDisplay(),
+            ),
+            const NewBestNotification(),
+            if (status == GameStatus.paused) const PauseOverlay(),
+            if (status == GameStatus.gameOver) const GameOverOverlay(),
+            if (_showCountdown)
+              CountdownOverlay(
+                onComplete: _onCountdownComplete,
+              ),
+          ],
+        ),
       ),
+      bottomNavigationBar: const BannerAdWidget(),
     );
   }
 }
