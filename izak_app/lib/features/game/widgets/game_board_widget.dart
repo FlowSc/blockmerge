@@ -1,24 +1,78 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/game_constants.dart';
 import '../../settings/providers/settings_notifier.dart';
 import '../models/falling_block.dart';
+import '../models/game_state.dart';
 import '../models/position.dart';
 import '../models/tile.dart' as game;
 import '../providers/game_notifier.dart';
+import 'mega_merge_effect.dart';
 import 'tile_widget.dart';
 
-class GameBoardWidget extends ConsumerWidget {
+/// Minimum chain level that triggers the mega merge screen effect.
+const int _megaComboThreshold = 4; // chainLevel 4 = 5th combo
+
+class GameBoardWidget extends ConsumerStatefulWidget {
   const GameBoardWidget({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final gameState = ref.watch(gameNotifierProvider);
+  ConsumerState<GameBoardWidget> createState() => _GameBoardWidgetState();
+}
+
+class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _shakeController;
+  late Animation<double> _shakeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _shakeController = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+    _shakeAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0, end: 4), weight: 15),
+      TweenSequenceItem(tween: Tween(begin: 4, end: -3), weight: 15),
+      TweenSequenceItem(tween: Tween(begin: -3, end: 2.5), weight: 15),
+      TweenSequenceItem(tween: Tween(begin: 2.5, end: -1.5), weight: 15),
+      TweenSequenceItem(tween: Tween(begin: -1.5, end: 1), weight: 15),
+      TweenSequenceItem(tween: Tween(begin: 1, end: 0), weight: 25),
+    ]).animate(CurvedAnimation(
+      parent: _shakeController,
+      curve: Curves.easeOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _shakeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final GameState gameState = ref.watch(gameNotifierProvider);
     final List<List<int?>> grid = gameState.grid;
     final FallingBlock? currentBlock = gameState.currentBlock;
     final Set<Position>? highlighted = gameState.highlightedPositions;
     final Set<Position>? newMerged = gameState.newMergedPositions;
+    final int chainLevel = gameState.currentChainLevel;
+
+    // Trigger shake when chainLevel reaches threshold and there are new merges.
+    ref.listen<int>(
+      gameNotifierProvider.select((GameState s) => s.currentChainLevel),
+      (int? prev, int next) {
+        if (next >= _megaComboThreshold &&
+            ref.read(gameNotifierProvider).newMergedPositions != null) {
+          _shakeController.forward(from: 0);
+        }
+      },
+    );
 
     // Build a display grid that includes the falling block overlay
     final List<List<int?>> displayGrid = [
@@ -89,42 +143,63 @@ class GameBoardWidget extends ConsumerWidget {
         final double boardWidth = cellSize * GameConstants.columns;
         final double boardHeight = cellSize * GameConstants.rows;
 
-        return Center(
-          child: SizedBox(
-            width: boardWidth + 2,
-            height: boardHeight + 2,
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF0D1117),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: const Color(0xFF6C5CE7).withValues(alpha: 0.3),
-                  width: 1,
-                ),
+        Widget board = SizedBox(
+          width: boardWidth + 2,
+          height: boardHeight + 2,
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF0D1117),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: const Color(0xFF6C5CE7).withValues(alpha: 0.3),
+                width: 1,
               ),
-              child: Stack(
-                children: [
-                  // Grid lines
-                  CustomPaint(
-                    size: Size(boardWidth, boardHeight),
-                    painter: _GridPainter(cellSize: cellSize),
-                  ),
-                  // Ghost tiles
-                  if (ghostPositions != null && ghostValues != null)
-                    ..._buildGhostTiles(
-                        ghostPositions, ghostValues, cellSize),
-                  // Board tiles + falling block
-                  ..._buildTiles(
+            ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // Grid lines
+                CustomPaint(
+                  size: Size(boardWidth, boardHeight),
+                  painter: _GridPainter(cellSize: cellSize),
+                ),
+                // Ghost tiles
+                if (ghostPositions != null && ghostValues != null)
+                  ..._buildGhostTiles(
+                      ghostPositions, ghostValues, cellSize),
+                // Board tiles + falling block
+                ..._buildTiles(
+                  displayGrid,
+                  cellSize,
+                  highlighted: highlighted,
+                  newMerged: newMerged,
+                ),
+                // Mega merge particle effects
+                if (newMerged != null && chainLevel >= _megaComboThreshold)
+                  ..._buildMegaEffects(
+                    newMerged,
                     displayGrid,
                     cellSize,
-                    highlighted: highlighted,
-                    newMerged: newMerged,
+                    chainLevel,
                   ),
-                ],
-              ),
+              ],
             ),
           ),
         );
+
+        // Wrap with shake animation for 5+ combos
+        board = AnimatedBuilder(
+          animation: _shakeController,
+          builder: (BuildContext context, Widget? child) {
+            return Transform.translate(
+              offset: Offset(_shakeAnimation.value, 0),
+              child: child,
+            );
+          },
+          child: board,
+        );
+
+        return Center(child: board);
       },
     );
   }
@@ -132,7 +207,7 @@ class GameBoardWidget extends ConsumerWidget {
   double _calculateCellSize(BoxConstraints constraints) {
     final double maxCellWidth = constraints.maxWidth / GameConstants.columns;
     final double maxCellHeight = constraints.maxHeight / GameConstants.rows;
-    return maxCellWidth < maxCellHeight ? maxCellWidth : maxCellHeight;
+    return min(maxCellWidth, maxCellHeight);
   }
 
   List<Widget> _buildTiles(
@@ -189,6 +264,39 @@ class GameBoardWidget extends ConsumerWidget {
                 color: Colors.white.withValues(alpha: 0.2),
                 width: 1,
               ),
+            ),
+          ),
+        ),
+      );
+    }
+    return widgets;
+  }
+
+  List<Widget> _buildMegaEffects(
+    Set<Position> mergedPositions,
+    List<List<int?>> grid,
+    double cellSize,
+    int chainLevel,
+  ) {
+    final List<Widget> widgets = [];
+    final double effectSize = cellSize * 2.5;
+    final double offset = (effectSize - cellSize) / 2;
+
+    for (final Position pos in mergedPositions) {
+      final int? value = grid[pos.row][pos.col];
+      final Color color = GameConstants.tileColors[value] ??
+          const Color(0xFFFF4444);
+
+      widgets.add(
+        Positioned(
+          key: ValueKey('effect_${pos.row}_${pos.col}'),
+          left: pos.col * cellSize + 1 - offset,
+          top: pos.row * cellSize + 1 - offset,
+          child: IgnorePointer(
+            child: MegaMergeEffect(
+              size: effectSize,
+              color: color,
+              chainLevel: chainLevel,
             ),
           ),
         ),

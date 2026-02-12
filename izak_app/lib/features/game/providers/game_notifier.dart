@@ -589,6 +589,7 @@ class GameNotifier extends _$GameNotifier {
         lastMergeChain: () => chainResult,
         totalMerges: state.totalMerges + 1,
         maxChainLevel: max(state.maxChainLevel, chainLevel),
+        currentChainLevel: chainLevel,
       );
 
       // Phase 3: After showing merged tile, apply gravity
@@ -629,6 +630,7 @@ class GameNotifier extends _$GameNotifier {
         isAnimating: false,
         highlightedPositions: () => null,
         newMergedPositions: () => null,
+        currentChainLevel: 0,
         status: GameStatus.victory,
       );
       return;
@@ -639,6 +641,7 @@ class GameNotifier extends _$GameNotifier {
       isAnimating: false,
       highlightedPositions: () => null,
       newMergedPositions: () => null,
+      currentChainLevel: 0,
     );
 
     _spawnNext();
