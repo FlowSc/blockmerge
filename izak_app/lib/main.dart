@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
@@ -23,18 +25,19 @@ Future<void> main() async {
     anonKey: SupabaseConfig.anonKey,
   );
 
-  // Request ATT permission before initializing ads.
-  // Must be called after a short delay so the app UI is ready on iOS.
-  final TrackingStatus status =
-      await AppTrackingTransparency.trackingAuthorizationStatus;
-  if (status == TrackingStatus.notDetermined) {
-    await AppTrackingTransparency.requestTrackingAuthorization();
-  }
+  // Request ATT permission before initializing ads (iOS only).
+  if (Platform.isIOS) {
+    final TrackingStatus status =
+        await AppTrackingTransparency.trackingAuthorizationStatus;
+    if (status == TrackingStatus.notDetermined) {
+      await AppTrackingTransparency.requestTrackingAuthorization();
+    }
 
-  // Print IDFA for AdMob test device registration.
-  final String idfa =
-      await AppTrackingTransparency.getAdvertisingIdentifier();
-  debugPrint('=== IDFA: $idfa ===');
+    // Print IDFA for AdMob test device registration.
+    final String idfa =
+        await AppTrackingTransparency.getAdvertisingIdentifier();
+    debugPrint('=== IDFA: $idfa ===');
+  }
 
   await MobileAds.instance.initialize();
 
