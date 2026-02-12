@@ -103,8 +103,9 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
             Text(
               title,
               style: const TextStyle(
+                fontFamily: 'PressStart2P',
                 color: Colors.white,
-                fontSize: 36,
+                fontSize: 18,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 4,
               ),
@@ -113,8 +114,9 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
             Text(
               l10n.scoreValue(score),
               style: const TextStyle(
+                fontFamily: 'PressStart2P',
                 color: Colors.white70,
-                fontSize: 24,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -149,8 +151,9 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                 child: Text(
                   l10n.scoreSubmitted,
                   style: TextStyle(
-                    color: const Color(0xFF00D2FF).withValues(alpha: 0.8),
-                    fontSize: 13,
+                    fontFamily: 'PressStart2P',
+                    color: const Color(0xFF00E5FF).withValues(alpha: 0.8),
+                    fontSize: 7,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -161,8 +164,9 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                 child: Text(
                   l10n.submitScore,
                   style: TextStyle(
+                    fontFamily: 'PressStart2P',
                     color: const Color(0xFFFFD700).withValues(alpha: 0.8),
-                    fontSize: 13,
+                    fontSize: 7,
                   ),
                 ),
               ),
@@ -179,13 +183,14 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                       vertical: 14,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                   child: Text(
                     l10n.home,
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontFamily: 'PressStart2P',
+                      fontSize: 8,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
                       color: Colors.white70,
@@ -204,13 +209,14 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                       vertical: 14,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                   child: Text(
                     l10n.rank,
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontFamily: 'PressStart2P',
+                      fontSize: 8,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
                       color: Color(0xFFFFD700),
@@ -225,21 +231,23 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                         .startGame(mode: gameMode);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6C5CE7),
+                    backgroundColor: const Color(0xFF00E5FF),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
                       vertical: 14,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                   child: Text(
                     l10n.retry,
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontFamily: 'PressStart2P',
+                      fontSize: 8,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
+                      color: Colors.black,
                     ),
                   ),
                 ),
@@ -264,7 +272,7 @@ class _StatChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(2),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -272,8 +280,9 @@ class _StatChip extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
+              fontFamily: 'PressStart2P',
               color: Colors.white.withValues(alpha: 0.5),
-              fontSize: 11,
+              fontSize: 6,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
             ),
@@ -282,8 +291,9 @@ class _StatChip extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
+              fontFamily: 'PressStart2P',
               color: Colors.white,
-              fontSize: 18,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
             ),
           ),

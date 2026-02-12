@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -98,8 +99,9 @@ class SettingsScreen extends ConsumerWidget {
             child: Text(
               'Merge Chain Blast v1.0.0',
               style: TextStyle(
+                fontFamily: 'PressStart2P',
                 color: Colors.white.withValues(alpha: 0.3),
-                fontSize: 12,
+                fontSize: 6,
               ),
             ),
           ),
@@ -131,6 +133,9 @@ void _showNicknameDialog(
             controller: controller,
             autofocus: true,
             maxLength: 10,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
+            ],
             decoration: InputDecoration(
               hintText: l10n.nicknameHint,
             ),

@@ -82,32 +82,17 @@ class _NewBestNotificationState extends ConsumerState<NewBestNotification>
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFFFD700).withValues(alpha: 0.5),
-                          blurRadius: 16,
-                          spreadRadius: 2,
-                        ),
-                      ],
+                      color: const Color(0xFFFFD700),
+                      borderRadius: BorderRadius.circular(2),
                     ),
                     child: Text(
                       l10n.newBest,
                       style: const TextStyle(
+                        fontFamily: 'PressStart2P',
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 12,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 3,
-                        shadows: [
-                          Shadow(
-                            color: Color(0x80000000),
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
                       ),
                     ),
                   ),

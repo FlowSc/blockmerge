@@ -99,7 +99,7 @@ class _ComboDisplayState extends ConsumerState<ComboDisplay>
                     ),
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(4),
                       border: Border.all(
                         color: color.withValues(alpha: 0.4),
                         width: 1.5,
@@ -112,18 +112,19 @@ class _ComboDisplayState extends ConsumerState<ComboDisplay>
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         style: TextStyle(
+                          fontFamily: 'PressStart2P',
                           color: color,
-                          fontSize: 32 + chainLevel * 4.0,
+                          fontSize: 16 + chainLevel * 2.0,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 3,
                           shadows: [
                             Shadow(
                               color: color.withValues(alpha: 0.8),
-                              blurRadius: 20,
+                              blurRadius: 8,
                             ),
                             Shadow(
                               color: color.withValues(alpha: 0.4),
-                              blurRadius: 40,
+                              blurRadius: 16,
                             ),
                           ],
                         ),

@@ -215,7 +215,7 @@ abstract class AppLocalizations {
   /// No description provided for @nicknameHint.
   ///
   /// In en, this message translates to:
-  /// **'2-10 character nickname'**
+  /// **'A-Z, 0-9, _ only (2-10 chars)'**
   String get nicknameHint;
 
   /// No description provided for @nicknameMinError.
@@ -575,7 +575,7 @@ abstract class AppLocalizations {
   /// No description provided for @nicknameDialogHint.
   ///
   /// In en, this message translates to:
-  /// **'Name for leaderboard (2-10 chars)'**
+  /// **'A-Z, 0-9, _ only (2-10 chars)'**
   String get nicknameDialogHint;
 
   /// No description provided for @continueGame.

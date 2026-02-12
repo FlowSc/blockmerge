@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 abstract final class AppTheme {
-  static const Color primaryColor = Color(0xFF6C5CE7);
-  static const Color backgroundColor = Color(0xFF1A1A2E);
-  static const Color surfaceColor = Color(0xFF16213E);
-  static const Color accentColor = Color(0xFF00D2FF);
+  static const Color primaryColor = Color(0xFF00E5FF);
+  static const Color backgroundColor = Color(0xFF0B0B1A);
+  static const Color surfaceColor = Color(0xFF1C1C3A);
+  static const Color accentColor = Color(0xFFFF6EC7);
 
   static ThemeData get darkTheme {
     return ThemeData(
@@ -20,26 +20,30 @@ abstract final class AppTheme {
         elevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
+          fontFamily: 'PressStart2P',
           color: Colors.white,
-          fontSize: 24,
+          fontSize: 12,
           fontWeight: FontWeight.bold,
           letterSpacing: 2,
         ),
       ),
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
+          fontFamily: 'PressStart2P',
           color: Colors.white,
-          fontSize: 32,
+          fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
         headlineMedium: TextStyle(
+          fontFamily: 'PressStart2P',
           color: Colors.white,
-          fontSize: 24,
+          fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
         bodyLarge: TextStyle(
+          fontFamily: 'PressStart2P',
           color: Colors.white70,
-          fontSize: 16,
+          fontSize: 10,
         ),
       ),
     );

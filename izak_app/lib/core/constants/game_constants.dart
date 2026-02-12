@@ -51,23 +51,23 @@ abstract final class GameConstants {
     return chainMultipliers[chainLevel];
   }
 
-  // Tile colors by value
+  // Tile colors by value (8-bit vivid palette)
   static const Map<int, Color> tileColors = {
-    2: Color(0xFFEEE4DA),
-    4: Color(0xFFEDE0C8),
-    8: Color(0xFFF2B179),
-    16: Color(0xFFF59563),
-    32: Color(0xFFF67C5F),
-    64: Color(0xFFF65E3B),
-    128: Color(0xFFEDCF72),
-    256: Color(0xFFEDCC61),
-    512: Color(0xFFEDC850),
-    1024: Color(0xFFEDC53F),
-    2048: Color(0xFFEDC22E),
+    2: Color(0xFF55FF55),
+    4: Color(0xFF55FFFF),
+    8: Color(0xFFFF8844),
+    16: Color(0xFFCCCC00),
+    32: Color(0xFFFF5555),
+    64: Color(0xFFFF55FF),
+    128: Color(0xFF5577FF),
+    256: Color(0xFFFFAA00),
+    512: Color(0xFFFF0088),
+    1024: Color(0xFF00FFAA),
+    2048: Color(0xFFFFD700),
   };
 
-  // Text color: dark for low values, white for high values
+  // Text color: white for all vivid backgrounds
   static Color tileTextColor(int value) {
-    return value <= 4 ? const Color(0xFF776E65) : Colors.white;
+    return Colors.white;
   }
 }

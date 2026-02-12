@@ -45,6 +45,8 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
                 child: Text(
                   l10n.skip,
                   style: TextStyle(
+                    fontFamily: 'PressStart2P',
+                    fontSize: 8,
                     color: Colors.white.withValues(alpha: 0.5),
                   ),
                 ),
@@ -81,7 +83,7 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: i == _currentPage
-                              ? const Color(0xFF6C5CE7)
+                              ? const Color(0xFF00E5FF)
                               : Colors.white.withValues(alpha: 0.2),
                         ),
                       );
@@ -92,17 +94,22 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
                       ? FilledButton(
                           onPressed: _onDone,
                           style: FilledButton.styleFrom(
-                            backgroundColor: const Color(0xFF6C5CE7),
+                            backgroundColor: const Color(0xFF00E5FF),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 32,
                               vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
                             ),
                           ),
                           child: Text(
                             l10n.start,
                             style: const TextStyle(
+                              fontFamily: 'PressStart2P',
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: 10,
+                              color: Colors.black,
                             ),
                           ),
                         )
@@ -136,7 +143,7 @@ class _IntroPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return _TutorialPageLayout(
       icon: Icons.grid_4x4,
-      iconColor: const Color(0xFF6C5CE7),
+      iconColor: const Color(0xFF00E5FF),
       title: l10n.tutorialIntroTitle,
       description: l10n.tutorialIntroDesc,
     );
@@ -158,13 +165,14 @@ class _ControlsPage extends StatelessWidget {
           const Icon(
             Icons.touch_app,
             size: 64,
-            color: Color(0xFF00D2FF),
+            color: Color(0xFF00E5FF),
           ),
           const SizedBox(height: 32),
           Text(
             l10n.tutorialControls,
             style: const TextStyle(
-              fontSize: 28,
+              fontFamily: 'PressStart2P',
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -214,7 +222,7 @@ class _ControlRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: const Color(0xFF00D2FF), size: 28),
+        Icon(icon, color: const Color(0xFF00E5FF), size: 28),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
@@ -223,8 +231,9 @@ class _ControlRow extends StatelessWidget {
               Text(
                 label,
                 style: const TextStyle(
+                  fontFamily: 'PressStart2P',
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 8,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -232,7 +241,7 @@ class _ControlRow extends StatelessWidget {
                 description,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.5),
-                  fontSize: 13,
+                  fontSize: 12,
                 ),
               ),
             ],
@@ -264,7 +273,8 @@ class _ChainPage extends StatelessWidget {
           Text(
             l10n.tutorialChainTitle,
             style: const TextStyle(
-              fontSize: 28,
+              fontFamily: 'PressStart2P',
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -274,22 +284,22 @@ class _ChainPage extends StatelessWidget {
           const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _NumberBox(value: '2', color: Color(0xFF6C5CE7)),
+              _NumberBox(value: '2', color: Color(0xFF55FF55)),
               Text(' + ', style: TextStyle(color: Colors.white54, fontSize: 20)),
-              _NumberBox(value: '2', color: Color(0xFF6C5CE7)),
+              _NumberBox(value: '2', color: Color(0xFF55FF55)),
               Text(' = ', style: TextStyle(color: Colors.white54, fontSize: 20)),
-              _NumberBox(value: '4', color: Color(0xFFA29BFE)),
+              _NumberBox(value: '4', color: Color(0xFF55FFFF)),
             ],
           ),
           const SizedBox(height: 12),
           const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _NumberBox(value: '4', color: Color(0xFFA29BFE)),
+              _NumberBox(value: '4', color: Color(0xFF55FFFF)),
               Text(' + ', style: TextStyle(color: Colors.white54, fontSize: 20)),
-              _NumberBox(value: '4', color: Color(0xFFA29BFE)),
+              _NumberBox(value: '4', color: Color(0xFF55FFFF)),
               Text(' = ', style: TextStyle(color: Colors.white54, fontSize: 20)),
-              _NumberBox(value: '8', color: Color(0xFFE17055)),
+              _NumberBox(value: '8', color: Color(0xFFFF8844)),
             ],
           ),
           const SizedBox(height: 24),
@@ -298,7 +308,7 @@ class _ChainPage extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.7),
-              fontSize: 15,
+              fontSize: 13,
               height: 1.5,
             ),
           ),
@@ -307,13 +317,14 @@ class _ChainPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
               color: const Color(0xFFFFD93D).withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
               l10n.tutorialChainExample,
               style: const TextStyle(
+                fontFamily: 'PressStart2P',
                 color: Color(0xFFFFD93D),
-                fontSize: 18,
+                fontSize: 10,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 2,
               ),
@@ -338,14 +349,15 @@ class _NumberBox extends StatelessWidget {
       height: 48,
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(2),
       ),
       alignment: Alignment.center,
       child: Text(
         value,
         style: const TextStyle(
+          fontFamily: 'PressStart2P',
           color: Colors.white,
-          fontSize: 20,
+          fontSize: 14,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -395,7 +407,8 @@ class _TutorialPageLayout extends StatelessWidget {
             title,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 28,
+              fontFamily: 'PressStart2P',
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: Colors.white,
               height: 1.3,
@@ -407,7 +420,7 @@ class _TutorialPageLayout extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.7),
-              fontSize: 15,
+              fontSize: 13,
               height: 1.5,
             ),
           ),

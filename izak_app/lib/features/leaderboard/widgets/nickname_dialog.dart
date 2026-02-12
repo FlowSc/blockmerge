@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,6 +27,9 @@ Future<String?> showNicknameDialog(BuildContext context, WidgetRef ref) async {
             controller: controller,
             autofocus: true,
             maxLength: 10,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
+            ],
             decoration: InputDecoration(
               hintText: l10n.nicknameDialogHint,
             ),

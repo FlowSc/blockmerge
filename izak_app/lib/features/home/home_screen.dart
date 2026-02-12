@@ -27,18 +27,23 @@ class HomeScreen extends ConsumerWidget {
               Text(
                 l10n.appTitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 64,
+                style: const TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                  letterSpacing: 12,
+                  color: Color(0xFF00E5FF),
+                  letterSpacing: 3,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 l10n.subtitle,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: const TextStyle(
+                  fontFamily: 'PressStart2P',
+                  fontSize: 8,
+                  color: Colors.white70,
+                ),
               ),
               const Spacer(flex: 2),
               if (showContinue) ...[
@@ -53,10 +58,11 @@ class HomeScreen extends ConsumerWidget {
                       backgroundColor: const Color(0xFFFFD700),
                       foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       textStyle: const TextStyle(
-                        fontSize: 20,
+                        fontFamily: 'PressStart2P',
+                        fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -77,12 +83,14 @@ class HomeScreen extends ConsumerWidget {
                     }
                   },
                   style: FilledButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor: const Color(0xFF00E5FF),
+                    foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                     textStyle: const TextStyle(
-                      fontSize: 20,
+                      fontFamily: 'PressStart2P',
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -98,12 +106,14 @@ class HomeScreen extends ConsumerWidget {
                     context.go('/game?mode=timeAttack');
                   },
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF6B35),
+                    backgroundColor: const Color(0xFFFF6EC7),
+                    foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                     textStyle: const TextStyle(
-                      fontSize: 20,
+                      fontFamily: 'PressStart2P',
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -121,10 +131,11 @@ class HomeScreen extends ConsumerWidget {
                       color: const Color(0xFFFFD700).withValues(alpha: 0.5),
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                     textStyle: const TextStyle(
-                      fontSize: 20,
+                      fontFamily: 'PressStart2P',
+                      fontSize: 10,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -139,16 +150,14 @@ class HomeScreen extends ConsumerWidget {
                   onPressed: () => context.push('/settings'),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withValues(alpha: 0.5),
+                      color: const Color(0xFF00E5FF).withValues(alpha: 0.5),
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                     textStyle: const TextStyle(
-                      fontSize: 20,
+                      fontFamily: 'PressStart2P',
+                      fontSize: 10,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

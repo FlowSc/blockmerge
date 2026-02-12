@@ -121,14 +121,15 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
               const Text(
                 '2048',
                 style: TextStyle(
-                  color: Color(0xFFEDC22E),
-                  fontSize: 56,
+                  fontFamily: 'PressStart2P',
+                  color: Color(0xFFFFD700),
+                  fontSize: 28,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 6,
                   shadows: [
                     Shadow(
-                      color: Color(0x80EDC22E),
-                      blurRadius: 30,
+                      color: Color(0x80FFD700),
+                      blurRadius: 16,
                     ),
                   ],
                 ),
@@ -137,8 +138,9 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
               Text(
                 l10n.youWin,
                 style: const TextStyle(
+                  fontFamily: 'PressStart2P',
                   color: Colors.white,
-                  fontSize: 28,
+                  fontSize: 14,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 4,
                 ),
@@ -147,8 +149,9 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
               Text(
                 l10n.scoreValue(score),
                 style: const TextStyle(
+                  fontFamily: 'PressStart2P',
                   color: Colors.white70,
-                  fontSize: 24,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -183,8 +186,9 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                   child: Text(
                     l10n.scoreSubmitted,
                     style: TextStyle(
-                      color: const Color(0xFF00D2FF).withValues(alpha: 0.8),
-                      fontSize: 13,
+                      fontFamily: 'PressStart2P',
+                      color: const Color(0xFF00E5FF).withValues(alpha: 0.8),
+                      fontSize: 7,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -195,8 +199,9 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                   child: Text(
                     l10n.submitScore,
                     style: TextStyle(
+                      fontFamily: 'PressStart2P',
                       color: const Color(0xFFFFD700).withValues(alpha: 0.8),
-                      fontSize: 13,
+                      fontSize: 7,
                     ),
                   ),
                 ),
@@ -210,19 +215,20 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                         .continueAfterVictory();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6C5CE7),
+                    backgroundColor: const Color(0xFF00E5FF),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                   child: Text(
                     l10n.keepGoing,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontFamily: 'PressStart2P',
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                 ),
@@ -240,13 +246,14 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                         vertical: 14,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                     ),
                     child: Text(
                       l10n.home,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontFamily: 'PressStart2P',
+                        fontSize: 8,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
                         color: Colors.white70,
@@ -266,13 +273,14 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                         vertical: 14,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                     ),
                     child: Text(
                       l10n.rank,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontFamily: 'PressStart2P',
+                        fontSize: 8,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
                         color: Color(0xFFFFD700),
@@ -285,22 +293,23 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                       ref.read(gameNotifierProvider.notifier).startGame();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFEDC22E),
+                      backgroundColor: const Color(0xFFFFD700),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20,
                         vertical: 14,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                     ),
                     child: Text(
                       l10n.retry,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontFamily: 'PressStart2P',
+                        fontSize: 8,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                     ),
                   ),
@@ -326,7 +335,7 @@ class _StatChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(2),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -334,8 +343,9 @@ class _StatChip extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
+              fontFamily: 'PressStart2P',
               color: Colors.white.withValues(alpha: 0.5),
-              fontSize: 11,
+              fontSize: 6,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
             ),
@@ -344,8 +354,9 @@ class _StatChip extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
+              fontFamily: 'PressStart2P',
               color: Colors.white,
-              fontSize: 18,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
             ),
           ),

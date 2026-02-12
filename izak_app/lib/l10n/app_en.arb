@@ -19,7 +19,7 @@
   "restorePurchases": "Restore Purchases",
   "restoringPurchases": "Restoring purchases...",
   "setNickname": "Set Nickname",
-  "nicknameHint": "2-10 character nickname",
+  "nicknameHint": "A-Z, 0-9, _ only (2-10 chars)",
   "nicknameMinError": "Enter at least 2 characters",
   "nicknameMaxError": "Maximum 10 characters",
   "cancel": "Cancel",
@@ -145,7 +145,7 @@
     }
   },
   "enterNickname": "Enter Nickname",
-  "nicknameDialogHint": "Name for leaderboard (2-10 chars)",
+  "nicknameDialogHint": "A-Z, 0-9, _ only (2-10 chars)",
   "continueGame": "CONTINUE",
   "keepGoing": "KEEP GOING",
   "quitConfirmTitle": "Quit Game?",

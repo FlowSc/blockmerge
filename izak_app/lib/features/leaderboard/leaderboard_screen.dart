@@ -232,7 +232,7 @@ class _LeaderboardTile extends StatelessWidget {
         color: isMe
             ? const Color(0xFFFFD700).withValues(alpha: 0.1)
             : Colors.white.withValues(alpha: 0.04),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(2),
         border: isMe
             ? Border.all(
                 color: const Color(0xFFFFD700).withValues(alpha: 0.3),
@@ -247,8 +247,9 @@ class _LeaderboardTile extends StatelessWidget {
               '$rank',
               textAlign: TextAlign.center,
               style: TextStyle(
+                fontFamily: 'PressStart2P',
                 color: rankColor,
-                fontSize: rank <= 3 ? 20 : 16,
+                fontSize: rank <= 3 ? 12 : 10,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -261,8 +262,9 @@ class _LeaderboardTile extends StatelessWidget {
                 Text(
                   entry.nickname,
                   style: TextStyle(
+                    fontFamily: 'PressStart2P',
                     color: isMe ? const Color(0xFFFFD700) : Colors.white,
-                    fontSize: 16,
+                    fontSize: 9,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -283,8 +285,9 @@ class _LeaderboardTile extends StatelessWidget {
           Text(
             '${entry.score}',
             style: TextStyle(
+              fontFamily: 'PressStart2P',
               color: isMe ? const Color(0xFFFFD700) : Colors.white,
-              fontSize: 18,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
             ),
           ),

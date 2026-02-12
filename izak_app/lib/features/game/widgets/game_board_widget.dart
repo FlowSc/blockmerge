@@ -28,9 +28,13 @@ class GameBoardWidget extends ConsumerStatefulWidget {
 }
 
 class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _shakeController;
   late Animation<double> _shakeAnimation;
+
+  late AnimationController _borderColorController;
+  Color _borderColorFrom = const Color(0xFF00E5FF);
+  Color _borderColorTo = const Color(0xFF00E5FF);
 
   @override
   void initState() {
@@ -50,11 +54,17 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
       parent: _shakeController,
       curve: Curves.easeOut,
     ));
+
+    _borderColorController = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
   }
 
   @override
   void dispose() {
     _shakeController.dispose();
+    _borderColorController.dispose();
     super.dispose();
   }
 
@@ -74,6 +84,35 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
         if (next >= _megaComboThreshold &&
             ref.read(gameNotifierProvider).newMergedPositions != null) {
           _shakeController.forward(from: 0);
+        }
+      },
+    );
+
+    // Update border color when new merges occur.
+    ref.listen<Set<Position>?>(
+      gameNotifierProvider.select((GameState s) => s.newMergedPositions),
+      (Set<Position>? prev, Set<Position>? next) {
+        if (next != null && next.isNotEmpty) {
+          final GameState gs = ref.read(gameNotifierProvider);
+          // Find the highest merged tile value for border color.
+          int? maxValue;
+          for (final Position pos in next) {
+            final int? val = gs.grid[pos.row][pos.col];
+            if (val != null && (maxValue == null || val > maxValue)) {
+              maxValue = val;
+            }
+          }
+          if (maxValue != null) {
+            final Color newColor =
+                GameConstants.tileColors[maxValue] ?? const Color(0xFF00E5FF);
+            _borderColorFrom = Color.lerp(
+              _borderColorFrom,
+              _borderColorTo,
+              _borderColorController.value,
+            )!;
+            _borderColorTo = newColor;
+            _borderColorController.forward(from: 0);
+          }
         }
       },
     );
@@ -150,15 +189,26 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
         Widget board = SizedBox(
           width: boardWidth + 2,
           height: boardHeight + 2,
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF0D1117),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: const Color(0xFF6C5CE7).withValues(alpha: 0.3),
-                width: 1,
-              ),
-            ),
+          child: AnimatedBuilder(
+            animation: _borderColorController,
+            builder: (BuildContext context, Widget? child) {
+              final Color borderColor = Color.lerp(
+                _borderColorFrom,
+                _borderColorTo,
+                Curves.easeOut.transform(_borderColorController.value),
+              )!;
+              return Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0B0B1A),
+                  borderRadius: BorderRadius.circular(2),
+                  border: Border.all(
+                    color: borderColor,
+                    width: 2,
+                  ),
+                ),
+                child: child,
+              );
+            },
             child: Stack(
               clipBehavior: Clip.none,
               children: [
@@ -270,7 +320,7 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
             width: cellSize - 2,
             height: cellSize - 2,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(2),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.2),
                 width: 1,
@@ -362,7 +412,7 @@ class _GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.05)
+      ..color = const Color(0xFF2A2A4A)
       ..strokeWidth = 0.5;
 
     for (int col = 1; col < GameConstants.columns; col++) {

@@ -82,6 +82,7 @@ class _IzakAppState extends ConsumerState<IzakApp> {
       theme: AppTheme.darkTheme,
       routerConfig: _router,
       debugShowCheckedModeBanner: false,
+      locale: const Locale('en'),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
     );

@@ -66,7 +66,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setNickname => 'Set Nickname';
 
   @override
-  String get nicknameHint => '2-10 character nickname';
+  String get nicknameHint => 'A-Z, 0-9, _ only (2-10 chars)';
 
   @override
   String get nicknameMinError => 'Enter at least 2 characters';
@@ -266,7 +266,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterNickname => 'Enter Nickname';
 
   @override
-  String get nicknameDialogHint => 'Name for leaderboard (2-10 chars)';
+  String get nicknameDialogHint => 'A-Z, 0-9, _ only (2-10 chars)';
 
   @override
   String get continueGame => 'CONTINUE';

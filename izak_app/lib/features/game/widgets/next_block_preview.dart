@@ -24,10 +24,10 @@ class NextBlockPreview extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1117),
-        borderRadius: BorderRadius.circular(8),
+        color: const Color(0xFF0B0B1A),
+        borderRadius: BorderRadius.circular(2),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
+          color: const Color(0xFF00E5FF).withValues(alpha: 0.4),
         ),
       ),
       child: Column(
@@ -36,8 +36,9 @@ class NextBlockPreview extends ConsumerWidget {
           Text(
             l10n.next,
             style: TextStyle(
+              fontFamily: 'PressStart2P',
               color: Colors.white.withValues(alpha: 0.5),
-              fontSize: 10,
+              fontSize: 7,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
             ),

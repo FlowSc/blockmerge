@@ -29,8 +29,9 @@ class PauseOverlay extends ConsumerWidget {
             Text(
               l10n.paused,
               style: const TextStyle(
+                fontFamily: 'PressStart2P',
                 color: Colors.white,
-                fontSize: 32,
+                fontSize: 16,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 4,
               ),
@@ -39,7 +40,7 @@ class PauseOverlay extends ConsumerWidget {
             _MenuButton(
               label: l10n.resume,
               icon: Icons.play_arrow,
-              color: const Color(0xFF6C5CE7),
+              color: const Color(0xFF00E5FF),
               onPressed: onResume,
             ),
             const SizedBox(height: 16),
@@ -101,7 +102,8 @@ class _MenuButton extends StatelessWidget {
         label: Text(
           label,
           style: const TextStyle(
-            fontSize: 18,
+            fontFamily: 'PressStart2P',
+            fontSize: 10,
             fontWeight: FontWeight.bold,
             letterSpacing: 1,
           ),
@@ -111,7 +113,7 @@ class _MenuButton extends StatelessWidget {
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(4),
           ),
         ),
       ),

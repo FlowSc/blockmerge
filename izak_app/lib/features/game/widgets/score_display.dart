@@ -27,16 +27,16 @@ class ScoreDisplay extends ConsumerWidget {
     final Color bottomColor = isTimeAttack
         ? (remainingSeconds <= 30
             ? const Color(0xFFFF4444)
-            : const Color(0xFFFF6B35).withValues(alpha: 0.9))
-        : const Color(0xFF00D2FF).withValues(alpha: 0.8);
+            : const Color(0xFFFF6EC7).withValues(alpha: 0.9))
+        : const Color(0xFF00E5FF).withValues(alpha: 0.8);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1117),
-        borderRadius: BorderRadius.circular(8),
+        color: const Color(0xFF0B0B1A),
+        borderRadius: BorderRadius.circular(2),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
+          color: const Color(0xFF00E5FF).withValues(alpha: 0.4),
         ),
       ),
       child: Column(
@@ -45,8 +45,9 @@ class ScoreDisplay extends ConsumerWidget {
           Text(
             l10n.scoreLabel,
             style: TextStyle(
+              fontFamily: 'PressStart2P',
               color: Colors.white.withValues(alpha: 0.5),
-              fontSize: 10,
+              fontSize: 7,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
             ),
@@ -55,8 +56,9 @@ class ScoreDisplay extends ConsumerWidget {
           Text(
             '$score',
             style: const TextStyle(
+              fontFamily: 'PressStart2P',
               color: Colors.white,
-              fontSize: 20,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -64,8 +66,9 @@ class ScoreDisplay extends ConsumerWidget {
           Text(
             bottomLabel,
             style: TextStyle(
+              fontFamily: 'PressStart2P',
               color: bottomColor,
-              fontSize: 10,
+              fontSize: 7,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
             ),
