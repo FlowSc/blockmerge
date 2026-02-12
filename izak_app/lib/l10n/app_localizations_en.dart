@@ -312,4 +312,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get periodAll => 'ALL';
+
+  @override
+  String get pauseNotAllowed => 'Pause is not available\nin Time Attack!';
+
+  @override
+  String get timeAttackTutorialTitle => 'TIME ATTACK';
+
+  @override
+  String get timeAttackTutorialRule1 =>
+      '3 minutes to score\nas high as you can!';
+
+  @override
+  String get timeAttackTutorialRule2 => 'Pause is disabled.\nStay focused!';
+
+  @override
+  String get timeAttackTutorialRule3 =>
+      'Timer keeps running\neven in background.';
+
+  @override
+  String get timeAttackTutorialGo => 'GO!';
 }

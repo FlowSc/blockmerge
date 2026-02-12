@@ -126,82 +126,73 @@ class _TimeAttackWarningState extends ConsumerState<TimeAttackWarning>
       });
     }
 
-    return IgnorePointer(
-      child: Stack(
-        children: [
-          // Banner (60s / 30s)
-          if (_bannerController != null && _bannerOpacity != null)
-            Positioned(
-              top: 8,
-              left: 0,
-              right: 0,
-              child: AnimatedBuilder(
-                animation: _bannerController!,
-                builder: (BuildContext context, Widget? child) {
-                  return Opacity(
-                    opacity: _bannerOpacity!.value,
-                    child: Transform.scale(
-                      scale: _bannerScale?.value ?? 1.0,
-                      child: Center(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _bannerColor.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(2),
-                            border: Border.all(
-                              color: _bannerColor.withValues(alpha: 0.6),
-                              width: 2,
-                            ),
-                          ),
-                          child: Text(
-                            _bannerText,
-                            style: TextStyle(
-                              fontFamily: 'PressStart2P',
-                              color: _bannerColor,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900,
-                              shadows: [
-                                Shadow(
-                                  color: _bannerColor.withValues(alpha: 0.8),
-                                  blurRadius: 12,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+    // Show countdown if active, otherwise show banner
+    if (remaining <= 10 && remaining > 0) {
+      return IgnorePointer(
+        child: Center(
+          child: _countdownController != null && _countdownScale != null
+              ? AnimatedBuilder(
+                  animation: _countdownController!,
+                  builder: (BuildContext context, Widget? child) {
+                    return Transform.scale(
+                      scale: _countdownScale!.value,
+                      child: _buildCountdownText(remaining),
+                    );
+                  },
+                )
+              : _buildCountdownText(remaining),
+        ),
+      );
+    }
+
+    if (_bannerController != null && _bannerOpacity != null) {
+      return IgnorePointer(
+        child: AnimatedBuilder(
+          animation: _bannerController!,
+          builder: (BuildContext context, Widget? child) {
+            return Opacity(
+              opacity: _bannerOpacity!.value,
+              child: Transform.scale(
+                scale: _bannerScale?.value ?? 1.0,
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _bannerColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(2),
+                      border: Border.all(
+                        color: _bannerColor.withValues(alpha: 0.6),
+                        width: 2,
                       ),
                     ),
-                  );
-                },
+                    child: Text(
+                      _bannerText,
+                      style: TextStyle(
+                        fontFamily: 'PressStart2P',
+                        color: _bannerColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        shadows: [
+                          Shadow(
+                            color: _bannerColor.withValues(alpha: 0.8),
+                            blurRadius: 12,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
+            );
+          },
+        ),
+      );
+    }
 
-          // Countdown (10s and below)
-          if (remaining <= 10 && remaining > 0)
-            Positioned(
-              top: 8,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: _countdownController != null && _countdownScale != null
-                    ? AnimatedBuilder(
-                        animation: _countdownController!,
-                        builder: (BuildContext context, Widget? child) {
-                          return Transform.scale(
-                            scale: _countdownScale!.value,
-                            child: _buildCountdownText(remaining),
-                          );
-                        },
-                      )
-                    : _buildCountdownText(remaining),
-              ),
-            ),
-        ],
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _buildCountdownText(int seconds) {

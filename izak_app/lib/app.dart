@@ -9,6 +9,7 @@ import 'features/home/home_screen.dart';
 import 'features/leaderboard/leaderboard_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/splash/splash_screen.dart';
+import 'features/tutorial/time_attack_tutorial_screen.dart';
 import 'features/tutorial/tutorial_screen.dart';
 
 GoRouter _createRouter() => GoRouter(
@@ -50,6 +51,12 @@ GoRouter _createRouter() => GoRouter(
       path: '/tutorial',
       builder: (BuildContext context, GoRouterState state) {
         return const TutorialScreen();
+      },
+    ),
+    GoRoute(
+      path: '/time-attack-tutorial',
+      builder: (BuildContext context, GoRouterState state) {
+        return const TimeAttackTutorialScreen();
       },
     ),
     GoRoute(

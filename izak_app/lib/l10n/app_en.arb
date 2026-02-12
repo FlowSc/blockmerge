@@ -160,5 +160,11 @@
   "periodWeekly": "WEEK",
   "periodMonthly": "MONTH",
   "periodYearly": "YEAR",
-  "periodAll": "ALL"
+  "periodAll": "ALL",
+  "pauseNotAllowed": "Pause is not available\nin Time Attack!",
+  "timeAttackTutorialTitle": "TIME ATTACK",
+  "timeAttackTutorialRule1": "3 minutes to score\nas high as you can!",
+  "timeAttackTutorialRule2": "Pause is disabled.\nStay focused!",
+  "timeAttackTutorialRule3": "Timer keeps running\neven in background.",
+  "timeAttackTutorialGo": "GO!"
 }

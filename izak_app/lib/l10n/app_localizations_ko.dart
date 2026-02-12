@@ -311,4 +311,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get periodAll => '전체';
+
+  @override
+  String get pauseNotAllowed => '타임어택에서는\n일시정지를 사용할 수 없습니다!';
+
+  @override
+  String get timeAttackTutorialTitle => '타임어택';
+
+  @override
+  String get timeAttackTutorialRule1 => '3분 안에 최고 점수를\n달성하세요!';
+
+  @override
+  String get timeAttackTutorialRule2 => '일시정지가 불가합니다.\n집중하세요!';
+
+  @override
+  String get timeAttackTutorialRule3 => '백그라운드에서도\n타이머가 계속됩니다.';
+
+  @override
+  String get timeAttackTutorialGo => 'GO!';
 }

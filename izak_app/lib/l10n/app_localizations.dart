@@ -667,6 +667,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ALL'**
   String get periodAll;
+
+  /// No description provided for @pauseNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause is not available\nin Time Attack!'**
+  String get pauseNotAllowed;
+
+  /// No description provided for @timeAttackTutorialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'TIME ATTACK'**
+  String get timeAttackTutorialTitle;
+
+  /// No description provided for @timeAttackTutorialRule1.
+  ///
+  /// In en, this message translates to:
+  /// **'3 minutes to score\nas high as you can!'**
+  String get timeAttackTutorialRule1;
+
+  /// No description provided for @timeAttackTutorialRule2.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause is disabled.\nStay focused!'**
+  String get timeAttackTutorialRule2;
+
+  /// No description provided for @timeAttackTutorialRule3.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer keeps running\neven in background.'**
+  String get timeAttackTutorialRule3;
+
+  /// No description provided for @timeAttackTutorialGo.
+  ///
+  /// In en, this message translates to:
+  /// **'GO!'**
+  String get timeAttackTutorialGo;
 }
 
 class _AppLocalizationsDelegate

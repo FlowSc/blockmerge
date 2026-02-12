@@ -93,5 +93,11 @@
   "periodWeekly": "주간",
   "periodMonthly": "월간",
   "periodYearly": "연간",
-  "periodAll": "전체"
+  "periodAll": "전체",
+  "pauseNotAllowed": "타임어택에서는\n일시정지를 사용할 수 없습니다!",
+  "timeAttackTutorialTitle": "타임어택",
+  "timeAttackTutorialRule1": "3분 안에 최고 점수를\n달성하세요!",
+  "timeAttackTutorialRule2": "일시정지가 불가합니다.\n집중하세요!",
+  "timeAttackTutorialRule3": "백그라운드에서도\n타이머가 계속됩니다.",
+  "timeAttackTutorialGo": "GO!"
 }

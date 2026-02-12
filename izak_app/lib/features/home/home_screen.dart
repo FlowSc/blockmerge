@@ -107,7 +107,13 @@ class HomeScreen extends ConsumerWidget {
                 height: 56,
                 child: FilledButton(
                   onPressed: () {
-                    context.go('/game?mode=timeAttack');
+                    final bool taSeen = ref.read(settingsNotifierProvider
+                        .select((s) => s.timeAttackTutorialSeen));
+                    if (taSeen) {
+                      context.go('/game?mode=timeAttack');
+                    } else {
+                      context.push('/time-attack-tutorial');
+                    }
                   },
                   style: FilledButton.styleFrom(
                     backgroundColor: const Color(0xFFFF6EC7),

@@ -8,6 +8,7 @@ final class SettingsState {
     this.vibrationEnabled = true,
     this.showGhost = true,
     this.tutorialSeen = false,
+    this.timeAttackTutorialSeen = false,
     this.nickname,
     this.isAdFree = false,
   });
@@ -17,6 +18,7 @@ final class SettingsState {
   final bool vibrationEnabled;
   final bool showGhost;
   final bool tutorialSeen;
+  final bool timeAttackTutorialSeen;
   final String? nickname;
   final bool isAdFree;
 
@@ -26,6 +28,7 @@ final class SettingsState {
     bool? vibrationEnabled,
     bool? showGhost,
     bool? tutorialSeen,
+    bool? timeAttackTutorialSeen,
     String? Function()? nickname,
     bool? isAdFree,
   }) {
@@ -35,6 +38,8 @@ final class SettingsState {
       vibrationEnabled: vibrationEnabled ?? this.vibrationEnabled,
       showGhost: showGhost ?? this.showGhost,
       tutorialSeen: tutorialSeen ?? this.tutorialSeen,
+      timeAttackTutorialSeen:
+          timeAttackTutorialSeen ?? this.timeAttackTutorialSeen,
       nickname: nickname != null ? nickname() : this.nickname,
       isAdFree: isAdFree ?? this.isAdFree,
     );

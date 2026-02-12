@@ -10,6 +10,7 @@ const String _sfxKey = 'sfx_enabled';
 const String _vibrationKey = 'vibration_enabled';
 const String _ghostKey = 'show_ghost';
 const String _tutorialKey = 'tutorial_seen';
+const String _timeAttackTutorialKey = 'time_attack_tutorial_seen';
 const String _nicknameKey = 'nickname';
 const String _adFreeKey = 'ad_free';
 
@@ -45,6 +46,8 @@ class SettingsNotifier extends _$SettingsNotifier {
       vibrationEnabled: prefs.getBool(_vibrationKey) ?? true,
       showGhost: prefs.getBool(_ghostKey) ?? true,
       tutorialSeen: prefs.getBool(_tutorialKey) ?? false,
+      timeAttackTutorialSeen:
+          prefs.getBool(_timeAttackTutorialKey) ?? false,
       nickname: prefs.getString(_nicknameKey),
       isAdFree: prefs.getBool(_adFreeKey) ?? false,
     );
@@ -82,6 +85,12 @@ class SettingsNotifier extends _$SettingsNotifier {
     state = state.copyWith(tutorialSeen: true);
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_tutorialKey, true);
+  }
+
+  Future<void> markTimeAttackTutorialSeen() async {
+    state = state.copyWith(timeAttackTutorialSeen: true);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_timeAttackTutorialKey, true);
   }
 
   Future<void> setNickname(String nickname) async {

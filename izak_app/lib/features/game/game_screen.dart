@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../home/widgets/countdown_overlay.dart';
 import 'models/game_mode.dart';
 import 'models/game_state.dart';
@@ -57,6 +58,8 @@ class _GameScreenState extends ConsumerState<GameScreen>
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.inactive ||
         state == AppLifecycleState.paused) {
+      // Time attack: never pause — timer keeps running.
+      if (widget.gameMode == GameMode.timeAttack) return;
       final GameNotifier notifier = ref.read(gameNotifierProvider.notifier);
       notifier.pause();
       notifier.saveGame();
@@ -86,6 +89,30 @@ class _GameScreenState extends ConsumerState<GameScreen>
       _pendingResume = true;
       _showCountdown = true;
     });
+  }
+
+  void _showPauseNotAllowed() {
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          l10n.pauseNotAllowed,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontFamily: 'PressStart2P',
+            fontSize: 7,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: const Color(0xFFFF4444).withValues(alpha: 0.9),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4),
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   void _onPanStart(DragStartDetails details) {
@@ -144,7 +171,11 @@ class _GameScreenState extends ConsumerState<GameScreen>
                         IconButton(
                           icon: const Icon(Icons.pause, color: Colors.white),
                           onPressed: () {
-                            ref.read(gameNotifierProvider.notifier).pause();
+                            if (widget.gameMode == GameMode.timeAttack) {
+                              _showPauseNotAllowed();
+                            } else {
+                              ref.read(gameNotifierProvider.notifier).pause();
+                            }
                           },
                         )
                       else
@@ -157,26 +188,32 @@ class _GameScreenState extends ConsumerState<GameScreen>
                   ),
                 ),
                 const SizedBox(height: 4),
-                // Game board
+                // Game board + time attack warning overlay
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: GestureDetector(
-                      onPanStart: _onPanStart,
-                      onPanUpdate: _onPanUpdate,
-                      onPanEnd: _onPanEnd,
-                      onTap: _onTap,
-                      behavior: HitTestBehavior.opaque,
-                      child: const GameBoardWidget(),
+                    child: Stack(
+                      children: [
+                        GestureDetector(
+                          onPanStart: _onPanStart,
+                          onPanUpdate: _onPanUpdate,
+                          onPanEnd: _onPanEnd,
+                          onTap: _onTap,
+                          behavior: HitTestBehavior.opaque,
+                          child: const GameBoardWidget(),
+                        ),
+                        const Positioned(
+                          top: 4,
+                          left: 0,
+                          right: 0,
+                          child: TimeAttackWarning(),
+                        ),
+                      ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 8),
               ],
-            ),
-            // Time attack warnings (top of board area)
-            const Positioned.fill(
-              child: TimeAttackWarning(),
             ),
             // Combo overlay: centered on screen, no layout impact
             const Positioned.fill(
