@@ -104,6 +104,7 @@ class _ComboDisplayState extends ConsumerState<ComboDisplay>
                     ),
                     child: Text(
                       label,
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: color,
                         fontSize: 32 + chainLevel * 6.0,

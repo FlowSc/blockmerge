@@ -103,7 +103,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
           children: [
             Column(
               children: [
-                // Header: [Pause] [NEXT block] --- [SCORE]
+                // Header: [Pause] --- [NEXT block] --- [SCORE]
                 Padding(
                   padding: const EdgeInsets.fromLTRB(4, 8, 16, 4),
                   child: Row(
@@ -118,7 +118,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
                         )
                       else
                         const SizedBox(width: 48),
-                      const SizedBox(width: 4),
+                      const Spacer(),
                       const NextBlockPreview(),
                       const Spacer(),
                       const ScoreDisplay(),
