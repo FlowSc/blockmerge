@@ -26,6 +26,7 @@ class HomeScreen extends ConsumerWidget {
               const Spacer(flex: 3),
               Text(
                 l10n.appTitle,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 64,
                   fontWeight: FontWeight.bold,
@@ -36,6 +37,7 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 l10n.subtitle,
+                textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const Spacer(flex: 2),

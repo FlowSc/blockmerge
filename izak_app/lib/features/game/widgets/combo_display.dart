@@ -105,24 +105,28 @@ class _ComboDisplayState extends ConsumerState<ComboDisplay>
                         width: 1.5,
                       ),
                     ),
-                    child: Text(
-                      label,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: color,
-                        fontSize: 32 + chainLevel * 6.0,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 3,
-                        shadows: [
-                          Shadow(
-                            color: color.withValues(alpha: 0.8),
-                            blurRadius: 20,
-                          ),
-                          Shadow(
-                            color: color.withValues(alpha: 0.4),
-                            blurRadius: 40,
-                          ),
-                        ],
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: color,
+                          fontSize: 32 + chainLevel * 4.0,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 3,
+                          shadows: [
+                            Shadow(
+                              color: color.withValues(alpha: 0.8),
+                              blurRadius: 20,
+                            ),
+                            Shadow(
+                              color: color.withValues(alpha: 0.4),
+                              blurRadius: 40,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
