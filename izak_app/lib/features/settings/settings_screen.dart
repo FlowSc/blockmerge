@@ -3,7 +3,8 @@ import '../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/providers/purchase_provider.dart';
+// TODO: Re-enable when ads are implemented.
+// import '../../core/providers/purchase_provider.dart';
 import 'providers/settings_notifier.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -78,19 +79,20 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/tutorial'),
           ),
-          const Divider(height: 32),
-          _AdRemovalTile(isAdFree: settings.isAdFree),
-          ListTile(
-            leading: const Icon(Icons.restore),
-            title: Text(l10n.restorePurchases),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              ref.read(purchaseNotifierProvider.notifier).restorePurchases();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.restoringPurchases)),
-              );
-            },
-          ),
+          // TODO: Re-enable when ads are implemented.
+          // const Divider(height: 32),
+          // _AdRemovalTile(isAdFree: settings.isAdFree),
+          // ListTile(
+          //   leading: const Icon(Icons.restore),
+          //   title: Text(l10n.restorePurchases),
+          //   trailing: const Icon(Icons.chevron_right),
+          //   onTap: () {
+          //     ref.read(purchaseNotifierProvider.notifier).restorePurchases();
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       SnackBar(content: Text(l10n.restoringPurchases)),
+          //     );
+          //   },
+          // ),
           const SizedBox(height: 48),
           Center(
             child: Text(
@@ -165,94 +167,95 @@ void _showNicknameDialog(
   );
 }
 
-class _AdRemovalTile extends ConsumerWidget {
-  const _AdRemovalTile({required this.isAdFree});
-
-  final bool isAdFree;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final PurchaseState purchaseState = ref.watch(purchaseNotifierProvider);
-    final bool isLoading =
-        purchaseState.loadingState == PurchaseLoadingState.loading;
-    final l10n = AppLocalizations.of(context)!;
-
-    if (isAdFree) {
-      return ListTile(
-        leading: Icon(
-          Icons.check_circle,
-          color: Colors.green.withValues(alpha: 0.7),
-        ),
-        title: Text(l10n.removeAds),
-        subtitle: Text(
-          l10n.purchased,
-          style: TextStyle(
-            color: Colors.green.withValues(alpha: 0.7),
-            fontSize: 12,
-          ),
-        ),
-        enabled: false,
-      );
-    }
-
-    return ListTile(
-      leading: const Icon(Icons.block),
-      title: Text(l10n.removeAds),
-      subtitle: Text(
-        purchaseState.removeAdsPrice ?? l10n.removeAdsDesc,
-        style: TextStyle(
-          color: Colors.white.withValues(alpha: 0.5),
-          fontSize: 12,
-        ),
-      ),
-      trailing: isLoading
-          ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : const Icon(Icons.chevron_right),
-      onTap: isLoading
-          ? null
-          : () => _showPurchaseDialog(context, ref, purchaseState.removeAdsPrice),
-    );
-  }
-
-  void _showPurchaseDialog(
-    BuildContext context,
-    WidgetRef ref,
-    String? price,
-  ) {
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext ctx) {
-        final l10n = AppLocalizations.of(ctx)!;
-
-        return AlertDialog(
-          title: Text(l10n.removeAds),
-          content: Text(
-            price != null
-                ? l10n.removeAdsConfirm(price)
-                : l10n.removeAdsConfirmDefault,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: Text(l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () {
-                Navigator.of(ctx).pop();
-                ref.read(purchaseNotifierProvider.notifier).buyRemoveAds();
-              },
-              child: Text(l10n.purchase),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
+// TODO: Re-enable when ads are implemented.
+// class _AdRemovalTile extends ConsumerWidget {
+//   const _AdRemovalTile({required this.isAdFree});
+//
+//   final bool isAdFree;
+//
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final PurchaseState purchaseState = ref.watch(purchaseNotifierProvider);
+//     final bool isLoading =
+//         purchaseState.loadingState == PurchaseLoadingState.loading;
+//     final l10n = AppLocalizations.of(context)!;
+//
+//     if (isAdFree) {
+//       return ListTile(
+//         leading: Icon(
+//           Icons.check_circle,
+//           color: Colors.green.withValues(alpha: 0.7),
+//         ),
+//         title: Text(l10n.removeAds),
+//         subtitle: Text(
+//           l10n.purchased,
+//           style: TextStyle(
+//             color: Colors.green.withValues(alpha: 0.7),
+//             fontSize: 12,
+//           ),
+//         ),
+//         enabled: false,
+//       );
+//     }
+//
+//     return ListTile(
+//       leading: const Icon(Icons.block),
+//       title: Text(l10n.removeAds),
+//       subtitle: Text(
+//         purchaseState.removeAdsPrice ?? l10n.removeAdsDesc,
+//         style: TextStyle(
+//           color: Colors.white.withValues(alpha: 0.5),
+//           fontSize: 12,
+//         ),
+//       ),
+//       trailing: isLoading
+//           ? const SizedBox(
+//               width: 20,
+//               height: 20,
+//               child: CircularProgressIndicator(strokeWidth: 2),
+//             )
+//           : const Icon(Icons.chevron_right),
+//       onTap: isLoading
+//           ? null
+//           : () => _showPurchaseDialog(context, ref, purchaseState.removeAdsPrice),
+//     );
+//   }
+//
+//   void _showPurchaseDialog(
+//     BuildContext context,
+//     WidgetRef ref,
+//     String? price,
+//   ) {
+//     showDialog<void>(
+//       context: context,
+//       builder: (BuildContext ctx) {
+//         final l10n = AppLocalizations.of(ctx)!;
+//
+//         return AlertDialog(
+//           title: Text(l10n.removeAds),
+//           content: Text(
+//             price != null
+//                 ? l10n.removeAdsConfirm(price)
+//                 : l10n.removeAdsConfirmDefault,
+//           ),
+//           actions: [
+//             TextButton(
+//               onPressed: () => Navigator.of(ctx).pop(),
+//               child: Text(l10n.cancel),
+//             ),
+//             FilledButton(
+//               onPressed: () {
+//                 Navigator.of(ctx).pop();
+//                 ref.read(purchaseNotifierProvider.notifier).buyRemoveAds();
+//               },
+//               child: Text(l10n.purchase),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+// }
 
 class _SettingsTile extends StatelessWidget {
   const _SettingsTile({
