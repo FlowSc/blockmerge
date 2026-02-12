@@ -2,7 +2,7 @@ name: izak_app
 description: "A hybrid puzzle game combining Tetris-style block dropping with 2048-style number merging."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.8.1
