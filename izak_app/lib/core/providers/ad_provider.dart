@@ -111,8 +111,16 @@ class AdNotifier extends _$AdNotifier {
     if (isAdFree) return;
 
     final InterstitialAd? ad = state.interstitialAd;
-    if (ad == null) return;
+    if (ad == null) {
+      // Ad not loaded yet — load and show when ready.
+      _loadAndShowInterstitial();
+      return;
+    }
 
+    _showLoadedInterstitial(ad);
+  }
+
+  void _showLoadedInterstitial(InterstitialAd ad) {
     ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (InterstitialAd ad) {
         ad.dispose();
@@ -128,5 +136,22 @@ class AdNotifier extends _$AdNotifier {
     );
 
     ad.show();
+  }
+
+  void _loadAndShowInterstitial() {
+    InterstitialAd.load(
+      adUnitId: AdConstants.interstitialAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          state = state.copyWith(interstitialAd: () => ad);
+          _showLoadedInterstitial(ad);
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          // Ad failed to load — silently skip.
+          state = state.copyWith(interstitialAd: () => null);
+        },
+      ),
+    );
   }
 }
