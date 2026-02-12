@@ -5,12 +5,16 @@ import '../models/settings_state.dart';
 
 part 'settings_notifier.g.dart';
 
-const String _soundKey = 'sound_enabled';
+const String _bgmKey = 'bgm_enabled';
+const String _sfxKey = 'sfx_enabled';
 const String _vibrationKey = 'vibration_enabled';
 const String _ghostKey = 'show_ghost';
 const String _tutorialKey = 'tutorial_seen';
 const String _nicknameKey = 'nickname';
 const String _adFreeKey = 'ad_free';
+
+// Legacy key for migration from single sound toggle.
+const String _legacySoundKey = 'sound_enabled';
 
 @Riverpod(keepAlive: true)
 class SettingsNotifier extends _$SettingsNotifier {
@@ -22,8 +26,22 @@ class SettingsNotifier extends _$SettingsNotifier {
 
   Future<void> _load() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Migrate legacy "sound_enabled" → bgm + sfx if new keys don't exist yet.
+    bool bgm = prefs.getBool(_bgmKey) ?? true;
+    bool sfx = prefs.getBool(_sfxKey) ?? true;
+    if (!prefs.containsKey(_bgmKey) && prefs.containsKey(_legacySoundKey)) {
+      final bool legacy = prefs.getBool(_legacySoundKey) ?? true;
+      bgm = legacy;
+      sfx = legacy;
+      await prefs.setBool(_bgmKey, bgm);
+      await prefs.setBool(_sfxKey, sfx);
+      await prefs.remove(_legacySoundKey);
+    }
+
     state = SettingsState(
-      soundEnabled: prefs.getBool(_soundKey) ?? true,
+      bgmEnabled: bgm,
+      sfxEnabled: sfx,
       vibrationEnabled: prefs.getBool(_vibrationKey) ?? true,
       showGhost: prefs.getBool(_ghostKey) ?? true,
       tutorialSeen: prefs.getBool(_tutorialKey) ?? false,
@@ -32,11 +50,18 @@ class SettingsNotifier extends _$SettingsNotifier {
     );
   }
 
-  Future<void> toggleSound() async {
-    final bool newValue = !state.soundEnabled;
-    state = state.copyWith(soundEnabled: newValue);
+  Future<void> toggleBgm() async {
+    final bool newValue = !state.bgmEnabled;
+    state = state.copyWith(bgmEnabled: newValue);
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_soundKey, newValue);
+    await prefs.setBool(_bgmKey, newValue);
+  }
+
+  Future<void> toggleSfx() async {
+    final bool newValue = !state.sfxEnabled;
+    state = state.copyWith(sfxEnabled: newValue);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_sfxKey, newValue);
   }
 
   Future<void> toggleVibration() async {

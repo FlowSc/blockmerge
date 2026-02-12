@@ -24,10 +24,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings => '설정';
 
   @override
-  String get sound => '사운드';
+  String get bgm => '배경음악';
 
   @override
-  String get soundDesc => '효과음 및 배경음악';
+  String get bgmDesc => '게임 배경음악';
+
+  @override
+  String get sfx => '효과음';
+
+  @override
+  String get sfxDesc => '병합 및 드롭 효과음';
 
   @override
   String get vibration => '진동';
@@ -272,4 +278,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get quitConfirmMessage => '현재까지의 진행사항이 사라집니다.';
+
+  @override
+  String get timeAttack => '타임어택';
+
+  @override
+  String get timeUp => '시간 종료!';
+
+  @override
+  String get classic => '클래식';
 }

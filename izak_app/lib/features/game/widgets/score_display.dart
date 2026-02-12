@@ -3,6 +3,7 @@ import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/game_constants.dart';
+import '../models/game_mode.dart';
 import '../providers/game_notifier.dart';
 
 class ScoreDisplay extends ConsumerWidget {
@@ -12,8 +13,22 @@ class ScoreDisplay extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final int score =
         ref.watch(gameNotifierProvider.select((s) => s.score));
+    final GameMode gameMode =
+        ref.watch(gameNotifierProvider.select((s) => s.gameMode));
+    final int remainingSeconds =
+        ref.watch(gameNotifierProvider.select((s) => s.remainingSeconds));
     final int level = score ~/ GameConstants.pointsPerLevel;
     final l10n = AppLocalizations.of(context)!;
+
+    final bool isTimeAttack = gameMode == GameMode.timeAttack;
+    final String bottomLabel = isTimeAttack
+        ? _formatTime(remainingSeconds)
+        : l10n.levelLabel(level);
+    final Color bottomColor = isTimeAttack
+        ? (remainingSeconds <= 30
+            ? const Color(0xFFFF4444)
+            : const Color(0xFFFF6B35).withValues(alpha: 0.9))
+        : const Color(0xFF00D2FF).withValues(alpha: 0.8);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -47,9 +62,9 @@ class ScoreDisplay extends ConsumerWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            l10n.levelLabel(level),
+            bottomLabel,
             style: TextStyle(
-              color: const Color(0xFF00D2FF).withValues(alpha: 0.8),
+              color: bottomColor,
               fontSize: 10,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
@@ -58,5 +73,11 @@ class ScoreDisplay extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  String _formatTime(int seconds) {
+    final int m = seconds ~/ 60;
+    final int s = seconds % 60;
+    return '$m:${s.toString().padLeft(2, '0')}';
   }
 }

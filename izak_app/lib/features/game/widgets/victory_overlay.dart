@@ -75,6 +75,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
             deviceId: deviceId,
             totalMerges: gameState.totalMerges,
             maxChainLevel: gameState.maxChainLevel,
+            gameMode: 'classic',
           );
 
       if (mounted) {

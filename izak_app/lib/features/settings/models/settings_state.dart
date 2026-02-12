@@ -3,7 +3,8 @@ import 'package:flutter/foundation.dart';
 @immutable
 final class SettingsState {
   const SettingsState({
-    this.soundEnabled = true,
+    this.bgmEnabled = true,
+    this.sfxEnabled = true,
     this.vibrationEnabled = true,
     this.showGhost = true,
     this.tutorialSeen = false,
@@ -11,7 +12,8 @@ final class SettingsState {
     this.isAdFree = false,
   });
 
-  final bool soundEnabled;
+  final bool bgmEnabled;
+  final bool sfxEnabled;
   final bool vibrationEnabled;
   final bool showGhost;
   final bool tutorialSeen;
@@ -19,7 +21,8 @@ final class SettingsState {
   final bool isAdFree;
 
   SettingsState copyWith({
-    bool? soundEnabled,
+    bool? bgmEnabled,
+    bool? sfxEnabled,
     bool? vibrationEnabled,
     bool? showGhost,
     bool? tutorialSeen,
@@ -27,7 +30,8 @@ final class SettingsState {
     bool? isAdFree,
   }) {
     return SettingsState(
-      soundEnabled: soundEnabled ?? this.soundEnabled,
+      bgmEnabled: bgmEnabled ?? this.bgmEnabled,
+      sfxEnabled: sfxEnabled ?? this.sfxEnabled,
       vibrationEnabled: vibrationEnabled ?? this.vibrationEnabled,
       showGhost: showGhost ?? this.showGhost,
       tutorialSeen: tutorialSeen ?? this.tutorialSeen,

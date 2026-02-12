@@ -128,17 +128,29 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings;
 
-  /// No description provided for @sound.
+  /// No description provided for @bgm.
   ///
   /// In en, this message translates to:
-  /// **'Sound'**
-  String get sound;
+  /// **'Background Music'**
+  String get bgm;
 
-  /// No description provided for @soundDesc.
+  /// No description provided for @bgmDesc.
   ///
   /// In en, this message translates to:
-  /// **'Sound effects and background music'**
-  String get soundDesc;
+  /// **'Game background music'**
+  String get bgmDesc;
+
+  /// No description provided for @sfx.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound Effects'**
+  String get sfx;
+
+  /// No description provided for @sfxDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge and drop sound effects'**
+  String get sfxDesc;
 
   /// No description provided for @vibration.
   ///
@@ -589,6 +601,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your current progress will be lost.'**
   String get quitConfirmMessage;
+
+  /// No description provided for @timeAttack.
+  ///
+  /// In en, this message translates to:
+  /// **'TIME ATTACK'**
+  String get timeAttack;
+
+  /// No description provided for @timeUp.
+  ///
+  /// In en, this message translates to:
+  /// **'TIME\'S UP!'**
+  String get timeUp;
+
+  /// No description provided for @classic.
+  ///
+  /// In en, this message translates to:
+  /// **'CLASSIC'**
+  String get classic;
 }
 
 class _AppLocalizationsDelegate

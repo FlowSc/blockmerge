@@ -24,10 +24,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
-  String get sound => 'Sound';
+  String get bgm => 'Background Music';
 
   @override
-  String get soundDesc => 'Sound effects and background music';
+  String get bgmDesc => 'Game background music';
+
+  @override
+  String get sfx => 'Sound Effects';
+
+  @override
+  String get sfxDesc => 'Merge and drop sound effects';
 
   @override
   String get vibration => 'Vibration';
@@ -273,4 +279,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quitConfirmMessage => 'Your current progress will be lost.';
+
+  @override
+  String get timeAttack => 'TIME ATTACK';
+
+  @override
+  String get timeUp => 'TIME\'S UP!';
+
+  @override
+  String get classic => 'CLASSIC';
 }

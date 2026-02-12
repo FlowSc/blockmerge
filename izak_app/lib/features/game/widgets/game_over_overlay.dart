@@ -8,6 +8,7 @@ import '../../../core/utils/device_id.dart';
 import '../../leaderboard/providers/leaderboard_notifier.dart';
 import '../../leaderboard/widgets/nickname_dialog.dart';
 import '../../settings/providers/settings_notifier.dart';
+import '../models/game_mode.dart';
 import '../providers/game_notifier.dart';
 
 class GameOverOverlay extends ConsumerStatefulWidget {
@@ -37,6 +38,9 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
     try {
       final String deviceId = await getDeviceId();
       final gameState = ref.read(gameNotifierProvider);
+      final String gameMode = gameState.gameMode == GameMode.timeAttack
+          ? 'time_attack'
+          : 'classic';
 
       await ref.read(leaderboardNotifierProvider.notifier).submitScore(
             nickname: nickname,
@@ -44,6 +48,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
             deviceId: deviceId,
             totalMerges: gameState.totalMerges,
             maxChainLevel: gameState.maxChainLevel,
+            gameMode: gameMode,
           );
 
       if (mounted) {
@@ -81,7 +86,13 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
         ref.watch(gameNotifierProvider.select((s) => s.totalMerges));
     final int maxChainLevel =
         ref.watch(gameNotifierProvider.select((s) => s.maxChainLevel));
+    final GameMode gameMode =
+        ref.watch(gameNotifierProvider.select((s) => s.gameMode));
     final l10n = AppLocalizations.of(context)!;
+
+    final String title = gameMode == GameMode.timeAttack
+        ? l10n.timeUp
+        : l10n.gameOver;
 
     return Container(
       color: Colors.black.withValues(alpha: 0.75),
@@ -90,7 +101,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              l10n.gameOver,
+              title,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 36,
@@ -209,7 +220,9 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                 const SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () {
-                    ref.read(gameNotifierProvider.notifier).startGame();
+                    ref
+                        .read(gameNotifierProvider.notifier)
+                        .startGame(mode: gameMode);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6C5CE7),

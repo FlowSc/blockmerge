@@ -6,7 +6,7 @@ part of 'game_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$hasSavedGameHash() => r'c5c043d6a6edac282e0a256792cfcc3a242dc208';
+String _$hasSavedGameHash() => r'968427f3433e4d91fd5c1d4070aaed78d9004403';
 
 /// See also [hasSavedGame].
 @ProviderFor(hasSavedGame)
@@ -23,7 +23,7 @@ final hasSavedGameProvider = AutoDisposeFutureProvider<bool>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef HasSavedGameRef = AutoDisposeFutureProviderRef<bool>;
-String _$gameNotifierHash() => r'c329c3a0d6107b9c24bba61fb847f99f0d822bc1';
+String _$gameNotifierHash() => r'c2915bfe23a6fcb9bb80212e4d55583ebdb99b32';
 
 /// See also [GameNotifier].
 @ProviderFor(GameNotifier)

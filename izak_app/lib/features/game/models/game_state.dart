@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'falling_block.dart';
+import 'game_mode.dart';
 import 'merge_result.dart';
 import 'position.dart';
 
@@ -23,6 +24,8 @@ final class GameState {
     this.maxChainLevel = 0,
     this.currentChainLevel = 0,
     this.hasReachedVictory = false,
+    this.gameMode = GameMode.classic,
+    this.remainingSeconds = 0,
   });
 
   /// 12 rows x 6 columns. null = empty cell, int = tile value.
@@ -58,6 +61,12 @@ final class GameState {
   /// True after the player chose to continue past the 2048 victory.
   final bool hasReachedVictory;
 
+  /// The current game mode (classic or time attack).
+  final GameMode gameMode;
+
+  /// Seconds remaining in time attack mode. 0 for classic.
+  final int remainingSeconds;
+
   GameState copyWith({
     List<List<int?>>? grid,
     FallingBlock? Function()? currentBlock,
@@ -73,6 +82,8 @@ final class GameState {
     int? maxChainLevel,
     int? currentChainLevel,
     bool? hasReachedVictory,
+    GameMode? gameMode,
+    int? remainingSeconds,
   }) {
     return GameState(
       grid: grid ?? this.grid,
@@ -95,6 +106,8 @@ final class GameState {
       maxChainLevel: maxChainLevel ?? this.maxChainLevel,
       currentChainLevel: currentChainLevel ?? this.currentChainLevel,
       hasReachedVictory: hasReachedVictory ?? this.hasReachedVictory,
+      gameMode: gameMode ?? this.gameMode,
+      remainingSeconds: remainingSeconds ?? this.remainingSeconds,
     );
   }
 }

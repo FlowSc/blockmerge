@@ -18,6 +18,9 @@ abstract final class GameConstants {
   // Win condition
   static const int winTileValue = 2048;
 
+  // Time attack duration (seconds)
+  static const int timeAttackSeconds = 180;
+
   // Lock delay (milliseconds): time to move after touching ground
   static const int lockDelayMs = 500;
 

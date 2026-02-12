@@ -5,8 +5,10 @@
   "start": "START",
   "leaderboard": "LEADERBOARD",
   "settings": "Settings",
-  "sound": "Sound",
-  "soundDesc": "Sound effects and background music",
+  "bgm": "Background Music",
+  "bgmDesc": "Game background music",
+  "sfx": "Sound Effects",
+  "sfxDesc": "Merge and drop sound effects",
   "vibration": "Vibration",
   "vibrationDesc": "Haptic feedback on merge and drop",
   "ghostBlock": "Ghost Block",
@@ -147,5 +149,8 @@
   "continueGame": "CONTINUE",
   "keepGoing": "KEEP GOING",
   "quitConfirmTitle": "Quit Game?",
-  "quitConfirmMessage": "Your current progress will be lost."
+  "quitConfirmMessage": "Your current progress will be lost.",
+  "timeAttack": "TIME ATTACK",
+  "timeUp": "TIME'S UP!",
+  "classic": "CLASSIC"
 }

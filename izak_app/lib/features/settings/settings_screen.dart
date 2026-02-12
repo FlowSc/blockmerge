@@ -22,12 +22,21 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           const SizedBox(height: 8),
           _SettingsTile(
-            icon: settings.soundEnabled ? Icons.volume_up : Icons.volume_off,
-            title: l10n.sound,
-            subtitle: l10n.soundDesc,
-            value: settings.soundEnabled,
+            icon: settings.bgmEnabled ? Icons.music_note : Icons.music_off,
+            title: l10n.bgm,
+            subtitle: l10n.bgmDesc,
+            value: settings.bgmEnabled,
             onChanged: (_) {
-              ref.read(settingsNotifierProvider.notifier).toggleSound();
+              ref.read(settingsNotifierProvider.notifier).toggleBgm();
+            },
+          ),
+          _SettingsTile(
+            icon: settings.sfxEnabled ? Icons.volume_up : Icons.volume_off,
+            title: l10n.sfx,
+            subtitle: l10n.sfxDesc,
+            value: settings.sfxEnabled,
+            onChanged: (_) {
+              ref.read(settingsNotifierProvider.notifier).toggleSfx();
             },
           ),
           _SettingsTile(

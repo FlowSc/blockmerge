@@ -89,6 +89,27 @@ class HomeScreen extends ConsumerWidget {
                   child: Text(l10n.start),
                 ),
               ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: 220,
+                height: 56,
+                child: FilledButton(
+                  onPressed: () {
+                    context.go('/game?mode=timeAttack');
+                  },
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF6B35),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  child: Text(l10n.timeAttack),
+                ),
+              ),
               const SizedBox(height: 16),
               SizedBox(
                 width: 220,

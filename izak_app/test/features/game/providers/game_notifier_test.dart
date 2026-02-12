@@ -10,7 +10,11 @@ void main() {
 
   setUp(() {
     WidgetsFlutterBinding.ensureInitialized();
-    SharedPreferences.setMockInitialValues({});
+    // Disable audio in tests to avoid just_audio MissingPluginException
+    SharedPreferences.setMockInitialValues({
+      'bgm_enabled': false,
+      'sfx_enabled': false,
+    });
     container = ProviderContainer();
   });
 

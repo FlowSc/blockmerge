@@ -16,9 +16,11 @@ class LeaderboardNotifier extends _$LeaderboardNotifier {
     return _repository.getTopScores();
   }
 
-  Future<void> loadTopScores() async {
+  Future<void> loadTopScores({String gameMode = 'classic'}) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _repository.getTopScores());
+    state = await AsyncValue.guard(
+      () => _repository.getTopScores(gameMode: gameMode),
+    );
   }
 
   Future<void> submitScore({
@@ -27,6 +29,7 @@ class LeaderboardNotifier extends _$LeaderboardNotifier {
     required String deviceId,
     required int totalMerges,
     required int maxChainLevel,
+    String gameMode = 'classic',
   }) async {
     await _repository.submitScore(
       nickname: nickname,
@@ -34,7 +37,8 @@ class LeaderboardNotifier extends _$LeaderboardNotifier {
       deviceId: deviceId,
       totalMerges: totalMerges,
       maxChainLevel: maxChainLevel,
+      gameMode: gameMode,
     );
-    await loadTopScores();
+    await loadTopScores(gameMode: gameMode);
   }
 }

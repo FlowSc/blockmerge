@@ -7,10 +7,14 @@ class LeaderboardRepository {
 
   final SupabaseClient _client;
 
-  Future<List<LeaderboardEntry>> getTopScores({int limit = 100}) async {
+  Future<List<LeaderboardEntry>> getTopScores({
+    int limit = 100,
+    String gameMode = 'classic',
+  }) async {
     final List<Map<String, dynamic>> data = await _client
         .from('leaderboard')
         .select()
+        .eq('game_mode', gameMode)
         .order('score', ascending: false)
         .limit(limit);
 
@@ -23,6 +27,7 @@ class LeaderboardRepository {
     required String deviceId,
     required int totalMerges,
     required int maxChainLevel,
+    String gameMode = 'classic',
   }) async {
     await _client.from('leaderboard').insert({
       'nickname': nickname,
@@ -30,6 +35,7 @@ class LeaderboardRepository {
       'device_id': deviceId,
       'total_merges': totalMerges,
       'max_chain_level': maxChainLevel,
+      'game_mode': gameMode,
     });
   }
 }

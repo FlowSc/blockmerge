@@ -7,9 +7,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/constants/game_constants.dart';
+import '../../../core/providers/sfx_notifier.dart';
 import '../../settings/providers/settings_notifier.dart';
 import '../models/board.dart';
 import '../models/falling_block.dart';
+import '../models/game_mode.dart';
 import '../models/game_state.dart';
 import '../models/merge_result.dart';
 import '../models/position.dart';
@@ -32,6 +34,7 @@ class GameNotifier extends _$GameNotifier {
   Timer? _tickTimer;
   Timer? _animTimer;
   Timer? _lockTimer;
+  Timer? _countdownTimer;
   bool _isLocking = false;
   DateTime? _lockStartedAt;
 
@@ -65,7 +68,9 @@ class GameNotifier extends _$GameNotifier {
   }
 
   /// Save current game state to SharedPreferences for crash/termination recovery.
+  /// Time attack mode is never saved (3-minute limit makes it meaningless).
   Future<void> saveGame() async {
+    if (state.gameMode == GameMode.timeAttack) return;
     if (state.status != GameStatus.paused &&
         state.status != GameStatus.playing) {
       return;
@@ -77,6 +82,7 @@ class GameNotifier extends _$GameNotifier {
       'totalMerges': state.totalMerges,
       'maxChainLevel': state.maxChainLevel,
       'hasReachedVictory': state.hasReachedVictory,
+      'gameMode': state.gameMode.name,
     };
     if (state.currentBlock != null) {
       json['currentBlock'] = state.currentBlock!.toJson();
@@ -116,6 +122,12 @@ class GameNotifier extends _$GameNotifier {
             FallingBlock.fromJson(json['nextBlock'] as Map<String, dynamic>);
       }
 
+      final String modeStr = json['gameMode'] as String? ?? 'classic';
+      final GameMode restoredMode = GameMode.values.firstWhere(
+        (GameMode m) => m.name == modeStr,
+        orElse: () => GameMode.classic,
+      );
+
       state = GameState(
         grid: grid,
         currentBlock: currentBlock,
@@ -127,6 +139,7 @@ class GameNotifier extends _$GameNotifier {
         totalMerges: json['totalMerges'] as int,
         maxChainLevel: json['maxChainLevel'] as int,
         hasReachedVictory: json['hasReachedVictory'] as bool? ?? false,
+        gameMode: restoredMode,
       );
 
       _rng = Random();
@@ -156,6 +169,8 @@ class GameNotifier extends _$GameNotifier {
     _animTimer = null;
     _lockTimer?.cancel();
     _lockTimer = null;
+    _countdownTimer?.cancel();
+    _countdownTimer = null;
     _isLocking = false;
     _lockStartedAt = null;
   }
@@ -239,7 +254,7 @@ class GameNotifier extends _$GameNotifier {
 
   // --- Public API ---
 
-  void startGame() {
+  void startGame({GameMode mode = GameMode.classic}) {
     _disposeTimers();
     _rng = Random();
     final FallingBlock first = FallingBlock.spawn(_rng);
@@ -255,10 +270,17 @@ class GameNotifier extends _$GameNotifier {
       lastMergeChain: null,
       totalMerges: 0,
       maxChainLevel: 0,
+      gameMode: mode,
+      remainingSeconds: mode == GameMode.timeAttack
+          ? GameConstants.timeAttackSeconds
+          : 0,
     );
 
     clearSavedGame();
     _startTicker();
+    if (mode == GameMode.timeAttack) {
+      _startCountdownTimer();
+    }
   }
 
   void moveLeft() {
@@ -350,6 +372,7 @@ class GameNotifier extends _$GameNotifier {
     _tickTimer?.cancel();
     _animTimer?.cancel();
     _lockTimer?.cancel();
+    _countdownTimer?.cancel();
     _isLocking = false;
 
     if (state.isAnimating) {
@@ -394,6 +417,10 @@ class GameNotifier extends _$GameNotifier {
     if (state.status != GameStatus.paused) return;
     state = state.copyWith(status: GameStatus.playing);
 
+    if (state.gameMode == GameMode.timeAttack) {
+      _startCountdownTimer();
+    }
+
     if (state.currentBlock == null) {
       // Was paused during animation — chain is now complete, spawn next
       _spawnNext();
@@ -403,6 +430,32 @@ class GameNotifier extends _$GameNotifier {
   }
 
   // --- Internal ---
+
+  void _startCountdownTimer() {
+    _countdownTimer?.cancel();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (state.status != GameStatus.playing) return;
+      final int next = state.remainingSeconds - 1;
+      if (next <= 0) {
+        _countdownTimer?.cancel();
+        _countdownTimer = null;
+        _tickTimer?.cancel();
+        _animTimer?.cancel();
+        _lockTimer?.cancel();
+        _isLocking = false;
+        clearSavedGame();
+        state = state.copyWith(
+          remainingSeconds: 0,
+          status: GameStatus.gameOver,
+          isAnimating: false,
+          highlightedPositions: () => null,
+          newMergedPositions: () => null,
+        );
+      } else {
+        state = state.copyWith(remainingSeconds: next);
+      }
+    });
+  }
 
   void _startTicker() {
     _tickTimer?.cancel();
@@ -443,6 +496,9 @@ class GameNotifier extends _$GameNotifier {
     final Set<Position> newPositions = {
       for (final tile in block.tiles) tile.position,
     };
+
+    // Play drop sound effect
+    ref.read(sfxNotifierProvider.notifier).playDrop();
 
     // Place block on grid synchronously
     final List<List<int?>> grid = Board.placeBlock(state.grid, block);
@@ -730,6 +786,7 @@ class GameNotifier extends _$GameNotifier {
       final int stepScore = target.newValue * multiplier;
 
       _haptic(chainLevel);
+      ref.read(sfxNotifierProvider.notifier).playMerge(chainLevel);
       final List<List<int?>> mergedGrid =
           Board.applyMerges(grid, singlePair);
 
@@ -785,8 +842,9 @@ class GameNotifier extends _$GameNotifier {
       _saveHighScore(newHighScore);
     }
 
-    // Check for win condition (2048 tile) — skip if already in endless mode.
-    if (!state.hasReachedVictory) {
+    // Check for win condition (2048 tile) — skip in time attack or endless mode.
+    if (!state.hasReachedVictory &&
+        state.gameMode != GameMode.timeAttack) {
       final bool hasWinTile = state.grid.any(
         (List<int?> row) =>
             row.any((int? v) => v != null && v >= GameConstants.winTileValue),

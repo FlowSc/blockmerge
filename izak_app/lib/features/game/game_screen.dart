@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../home/widgets/countdown_overlay.dart';
+import 'models/game_mode.dart';
 import 'models/game_state.dart';
 import 'providers/game_notifier.dart';
 import 'widgets/combo_display.dart';
@@ -15,9 +16,14 @@ import 'widgets/victory_overlay.dart';
 import '../../shared/widgets/banner_ad_widget.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
-  const GameScreen({this.isContinue = false, super.key});
+  const GameScreen({
+    this.isContinue = false,
+    this.gameMode = GameMode.classic,
+    super.key,
+  });
 
   final bool isContinue;
+  final GameMode gameMode;
 
   @override
   ConsumerState<GameScreen> createState() => _GameScreenState();
@@ -67,10 +73,10 @@ class _GameScreenState extends ConsumerState<GameScreen>
       final bool restored =
           await ref.read(gameNotifierProvider.notifier).restoreGame();
       if (!restored && mounted) {
-        ref.read(gameNotifierProvider.notifier).startGame();
+        ref.read(gameNotifierProvider.notifier).startGame(mode: widget.gameMode);
       }
     } else {
-      ref.read(gameNotifierProvider.notifier).startGame();
+      ref.read(gameNotifierProvider.notifier).startGame(mode: widget.gameMode);
     }
   }
 
