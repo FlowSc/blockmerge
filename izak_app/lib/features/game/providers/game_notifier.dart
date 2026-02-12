@@ -405,23 +405,22 @@ class GameNotifier extends _$GameNotifier {
       newValue: pair.newValue,
     );
 
-    final (int merges1, int score1) = _simulateChain(grid, toPos1);
-    final (int merges2, int score2) = _simulateChain(grid, toPos2);
-
-    // Primary: more chain merges wins
-    if (merges1 > merges2) return toPos1;
-    if (merges2 > merges1) return toPos2;
-
-    // Secondary: higher chain score wins
-    if (score1 > score2) return toPos1;
-    if (score2 > score1) return toPos2;
-
-    // Tertiary: toward strictly-bigger neighbor
+    // Primary: toward strictly-bigger neighbor (adjacency is king)
     final int tileValue = pair.newValue ~/ 2;
     final int n1 = _maxStrictNeighbor(grid, pair.from1, pair.from2, tileValue);
     final int n2 = _maxStrictNeighbor(grid, pair.from2, pair.from1, tileValue);
     if (n1 > n2) return toPos1;
     if (n2 > n1) return toPos2;
+
+    // Secondary: simulate chain — but only if neither side has a big neighbor
+    final (int merges1, int score1) = _simulateChain(grid, toPos1);
+    final (int merges2, int score2) = _simulateChain(grid, toPos2);
+
+    if (merges1 > merges2) return toPos1;
+    if (merges2 > merges1) return toPos2;
+
+    if (score1 > score2) return toPos1;
+    if (score2 > score1) return toPos2;
 
     // Final: lower row (base), then rightward
     if (pair.from1.row > pair.from2.row) return toPos1;
@@ -466,16 +465,31 @@ class GameNotifier extends _$GameNotifier {
     List<MergedPair> candidates,
   ) {
     MergedPair best = candidates.first;
+    int bestNeighbor = -1;
     int bestMerges = -1;
     int bestScore = -1;
 
     for (final MergedPair candidate in candidates) {
+      final int tileValue = candidate.newValue ~/ 2;
+      final int neighborVal = _maxStrictNeighbor(
+        grid,
+        candidate.to,
+        candidate.to == candidate.from1 ? candidate.from2 : candidate.from1,
+        tileValue,
+      );
       final (int totalMerges, int totalScore) =
           _simulateChain(grid, candidate);
 
-      if (totalMerges > bestMerges ||
-          (totalMerges == bestMerges && totalScore > bestScore)) {
+      // Primary: bigger neighbor adjacency
+      // Secondary: more chain merges
+      // Tertiary: higher score
+      if (neighborVal > bestNeighbor ||
+          (neighborVal == bestNeighbor && totalMerges > bestMerges) ||
+          (neighborVal == bestNeighbor &&
+              totalMerges == bestMerges &&
+              totalScore > bestScore)) {
         best = candidate;
+        bestNeighbor = neighborVal;
         bestMerges = totalMerges;
         bestScore = totalScore;
       }
