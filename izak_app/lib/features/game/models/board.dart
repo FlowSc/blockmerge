@@ -57,17 +57,18 @@ abstract final class Board {
   }
 
   /// Find all mergeable pairs of adjacent tiles with the same value.
-  /// Returns pairs sorted by position to ensure deterministic merging.
+  /// Scans bottom-to-top so base tiles are paired first.
+  /// Merge direction: toward the adjacent bigger number.
   /// Each tile participates in at most one pair per step.
   static List<MergedPair> findMergeablePairs(List<List<int?>> grid) {
     final List<MergedPair> pairs = [];
     final Set<Position> used = {};
 
-    // Scan left-to-right, top-to-bottom for horizontal pairs first,
-    // then vertical pairs. This gives deterministic, predictable behavior.
+    // Scan bottom-to-top so base (lower) tiles are paired first.
+    // This ensures stacked identical tiles merge from the bottom up.
 
-    // Horizontal pairs — merge into the right tile
-    for (int row = 0; row < GameConstants.rows; row++) {
+    // Horizontal pairs
+    for (int row = GameConstants.rows - 1; row >= 0; row--) {
       for (int col = 0; col < GameConstants.columns - 1; col++) {
         final Position pos1 = Position(row: row, col: col);
         final Position pos2 = Position(row: row, col: col + 1);
@@ -78,7 +79,7 @@ abstract final class Board {
           pairs.add(MergedPair(
             from1: pos1,
             from2: pos2,
-            to: pos2,
+            to: _chooseMergeTo(grid, pos1, pos2),
             newValue: val1 * 2,
           ));
           used.add(pos1);
@@ -87,19 +88,19 @@ abstract final class Board {
       }
     }
 
-    // Vertical pairs — merge into the lower tile
-    for (int row = 0; row < GameConstants.rows - 1; row++) {
+    // Vertical pairs — bottom-to-top
+    for (int row = GameConstants.rows - 1; row > 0; row--) {
       for (int col = 0; col < GameConstants.columns; col++) {
-        final Position pos1 = Position(row: row, col: col);
-        final Position pos2 = Position(row: row + 1, col: col);
+        final Position pos1 = Position(row: row - 1, col: col);
+        final Position pos2 = Position(row: row, col: col);
         if (used.contains(pos1) || used.contains(pos2)) continue;
-        final int? val1 = grid[row][col];
-        final int? val2 = grid[row + 1][col];
+        final int? val1 = grid[row - 1][col];
+        final int? val2 = grid[row][col];
         if (val1 != null && val1 == val2) {
           pairs.add(MergedPair(
             from1: pos1,
             from2: pos2,
-            to: pos2,
+            to: _chooseMergeTo(grid, pos1, pos2),
             newValue: val1 * 2,
           ));
           used.add(pos1);
@@ -109,6 +110,36 @@ abstract final class Board {
     }
 
     return pairs;
+  }
+
+  /// Choose merge target: prefer the side adjacent to a bigger number.
+  /// Tiebreaker: lower row (closer to base), then rightward.
+  static Position _chooseMergeTo(
+    List<List<int?>> grid,
+    Position pos1,
+    Position pos2,
+  ) {
+    int maxNeighborValue(Position pos, Position exclude) {
+      int maxVal = 0;
+      for (final Position n in pos.neighbors) {
+        if (n == exclude) continue;
+        if (!inBounds(n)) continue;
+        final int? val = grid[n.row][n.col];
+        if (val != null && val > maxVal) maxVal = val;
+      }
+      return maxVal;
+    }
+
+    final int score1 = maxNeighborValue(pos1, pos2);
+    final int score2 = maxNeighborValue(pos2, pos1);
+
+    if (score1 > score2) return pos1;
+    if (score2 > score1) return pos2;
+
+    // Tied: prefer lower row (closer to base), then rightward
+    if (pos1.row > pos2.row) return pos1;
+    if (pos2.row > pos1.row) return pos2;
+    return pos2;
   }
 
   /// Apply merges to the grid. Returns a new grid.

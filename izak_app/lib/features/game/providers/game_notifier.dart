@@ -356,43 +356,28 @@ class GameNotifier extends _$GameNotifier {
     });
   }
 
-  /// Expand a pair into both merge directions (merge into from1 or from2).
-  List<MergedPair> _expandDirections(MergedPair pair) {
-    return [
-      MergedPair(
-        from1: pair.from1,
-        from2: pair.from2,
-        to: pair.from1,
-        newValue: pair.newValue,
-      ),
-      MergedPair(
-        from1: pair.from1,
-        from2: pair.from2,
-        to: pair.from2,
-        newValue: pair.newValue,
-      ),
-    ];
-  }
-
-  /// Pick the pair + direction that maximises the full chain reaction.
-  /// Simulates the entire remaining chain for each candidate and picks
-  /// the one with the most total merges (tiebreaker: highest score).
+  /// Pick the best pair to merge.
+  /// Direction is already set by Board.findMergeablePairs (toward bigger
+  /// neighbor). Priority: bottom-most pair first, chain simulation as
+  /// tiebreaker for pairs at the same depth.
   MergedPair _selectBestPair(
     List<List<int?>> grid,
     List<MergedPair> pairs,
   ) {
-    if (pairs.length == 1) {
-      // Even with a single pair, still pick the better direction
-      final List<MergedPair> directions = _expandDirections(pairs.first);
-      return _pickBestCandidate(grid, directions);
-    }
+    if (pairs.length == 1) return pairs.first;
 
-    // Build all candidates: each pair × 2 directions
-    final List<MergedPair> candidates = [
-      for (final MergedPair pair in pairs) ..._expandDirections(pair),
-    ];
+    // Group by bottom-ness (highest max row = closest to base)
+    int pairBottomRow(MergedPair p) => max(p.from1.row, p.from2.row);
 
-    return _pickBestCandidate(grid, candidates);
+    final int bottomRow = pairs.map(pairBottomRow).reduce(max);
+    final List<MergedPair> bottomPairs = pairs
+        .where((MergedPair p) => pairBottomRow(p) == bottomRow)
+        .toList();
+
+    if (bottomPairs.length == 1) return bottomPairs.first;
+
+    // Tiebreaker: chain simulation picks the most chain-reactive pair
+    return _pickBestCandidate(grid, bottomPairs);
   }
 
   MergedPair _pickBestCandidate(
