@@ -55,7 +55,9 @@ GoRouter _createRouter() => GoRouter(
     GoRoute(
       path: '/leaderboard',
       builder: (BuildContext context, GoRouterState state) {
-        return const LeaderboardScreen();
+        final int initialTab =
+            state.uri.queryParameters['tab'] == 'timeAttack' ? 1 : 0;
+        return LeaderboardScreen(initialTab: initialTab);
       },
     ),
   ],

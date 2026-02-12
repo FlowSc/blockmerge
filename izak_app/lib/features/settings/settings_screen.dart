@@ -67,8 +67,9 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: Text(
               settings.nickname ?? l10n.nicknameNotSet,
               style: TextStyle(
+                fontFamily: 'PressStart2P',
                 color: Colors.white.withValues(alpha: 0.5),
-                fontSize: 12,
+                fontSize: 6,
               ),
             ),
             trailing: const Icon(Icons.chevron_right),
@@ -285,8 +286,9 @@ class _SettingsTile extends StatelessWidget {
       subtitle: Text(
         subtitle,
         style: TextStyle(
+          fontFamily: 'PressStart2P',
           color: Colors.white.withValues(alpha: 0.5),
-          fontSize: 12,
+          fontSize: 6,
         ),
       ),
       value: value,

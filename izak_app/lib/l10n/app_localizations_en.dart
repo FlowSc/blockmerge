@@ -297,4 +297,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noRecord => 'No record yet';
+
+  @override
+  String get periodDaily => 'TODAY';
+
+  @override
+  String get periodWeekly => 'WEEK';
+
+  @override
+  String get periodMonthly => 'MONTH';
+
+  @override
+  String get periodYearly => 'YEAR';
+
+  @override
+  String get periodAll => 'ALL';
 }

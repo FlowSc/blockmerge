@@ -12,6 +12,7 @@ import 'widgets/new_best_notification.dart';
 import 'widgets/next_block_preview.dart';
 import 'widgets/pause_overlay.dart';
 import 'widgets/score_display.dart';
+import 'widgets/time_attack_warning.dart';
 import 'widgets/victory_overlay.dart';
 import '../../shared/widgets/banner_ad_widget.dart';
 
@@ -172,6 +173,10 @@ class _GameScreenState extends ConsumerState<GameScreen>
                 ),
                 const SizedBox(height: 8),
               ],
+            ),
+            // Time attack warnings (top of board area)
+            const Positioned.fill(
+              child: TimeAttackWarning(),
             ),
             // Combo overlay: centered on screen, no layout impact
             const Positioned.fill(

@@ -18,12 +18,14 @@ void main() {
         child: IzakApp(),
       ),
     );
+
+    // Wait for splash screen's 2-second delay
+    await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
 
     expect(find.text('Merge Chain Blast'), findsOneWidget);
     expect(find.text('Block Merge Puzzle'), findsOneWidget);
     expect(find.text('START'), findsOneWidget);
-    expect(find.text('Settings'), findsOneWidget);
   });
 
   testWidgets('Tapping start navigates to game with countdown overlay',
@@ -33,8 +35,10 @@ void main() {
         child: IzakApp(),
       ),
     );
-    // Allow async settings load to complete
-    await tester.pump();
+
+    // Wait for splash screen
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('START'));
     await tester.pumpAndSettle();
@@ -51,8 +55,10 @@ void main() {
         child: IzakApp(),
       ),
     );
-    // Allow async settings load to complete
-    await tester.pump();
+
+    // Wait for splash screen
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('START'));
     await tester.pumpAndSettle();

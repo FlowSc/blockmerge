@@ -7,8 +7,14 @@ import '../../core/utils/device_id.dart';
 import 'models/leaderboard_entry.dart';
 import 'repositories/leaderboard_repository.dart';
 
+/// Time period filter for leaderboard queries.
+enum LeaderboardPeriod { daily, weekly, monthly, yearly, all }
+
 class LeaderboardScreen extends ConsumerStatefulWidget {
-  const LeaderboardScreen({super.key});
+  const LeaderboardScreen({this.initialTab = 0, super.key});
+
+  /// 0 = classic, 1 = time attack.
+  final int initialTab;
 
   @override
   ConsumerState<LeaderboardScreen> createState() => _LeaderboardScreenState();
@@ -20,22 +26,20 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
   late final TabController _tabController;
   late final LeaderboardRepository _repository;
 
-  List<LeaderboardEntry> _classicEntries = [];
-  List<LeaderboardEntry> _timeAttackEntries = [];
-  bool _classicLoading = true;
-  bool _timeAttackLoading = true;
-  String? _classicError;
-  String? _timeAttackError;
-
-  LeaderboardEntry? _myClassicBest;
-  LeaderboardEntry? _myTimeAttackBest;
-  int? _myClassicRank;
-  int? _myTimeAttackRank;
+  // Per-mode state
+  final Map<String, _ModeState> _modeState = {
+    'classic': _ModeState(),
+    'time_attack': _ModeState(),
+  };
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTab,
+    );
     _repository = LeaderboardRepository(Supabase.instance.client);
     _init();
   }
@@ -51,91 +55,77 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
     if (mounted) {
       setState(() => _myDeviceId = id);
     }
-    await Future.wait([_loadClassic(), _loadTimeAttack()]);
+    await Future.wait([
+      _loadData('classic'),
+      _loadData('time_attack'),
+    ]);
   }
 
-  Future<void> _loadClassic() async {
+  DateTime? _periodAfter(LeaderboardPeriod period) {
+    final DateTime now = DateTime.now().toUtc();
+    return switch (period) {
+      LeaderboardPeriod.daily => DateTime.utc(now.year, now.month, now.day),
+      LeaderboardPeriod.weekly => DateTime.utc(now.year, now.month, now.day)
+          .subtract(Duration(days: now.weekday - 1)),
+      LeaderboardPeriod.monthly => DateTime.utc(now.year, now.month),
+      LeaderboardPeriod.yearly => DateTime.utc(now.year),
+      LeaderboardPeriod.all => null,
+    };
+  }
+
+  Future<void> _loadData(String gameMode) async {
+    final _ModeState ms = _modeState[gameMode]!;
     setState(() {
-      _classicLoading = true;
-      _classicError = null;
+      ms.loading = true;
+      ms.error = null;
     });
     try {
-      final List<LeaderboardEntry> entries =
-          await _repository.getTopScores(gameMode: 'classic');
+      final DateTime? after = _periodAfter(ms.period);
+      final List<LeaderboardEntry> entries = await _repository.getTopScores(
+        gameMode: gameMode,
+        after: after,
+      );
 
       LeaderboardEntry? myBest;
       int? myRank;
       if (_myDeviceId != null) {
         myBest = await _repository.getMyBestScore(
           deviceId: _myDeviceId!,
-          gameMode: 'classic',
+          gameMode: gameMode,
+          after: after,
         );
         if (myBest != null) {
           myRank = await _repository.getRank(
             score: myBest.score,
-            gameMode: 'classic',
+            gameMode: gameMode,
+            after: after,
           );
         }
       }
 
       if (mounted) {
         setState(() {
-          _classicEntries = entries;
-          _myClassicBest = myBest;
-          _myClassicRank = myRank;
-          _classicLoading = false;
+          ms.entries = entries;
+          ms.myBest = myBest;
+          ms.myRank = myRank;
+          ms.loading = false;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _classicError = e.toString();
-          _classicLoading = false;
+          ms.error = e.toString();
+          ms.loading = false;
         });
       }
     }
   }
 
-  Future<void> _loadTimeAttack() async {
-    setState(() {
-      _timeAttackLoading = true;
-      _timeAttackError = null;
-    });
-    try {
-      final List<LeaderboardEntry> entries =
-          await _repository.getTopScores(gameMode: 'time_attack');
-
-      LeaderboardEntry? myBest;
-      int? myRank;
-      if (_myDeviceId != null) {
-        myBest = await _repository.getMyBestScore(
-          deviceId: _myDeviceId!,
-          gameMode: 'time_attack',
-        );
-        if (myBest != null) {
-          myRank = await _repository.getRank(
-            score: myBest.score,
-            gameMode: 'time_attack',
-          );
-        }
-      }
-
-      if (mounted) {
-        setState(() {
-          _timeAttackEntries = entries;
-          _myTimeAttackBest = myBest;
-          _myTimeAttackRank = myRank;
-          _timeAttackLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _timeAttackError = e.toString();
-          _timeAttackLoading = false;
-        });
-      }
-    }
+  void _onPeriodChanged(String gameMode, LeaderboardPeriod period) {
+    final _ModeState ms = _modeState[gameMode]!;
+    if (ms.period == period) return;
+    ms.period = period;
+    _loadData(gameMode);
   }
 
   @override
@@ -168,46 +158,30 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildTab(
-            entries: _classicEntries,
-            loading: _classicLoading,
-            error: _classicError,
-            onRefresh: _loadClassic,
-            myBest: _myClassicBest,
-            myRank: _myClassicRank,
-          ),
-          _buildTab(
-            entries: _timeAttackEntries,
-            loading: _timeAttackLoading,
-            error: _timeAttackError,
-            onRefresh: _loadTimeAttack,
-            myBest: _myTimeAttackBest,
-            myRank: _myTimeAttackRank,
-          ),
+          _buildTab('classic'),
+          _buildTab('time_attack'),
         ],
       ),
     );
   }
 
-  Widget _buildTab({
-    required List<LeaderboardEntry> entries,
-    required bool loading,
-    required String? error,
-    required Future<void> Function() onRefresh,
-    required LeaderboardEntry? myBest,
-    required int? myRank,
-  }) {
+  Widget _buildTab(String gameMode) {
+    final _ModeState ms = _modeState[gameMode]!;
     return Column(
       children: [
+        _PeriodSelector(
+          selected: ms.period,
+          onChanged: (LeaderboardPeriod p) => _onPeriodChanged(gameMode, p),
+        ),
         Expanded(
           child: _buildList(
-            entries: entries,
-            loading: loading,
-            error: error,
-            onRefresh: onRefresh,
+            entries: ms.entries,
+            loading: ms.loading,
+            error: ms.error,
+            onRefresh: () => _loadData(gameMode),
           ),
         ),
-        _MyBestBar(entry: myBest, rank: myRank),
+        _MyBestBar(entry: ms.myBest, rank: ms.myRank),
       ],
     );
   }
@@ -283,6 +257,102 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
             isMe: isMe,
           );
         },
+      ),
+    );
+  }
+}
+
+/// Mutable state holder for each game mode tab.
+class _ModeState {
+  List<LeaderboardEntry> entries = [];
+  bool loading = true;
+  String? error;
+  LeaderboardEntry? myBest;
+  int? myRank;
+  LeaderboardPeriod period = LeaderboardPeriod.all;
+}
+
+/// Horizontal period selector chips.
+class _PeriodSelector extends StatelessWidget {
+  const _PeriodSelector({
+    required this.selected,
+    required this.onChanged,
+  });
+
+  final LeaderboardPeriod selected;
+  final ValueChanged<LeaderboardPeriod> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    final List<(LeaderboardPeriod, String)> periods = [
+      (LeaderboardPeriod.daily, l10n.periodDaily),
+      (LeaderboardPeriod.weekly, l10n.periodWeekly),
+      (LeaderboardPeriod.monthly, l10n.periodMonthly),
+      (LeaderboardPeriod.yearly, l10n.periodYearly),
+      (LeaderboardPeriod.all, l10n.periodAll),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          for (int i = 0; i < periods.length; i++) ...[
+            if (i > 0) const SizedBox(width: 4),
+            _PeriodChip(
+              label: periods[i].$2,
+              isSelected: selected == periods[i].$1,
+              onTap: () => onChanged(periods[i].$1),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _PeriodChip extends StatelessWidget {
+  const _PeriodChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF00E5FF).withValues(alpha: 0.2)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(2),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF00E5FF).withValues(alpha: 0.6)
+                : Colors.white.withValues(alpha: 0.15),
+            width: 1,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontFamily: 'PressStart2P',
+            fontSize: 6,
+            color: isSelected
+                ? const Color(0xFF00E5FF)
+                : Colors.white.withValues(alpha: 0.5),
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
       ),
     );
   }

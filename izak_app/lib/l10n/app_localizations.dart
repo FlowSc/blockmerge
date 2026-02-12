@@ -637,6 +637,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No record yet'**
   String get noRecord;
+
+  /// No description provided for @periodDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'TODAY'**
+  String get periodDaily;
+
+  /// No description provided for @periodWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'WEEK'**
+  String get periodWeekly;
+
+  /// No description provided for @periodMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'MONTH'**
+  String get periodMonthly;
+
+  /// No description provided for @periodYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'YEAR'**
+  String get periodYearly;
+
+  /// No description provided for @periodAll.
+  ///
+  /// In en, this message translates to:
+  /// **'ALL'**
+  String get periodAll;
 }
 
 class _AppLocalizationsDelegate

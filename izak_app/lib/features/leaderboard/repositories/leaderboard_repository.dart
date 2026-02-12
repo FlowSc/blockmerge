@@ -10,11 +10,18 @@ class LeaderboardRepository {
   Future<List<LeaderboardEntry>> getTopScores({
     int limit = 100,
     String gameMode = 'classic',
+    DateTime? after,
   }) async {
-    final List<Map<String, dynamic>> data = await _client
+    var query = _client
         .from('leaderboard')
         .select()
-        .eq('game_mode', gameMode)
+        .eq('game_mode', gameMode);
+
+    if (after != null) {
+      query = query.gte('created_at', after.toUtc().toIso8601String());
+    }
+
+    final List<Map<String, dynamic>> data = await query
         .order('score', ascending: false)
         .limit(limit);
 
@@ -25,12 +32,19 @@ class LeaderboardRepository {
   Future<LeaderboardEntry?> getMyBestScore({
     required String deviceId,
     String gameMode = 'classic',
+    DateTime? after,
   }) async {
-    final List<Map<String, dynamic>> data = await _client
+    var query = _client
         .from('leaderboard')
         .select()
         .eq('device_id', deviceId)
-        .eq('game_mode', gameMode)
+        .eq('game_mode', gameMode);
+
+    if (after != null) {
+      query = query.gte('created_at', after.toUtc().toIso8601String());
+    }
+
+    final List<Map<String, dynamic>> data = await query
         .order('score', ascending: false)
         .limit(1);
 
@@ -42,12 +56,19 @@ class LeaderboardRepository {
   Future<int> getRank({
     required int score,
     String gameMode = 'classic',
+    DateTime? after,
   }) async {
-    final List<Map<String, dynamic>> data = await _client
+    var query = _client
         .from('leaderboard')
         .select('id')
         .eq('game_mode', gameMode)
         .gt('score', score);
+
+    if (after != null) {
+      query = query.gte('created_at', after.toUtc().toIso8601String());
+    }
+
+    final List<Map<String, dynamic>> data = await query;
 
     return data.length + 1;
   }

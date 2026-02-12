@@ -88,5 +88,10 @@
   "timeUp": "시간 종료!",
   "classic": "클래식",
   "myBest": "내 최고",
-  "noRecord": "기록 없음"
+  "noRecord": "기록 없음",
+  "periodDaily": "오늘",
+  "periodWeekly": "주간",
+  "periodMonthly": "월간",
+  "periodYearly": "연간",
+  "periodAll": "전체"
 }

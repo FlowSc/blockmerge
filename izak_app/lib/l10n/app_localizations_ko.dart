@@ -296,4 +296,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get noRecord => '기록 없음';
+
+  @override
+  String get periodDaily => '오늘';
+
+  @override
+  String get periodWeekly => '주간';
+
+  @override
+  String get periodMonthly => '월간';
+
+  @override
+  String get periodYearly => '연간';
+
+  @override
+  String get periodAll => '전체';
 }

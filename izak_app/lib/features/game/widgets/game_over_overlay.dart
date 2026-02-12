@@ -241,7 +241,11 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                 ),
                 const SizedBox(width: 10),
                 OutlinedButton(
-                  onPressed: () => context.push('/leaderboard'),
+                  onPressed: () => context.push(
+                    gameMode == GameMode.timeAttack
+                        ? '/leaderboard?tab=timeAttack'
+                        : '/leaderboard',
+                  ),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
                       color: const Color(0xFFFFD700).withValues(alpha: 0.5),

@@ -155,5 +155,10 @@
   "timeUp": "TIME'S UP!",
   "classic": "CLASSIC",
   "myBest": "MY BEST",
-  "noRecord": "No record yet"
+  "noRecord": "No record yet",
+  "periodDaily": "TODAY",
+  "periodWeekly": "WEEK",
+  "periodMonthly": "MONTH",
+  "periodYearly": "YEAR",
+  "periodAll": "ALL"
 }
