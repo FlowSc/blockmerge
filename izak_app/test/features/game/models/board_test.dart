@@ -140,10 +140,10 @@ void main() {
       grid[11][2] = 2;
 
       final List<MergedPair> pairs = Board.findMergeablePairs(grid);
-      // Only one pair should be found (first two), third remains
+      // Right-to-left scan: rightmost pair (col 1+2) is found, col 0 remains
       expect(pairs.length, 1);
-      expect(pairs[0].from1, const Position(row: 11, col: 0));
-      expect(pairs[0].from2, const Position(row: 11, col: 1));
+      expect(pairs[0].from1, const Position(row: 11, col: 1));
+      expect(pairs[0].from2, const Position(row: 11, col: 2));
     });
 
     test('finds multiple independent pairs', () {

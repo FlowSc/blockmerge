@@ -357,14 +357,14 @@ class GameNotifier extends _$GameNotifier {
   }
 
   /// Pick the best pair to merge.
-  /// Direction is already set by Board.findMergeablePairs (toward bigger
-  /// neighbor). Priority: bottom-most pair first, chain simulation as
-  /// tiebreaker for pairs at the same depth.
+  /// Priority: bottom-most pair first, then best direction (via chain
+  /// simulation including gravity), chain simulation as tiebreaker
+  /// when multiple bottom pairs exist.
   MergedPair _selectBestPair(
     List<List<int?>> grid,
     List<MergedPair> pairs,
   ) {
-    if (pairs.length == 1) return pairs.first;
+    if (pairs.length == 1) return _chooseBestDirection(grid, pairs.first);
 
     // Group by bottom-ness (highest max row = closest to base)
     int pairBottomRow(MergedPair p) => max(p.from1.row, p.from2.row);
@@ -374,10 +374,91 @@ class GameNotifier extends _$GameNotifier {
         .where((MergedPair p) => pairBottomRow(p) == bottomRow)
         .toList();
 
-    if (bottomPairs.length == 1) return bottomPairs.first;
+    if (bottomPairs.length == 1) {
+      return _chooseBestDirection(grid, bottomPairs.first);
+    }
 
-    // Tiebreaker: chain simulation picks the most chain-reactive pair
-    return _pickBestCandidate(grid, bottomPairs);
+    // Multiple bottom pairs: pick best direction for each, then compare
+    final List<MergedPair> candidates = [
+      for (final MergedPair pair in bottomPairs)
+        _chooseBestDirection(grid, pair),
+    ];
+    return _pickBestCandidate(grid, candidates);
+  }
+
+  /// Choose the best merge direction for a single pair by simulating
+  /// both directions (merge → gravity → full chain).
+  MergedPair _chooseBestDirection(
+    List<List<int?>> grid,
+    MergedPair pair,
+  ) {
+    final MergedPair toPos1 = MergedPair(
+      from1: pair.from1,
+      from2: pair.from2,
+      to: pair.from1,
+      newValue: pair.newValue,
+    );
+    final MergedPair toPos2 = MergedPair(
+      from1: pair.from1,
+      from2: pair.from2,
+      to: pair.from2,
+      newValue: pair.newValue,
+    );
+
+    final (int merges1, int score1) = _simulateChain(grid, toPos1);
+    final (int merges2, int score2) = _simulateChain(grid, toPos2);
+
+    // Primary: more chain merges wins
+    if (merges1 > merges2) return toPos1;
+    if (merges2 > merges1) return toPos2;
+
+    // Secondary: higher chain score wins
+    if (score1 > score2) return toPos1;
+    if (score2 > score1) return toPos2;
+
+    // Tertiary: toward strictly-bigger neighbor
+    final int tileValue = pair.newValue ~/ 2;
+    final int n1 = _maxStrictNeighbor(grid, pair.from1, pair.from2, tileValue);
+    final int n2 = _maxStrictNeighbor(grid, pair.from2, pair.from1, tileValue);
+    if (n1 > n2) return toPos1;
+    if (n2 > n1) return toPos2;
+
+    // Final: lower row (base), then rightward
+    if (pair.from1.row > pair.from2.row) return toPos1;
+    if (pair.from2.row > pair.from1.row) return toPos2;
+    return toPos2;
+  }
+
+  /// Simulate merge → gravity → full chain and return (totalMerges, totalScore).
+  (int, int) _simulateChain(List<List<int?>> grid, MergedPair candidate) {
+    final List<List<int?>> afterMerge =
+        Board.applyMerges(grid, [candidate]);
+    final List<List<int?>> afterGravity = Board.applyGravity(afterMerge);
+    final MergeChainResult result = Board.runMergeChain(afterGravity);
+
+    final int totalMerges = 1 + result.steps.fold<int>(
+      0,
+      (int sum, MergeStep step) => sum + step.mergedPairs.length,
+    );
+    final int totalScore = candidate.newValue + result.totalScore;
+    return (totalMerges, totalScore);
+  }
+
+  /// Max neighbor value strictly greater than [tileValue], excluding [exclude].
+  int _maxStrictNeighbor(
+    List<List<int?>> grid,
+    Position pos,
+    Position exclude,
+    int tileValue,
+  ) {
+    int maxVal = 0;
+    for (final Position n in pos.neighbors) {
+      if (n == exclude) continue;
+      if (!Board.inBounds(n)) continue;
+      final int? val = grid[n.row][n.col];
+      if (val != null && val > tileValue && val > maxVal) maxVal = val;
+    }
+    return maxVal;
   }
 
   MergedPair _pickBestCandidate(
@@ -389,20 +470,8 @@ class GameNotifier extends _$GameNotifier {
     int bestScore = -1;
 
     for (final MergedPair candidate in candidates) {
-      // Simulate: apply this merge → gravity → run full remaining chain
-      final List<List<int?>> afterMerge =
-          Board.applyMerges(grid, [candidate]);
-      final List<List<int?>> afterGravity = Board.applyGravity(afterMerge);
-      final MergeChainResult chainResult =
-          Board.runMergeChain(afterGravity);
-
-      // Total merges = 1 (this merge) + all follow-up merges
-      final int totalMerges = 1 + chainResult.steps.fold<int>(
-        0,
-        (int sum, MergeStep step) => sum + step.mergedPairs.length,
-      );
-      final int totalScore =
-          candidate.newValue + chainResult.totalScore;
+      final (int totalMerges, int totalScore) =
+          _simulateChain(grid, candidate);
 
       if (totalMerges > bestMerges ||
           (totalMerges == bestMerges && totalScore > bestScore)) {

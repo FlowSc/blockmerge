@@ -67,9 +67,9 @@ abstract final class Board {
     // Scan bottom-to-top so base (lower) tiles are paired first.
     // This ensures stacked identical tiles merge from the bottom up.
 
-    // Horizontal pairs
+    // Horizontal pairs — right-to-left so rightmost pair is preferred
     for (int row = GameConstants.rows - 1; row >= 0; row--) {
-      for (int col = 0; col < GameConstants.columns - 1; col++) {
+      for (int col = GameConstants.columns - 2; col >= 0; col--) {
         final Position pos1 = Position(row: row, col: col);
         final Position pos2 = Position(row: row, col: col + 1);
         if (used.contains(pos1) || used.contains(pos2)) continue;
@@ -79,7 +79,7 @@ abstract final class Board {
           pairs.add(MergedPair(
             from1: pos1,
             from2: pos2,
-            to: _chooseMergeTo(grid, pos1, pos2),
+            to: _chooseMergeTo(grid, pos1, pos2, val1),
             newValue: val1 * 2,
           ));
           used.add(pos1);
@@ -100,7 +100,7 @@ abstract final class Board {
           pairs.add(MergedPair(
             from1: pos1,
             from2: pos2,
-            to: _chooseMergeTo(grid, pos1, pos2),
+            to: _chooseMergeTo(grid, pos1, pos2, val1),
             newValue: val1 * 2,
           ));
           used.add(pos1);
@@ -112,26 +112,28 @@ abstract final class Board {
     return pairs;
   }
 
-  /// Choose merge target: prefer the side adjacent to a bigger number.
+  /// Choose merge target: prefer the side adjacent to a strictly bigger number.
+  /// Only neighbors with value > [tileValue] count (same-value neighbors ignored).
   /// Tiebreaker: lower row (closer to base), then rightward.
   static Position _chooseMergeTo(
     List<List<int?>> grid,
     Position pos1,
     Position pos2,
+    int tileValue,
   ) {
-    int maxNeighborValue(Position pos, Position exclude) {
+    int maxStrictNeighbor(Position pos, Position exclude) {
       int maxVal = 0;
       for (final Position n in pos.neighbors) {
         if (n == exclude) continue;
         if (!inBounds(n)) continue;
         final int? val = grid[n.row][n.col];
-        if (val != null && val > maxVal) maxVal = val;
+        if (val != null && val > tileValue && val > maxVal) maxVal = val;
       }
       return maxVal;
     }
 
-    final int score1 = maxNeighborValue(pos1, pos2);
-    final int score2 = maxNeighborValue(pos2, pos1);
+    final int score1 = maxStrictNeighbor(pos1, pos2);
+    final int score2 = maxStrictNeighbor(pos2, pos1);
 
     if (score1 > score2) return pos1;
     if (score2 > score1) return pos2;
