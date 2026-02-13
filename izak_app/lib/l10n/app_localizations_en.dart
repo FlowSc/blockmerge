@@ -332,4 +332,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timeAttackTutorialGo => 'GO!';
+
+  @override
+  String get itemNumberPurge => 'PURGE';
+
+  @override
+  String get itemMaxKeep => 'MAX';
+
+  @override
+  String get itemShuffle => 'SHUFFLE';
+
+  @override
+  String get itemNumberPurgeDesc => 'Remove all tiles of a chosen number';
+
+  @override
+  String get itemMaxKeepDesc => 'Keep only the highest tiles';
+
+  @override
+  String get itemShuffleDesc => 'Randomly rearrange all tiles';
+
+  @override
+  String get selectNumberToRemove => 'Select number to remove';
+
+  @override
+  String get itemReward => 'Choose an item!';
+
+  @override
+  String get watchAdItem => 'AD ITEM';
 }

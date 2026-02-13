@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../game/models/item_type.dart';
 import '../models/settings_state.dart';
 
 part 'settings_notifier.g.dart';
@@ -13,9 +16,17 @@ const String _tutorialKey = 'tutorial_seen';
 const String _timeAttackTutorialKey = 'time_attack_tutorial_seen';
 const String _nicknameKey = 'nickname';
 const String _adFreeKey = 'ad_free';
+const String _itemCountsKey = 'item_counts';
 
 // Legacy key for migration from single sound toggle.
 const String _legacySoundKey = 'sound_enabled';
+
+/// Default item counts for first-time users.
+const Map<String, int> _defaultItemCounts = {
+  'numberPurge': 3,
+  'maxKeep': 3,
+  'shuffle': 3,
+};
 
 @Riverpod(keepAlive: true)
 class SettingsNotifier extends _$SettingsNotifier {
@@ -40,6 +51,18 @@ class SettingsNotifier extends _$SettingsNotifier {
       await prefs.remove(_legacySoundKey);
     }
 
+    // Load item counts (first launch → default 3 each).
+    Map<String, int> itemCounts;
+    final String? itemCountsRaw = prefs.getString(_itemCountsKey);
+    if (itemCountsRaw != null) {
+      final Map<String, dynamic> decoded =
+          jsonDecode(itemCountsRaw) as Map<String, dynamic>;
+      itemCounts = decoded.map((String k, dynamic v) => MapEntry(k, v as int));
+    } else {
+      itemCounts = Map<String, int>.from(_defaultItemCounts);
+      await prefs.setString(_itemCountsKey, jsonEncode(itemCounts));
+    }
+
     state = SettingsState(
       bgmEnabled: bgm,
       sfxEnabled: sfx,
@@ -50,6 +73,7 @@ class SettingsNotifier extends _$SettingsNotifier {
           prefs.getBool(_timeAttackTutorialKey) ?? false,
       nickname: prefs.getString(_nicknameKey),
       isAdFree: prefs.getBool(_adFreeKey) ?? false,
+      itemCounts: itemCounts,
     );
   }
 
@@ -103,5 +127,32 @@ class SettingsNotifier extends _$SettingsNotifier {
     state = state.copyWith(isAdFree: value);
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_adFreeKey, value);
+  }
+
+  /// Add [count] items of [type] to the inventory.
+  Future<void> addItem(ItemType type, int count) async {
+    final Map<String, int> updated = Map<String, int>.from(state.itemCounts);
+    updated[type.name] = (updated[type.name] ?? 0) + count;
+    state = state.copyWith(itemCounts: updated);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_itemCountsKey, jsonEncode(updated));
+  }
+
+  /// Consume one item of [type]. Returns false if none available.
+  Future<bool> useItem(ItemType type) async {
+    final int current = state.itemCounts[type.name] ?? 0;
+    if (current <= 0) return false;
+
+    final Map<String, int> updated = Map<String, int>.from(state.itemCounts);
+    updated[type.name] = current - 1;
+    state = state.copyWith(itemCounts: updated);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_itemCountsKey, jsonEncode(updated));
+    return true;
+  }
+
+  /// Get the current count for [type].
+  int getItemCount(ItemType type) {
+    return state.itemCounts[type.name] ?? 0;
   }
 }

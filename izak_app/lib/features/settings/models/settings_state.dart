@@ -11,6 +11,7 @@ final class SettingsState {
     this.timeAttackTutorialSeen = false,
     this.nickname,
     this.isAdFree = false,
+    this.itemCounts = const {},
   });
 
   final bool bgmEnabled;
@@ -22,6 +23,9 @@ final class SettingsState {
   final String? nickname;
   final bool isAdFree;
 
+  /// Item inventory. Key = ItemType.name, value = owned quantity.
+  final Map<String, int> itemCounts;
+
   SettingsState copyWith({
     bool? bgmEnabled,
     bool? sfxEnabled,
@@ -31,6 +35,7 @@ final class SettingsState {
     bool? timeAttackTutorialSeen,
     String? Function()? nickname,
     bool? isAdFree,
+    Map<String, int>? itemCounts,
   }) {
     return SettingsState(
       bgmEnabled: bgmEnabled ?? this.bgmEnabled,
@@ -42,6 +47,7 @@ final class SettingsState {
           timeAttackTutorialSeen ?? this.timeAttackTutorialSeen,
       nickname: nickname != null ? nickname() : this.nickname,
       isAdFree: isAdFree ?? this.isAdFree,
+      itemCounts: itemCounts ?? this.itemCounts,
     );
   }
 }

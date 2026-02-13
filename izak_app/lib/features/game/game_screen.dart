@@ -11,6 +11,7 @@ import 'providers/game_notifier.dart';
 import 'widgets/combo_display.dart';
 import 'widgets/game_board_widget.dart';
 import 'widgets/game_over_overlay.dart';
+import 'widgets/item_buttons.dart';
 import 'widgets/new_best_notification.dart';
 import 'widgets/next_block_preview.dart';
 import 'widgets/pause_overlay.dart';
@@ -223,6 +224,9 @@ class _GameScreenState extends ConsumerState<GameScreen>
                     ],
                   ),
                 ),
+                const SizedBox(height: 4),
+                // Item buttons
+                const ItemButtons(),
                 const SizedBox(height: 4),
                 // Game board + time attack warning overlay
                 Expanded(

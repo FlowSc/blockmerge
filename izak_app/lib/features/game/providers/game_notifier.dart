@@ -13,6 +13,7 @@ import '../models/board.dart';
 import '../models/falling_block.dart';
 import '../models/game_mode.dart';
 import '../models/game_state.dart';
+import '../models/item_type.dart';
 import '../models/merge_result.dart';
 import '../models/position.dart';
 
@@ -465,6 +466,74 @@ class GameNotifier extends _$GameNotifier {
     } else {
       _startTicker();
     }
+  }
+
+  // --- Items ---
+
+  /// Whether item usage is currently allowed.
+  bool get canUseItem =>
+      state.status == GameStatus.playing && !state.isAnimating;
+
+  /// Remove all tiles of [targetValue] from the board.
+  void useNumberPurge(int targetValue) {
+    if (!canUseItem) return;
+    final SettingsNotifier settings =
+        ref.read(settingsNotifierProvider.notifier);
+    if (settings.getItemCount(ItemType.numberPurge) <= 0) return;
+
+    settings.useItem(ItemType.numberPurge);
+    final List<List<int?>> newGrid =
+        Board.removeValue(state.grid, targetValue);
+
+    state = state.copyWith(
+      grid: newGrid,
+      isAnimating: true,
+      lastMergeChain: () => null,
+    );
+
+    // Trigger merge chain after removal (adjacent same-numbers may exist).
+    _animTimer = Timer(const Duration(milliseconds: 200), () {
+      _animateMergeChain(newGrid, 0);
+    });
+  }
+
+  /// Keep only the maximum-value tiles, removing all others.
+  void useMaxKeep() {
+    if (!canUseItem) return;
+    final SettingsNotifier settings =
+        ref.read(settingsNotifierProvider.notifier);
+    if (settings.getItemCount(ItemType.maxKeep) <= 0) return;
+
+    settings.useItem(ItemType.maxKeep);
+    final List<List<int?>> newGrid = Board.keepMaxOnly(state.grid);
+
+    state = state.copyWith(
+      grid: newGrid,
+      isAnimating: false,
+    );
+  }
+
+  /// Shuffle all tiles randomly. May trigger merges if same values become adjacent.
+  void useShuffle() {
+    if (!canUseItem) return;
+    final SettingsNotifier settings =
+        ref.read(settingsNotifierProvider.notifier);
+    if (settings.getItemCount(ItemType.shuffle) <= 0) return;
+
+    settings.useItem(ItemType.shuffle);
+    final List<List<int?>> newGrid =
+        Board.shuffleTiles(state.grid, _rng);
+
+    state = state.copyWith(
+      grid: newGrid,
+      isAnimating: true,
+      lastMergeChain: () => null,
+    );
+
+    // Trigger merge chain after shuffle.
+    _animTimer = Timer(const Duration(milliseconds: 200), () {
+      _animateMergeChain(newGrid, 0);
+    });
   }
 
   // --- Internal ---

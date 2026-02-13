@@ -10,7 +10,9 @@ import '../../leaderboard/providers/leaderboard_notifier.dart';
 import '../../leaderboard/widgets/nickname_dialog.dart';
 import '../../settings/providers/settings_notifier.dart';
 import '../models/game_mode.dart';
+import '../models/item_type.dart';
 import '../providers/game_notifier.dart';
+import 'item_reward_dialog.dart';
 
 class GameOverOverlay extends ConsumerStatefulWidget {
   const GameOverOverlay({super.key});
@@ -22,7 +24,7 @@ class GameOverOverlay extends ConsumerStatefulWidget {
 class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
   bool _submitted = false;
   bool _submitting = false;
-  // bool _adContinueUsed = false; // TODO: re-enable with rewarded ad
+  bool _itemRewardUsed = false;
 
   Future<void> _submitScore() async {
     if (_submitted || _submitting) return;
@@ -69,6 +71,22 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
         );
       }
     }
+  }
+
+  void _onItemReward(BuildContext context) {
+    ref.read(adNotifierProvider.notifier).showRewardedAd(
+      onRewarded: () async {
+        if (!mounted) return;
+        final ItemType? chosen = await showItemRewardDialog(context);
+        if (chosen == null) return;
+        ref
+            .read(settingsNotifierProvider.notifier)
+            .addItem(chosen, 1);
+        if (mounted) {
+          setState(() => _itemRewardUsed = true);
+        }
+      },
+    );
   }
 
   @override
@@ -173,47 +191,35 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                 ),
               ),
             const SizedBox(height: 16),
-            // TODO: Rewarded ad continue button (disabled for now)
-            // if (!_adContinueUsed &&
-            //     !ref.watch(gameNotifierProvider
-            //         .select((s) => s.hasUsedContinue)))
-            //   Padding(
-            //     padding: const EdgeInsets.only(bottom: 12),
-            //     child: SizedBox(
-            //       width: 220,
-            //       child: ElevatedButton.icon(
-            //         onPressed: () {
-            //           ref
-            //               .read(adNotifierProvider.notifier)
-            //               .showRewardedAd(onRewarded: () {
-            //             ref
-            //                 .read(gameNotifierProvider.notifier)
-            //                 .continueAfterAd();
-            //             setState(() => _adContinueUsed = true);
-            //           });
-            //         },
-            //         icon: const Icon(Icons.play_circle_outline, size: 16),
-            //         label: Text(
-            //           l10n.watchAdContinue,
-            //           style: const TextStyle(
-            //             fontFamily: 'PressStart2P',
-            //             fontSize: 8,
-            //             fontWeight: FontWeight.bold,
-            //             letterSpacing: 2,
-            //             color: Colors.black,
-            //           ),
-            //         ),
-            //         style: ElevatedButton.styleFrom(
-            //           backgroundColor: const Color(0xFFFF6EC7),
-            //           foregroundColor: Colors.black,
-            //           padding: const EdgeInsets.symmetric(vertical: 14),
-            //           shape: RoundedRectangleBorder(
-            //             borderRadius: BorderRadius.circular(4),
-            //           ),
-            //         ),
-            //       ),
-            //     ),
-            //   ),
+            if (!_itemRewardUsed)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: SizedBox(
+                  width: 220,
+                  child: ElevatedButton.icon(
+                    onPressed: () => _onItemReward(context),
+                    icon: const Icon(Icons.card_giftcard, size: 16),
+                    label: Text(
+                      l10n.watchAdItem,
+                      style: const TextStyle(
+                        fontFamily: 'PressStart2P',
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                        color: Colors.black,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF6EC7),
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [

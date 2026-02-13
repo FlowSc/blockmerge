@@ -329,4 +329,31 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get timeAttackTutorialGo => 'GO!';
+
+  @override
+  String get itemNumberPurge => '제거';
+
+  @override
+  String get itemMaxKeep => '최대값';
+
+  @override
+  String get itemShuffle => '셔플';
+
+  @override
+  String get itemNumberPurgeDesc => '선택한 숫자의 타일을 모두 제거';
+
+  @override
+  String get itemMaxKeepDesc => '가장 큰 타일만 남기기';
+
+  @override
+  String get itemShuffleDesc => '모든 타일 위치를 랜덤 재배치';
+
+  @override
+  String get selectNumberToRemove => '제거할 숫자를 선택하세요';
+
+  @override
+  String get itemReward => '아이템을 선택하세요!';
+
+  @override
+  String get watchAdItem => '광고 아이템';
 }

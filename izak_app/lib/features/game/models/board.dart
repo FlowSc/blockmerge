@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../../../core/constants/game_constants.dart';
 import 'falling_block.dart';
 import 'game_state.dart';
@@ -334,5 +336,68 @@ abstract final class Board {
   static bool isSpawnBlocked(List<List<int?>> grid) {
     // Check if the spawn column at rows 0-1 is occupied
     return grid[GameConstants.spawnRow][GameConstants.spawnColumn] != null;
+  }
+
+  // --- Item utility functions ---
+
+  /// Remove all tiles with the given [value] and apply gravity.
+  static List<List<int?>> removeValue(List<List<int?>> grid, int value) {
+    final List<List<int?>> newGrid = copyGrid(grid);
+    for (int row = 0; row < GameConstants.rows; row++) {
+      for (int col = 0; col < GameConstants.columns; col++) {
+        if (newGrid[row][col] == value) {
+          newGrid[row][col] = null;
+        }
+      }
+    }
+    return applyGravity(newGrid);
+  }
+
+  /// Keep only tiles with the maximum value, remove everything else,
+  /// then apply gravity.
+  static List<List<int?>> keepMaxOnly(List<List<int?>> grid) {
+    int maxValue = 0;
+    for (int row = 0; row < GameConstants.rows; row++) {
+      for (int col = 0; col < GameConstants.columns; col++) {
+        final int? v = grid[row][col];
+        if (v != null && v > maxValue) maxValue = v;
+      }
+    }
+    if (maxValue == 0) return copyGrid(grid);
+
+    final List<List<int?>> newGrid = copyGrid(grid);
+    for (int row = 0; row < GameConstants.rows; row++) {
+      for (int col = 0; col < GameConstants.columns; col++) {
+        if (newGrid[row][col] != maxValue) {
+          newGrid[row][col] = null;
+        }
+      }
+    }
+    return applyGravity(newGrid);
+  }
+
+  /// Shuffle all tile positions randomly and fill from the bottom up.
+  static List<List<int?>> shuffleTiles(List<List<int?>> grid, Random rng) {
+    final List<int> values = [];
+    for (int row = 0; row < GameConstants.rows; row++) {
+      for (int col = 0; col < GameConstants.columns; col++) {
+        final int? v = grid[row][col];
+        if (v != null) values.add(v);
+      }
+    }
+    if (values.isEmpty) return copyGrid(grid);
+
+    values.shuffle(rng);
+
+    // Fill from the bottom row upward, left to right.
+    final List<List<int?>> newGrid = empty();
+    int idx = 0;
+    for (int row = GameConstants.rows - 1; row >= 0 && idx < values.length; row--) {
+      for (int col = 0; col < GameConstants.columns && idx < values.length; col++) {
+        newGrid[row][col] = values[idx++];
+      }
+    }
+
+    return newGrid;
   }
 }

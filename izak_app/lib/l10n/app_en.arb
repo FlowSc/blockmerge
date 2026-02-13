@@ -166,5 +166,14 @@
   "timeAttackTutorialRule1": "3 minutes to score\nas high as you can!",
   "timeAttackTutorialRule2": "Pause is disabled.\nStay focused!",
   "timeAttackTutorialRule3": "Timer keeps running\neven in background.",
-  "timeAttackTutorialGo": "GO!"
+  "timeAttackTutorialGo": "GO!",
+  "itemNumberPurge": "PURGE",
+  "itemMaxKeep": "MAX",
+  "itemShuffle": "SHUFFLE",
+  "itemNumberPurgeDesc": "Remove all tiles of a chosen number",
+  "itemMaxKeepDesc": "Keep only the highest tiles",
+  "itemShuffleDesc": "Randomly rearrange all tiles",
+  "selectNumberToRemove": "Select number to remove",
+  "itemReward": "Choose an item!",
+  "watchAdItem": "AD ITEM"
 }

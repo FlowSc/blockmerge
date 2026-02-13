@@ -703,6 +703,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'GO!'**
   String get timeAttackTutorialGo;
+
+  /// No description provided for @itemNumberPurge.
+  ///
+  /// In en, this message translates to:
+  /// **'PURGE'**
+  String get itemNumberPurge;
+
+  /// No description provided for @itemMaxKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'MAX'**
+  String get itemMaxKeep;
+
+  /// No description provided for @itemShuffle.
+  ///
+  /// In en, this message translates to:
+  /// **'SHUFFLE'**
+  String get itemShuffle;
+
+  /// No description provided for @itemNumberPurgeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove all tiles of a chosen number'**
+  String get itemNumberPurgeDesc;
+
+  /// No description provided for @itemMaxKeepDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep only the highest tiles'**
+  String get itemMaxKeepDesc;
+
+  /// No description provided for @itemShuffleDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Randomly rearrange all tiles'**
+  String get itemShuffleDesc;
+
+  /// No description provided for @selectNumberToRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Select number to remove'**
+  String get selectNumberToRemove;
+
+  /// No description provided for @itemReward.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an item!'**
+  String get itemReward;
+
+  /// No description provided for @watchAdItem.
+  ///
+  /// In en, this message translates to:
+  /// **'AD ITEM'**
+  String get watchAdItem;
 }
 
 class _AppLocalizationsDelegate
