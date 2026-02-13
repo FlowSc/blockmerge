@@ -37,6 +37,10 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
   Color _borderColorFrom = const Color(0xFF00E5FF);
   Color _borderColorTo = const Color(0xFF00E5FF);
 
+  // Horizontal slide animation for falling block
+  late AnimationController _blockSlideController;
+  double _blockSlideOffset = 0;
+
   @override
   void initState() {
     super.initState();
@@ -60,12 +64,20 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
+
+    _blockSlideController = AnimationController(
+      duration: const Duration(milliseconds: 60),
+      vsync: this,
+    )..addListener(() {
+        setState(() {});
+      });
   }
 
   @override
   void dispose() {
     _shakeController.dispose();
     _borderColorController.dispose();
+    _blockSlideController.dispose();
     super.dispose();
   }
 
@@ -117,6 +129,20 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
             _borderColorTo = newColor;
             _borderColorController.forward(from: 0);
           }
+        }
+      },
+    );
+
+    // Detect horizontal movement of falling block for slide animation.
+    ref.listen<int?>(
+      gameNotifierProvider
+          .select((GameState s) => s.currentBlock?.leftCol),
+      (int? prev, int? next) {
+        if (prev != null && next != null && prev != next) {
+          // Skip animation for large jumps (new block spawn).
+          if ((prev - next).abs() > 2) return;
+          _blockSlideOffset = (prev - next).toDouble();
+          _blockSlideController.forward(from: 0);
         }
       },
     );
@@ -233,6 +259,7 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
                   newMerged: newMerged,
                   slidingMerge: slidingMerge,
                   gravityDrops: gravityDrops,
+                  fallingBlockPositions: fallingBlockPositions,
                 ),
                 // Sliding merge tile
                 if (slidingMerge != null)
@@ -319,6 +346,13 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
     return min(maxCellWidth, maxCellHeight);
   }
 
+  double get _currentSlideOffset {
+    if (!_blockSlideController.isAnimating && _blockSlideController.isCompleted) {
+      return 0;
+    }
+    return _blockSlideOffset * (1.0 - _blockSlideController.value);
+  }
+
   List<Widget> _buildTiles(
     List<List<int?>> grid,
     double cellSize, {
@@ -326,6 +360,7 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
     Set<Position>? newMerged,
     SlidingMerge? slidingMerge,
     List<TileDrop>? gravityDrops,
+    Set<Position> fallingBlockPositions = const {},
   }) {
     // The sliding tile's source position should be hidden from the grid
     // (it's rendered as an animated overlay instead).
@@ -360,11 +395,14 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
 
           final bool isHighlighted = highlighted?.contains(pos) ?? false;
           final bool isNewMerge = newMerged?.contains(pos) ?? false;
+          final bool isFalling = fallingBlockPositions.contains(pos);
+          final double slidePixels =
+              isFalling ? _currentSlideOffset * cellSize : 0;
 
           widgets.add(
             Positioned(
               key: ValueKey('tile_${row}_${col}_${value}_$isNewMerge'),
-              left: col * cellSize + 1,
+              left: col * cellSize + 1 + slidePixels,
               top: row * cellSize + 1,
               child: TileWidget(
                 value: value,

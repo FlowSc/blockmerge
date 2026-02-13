@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -38,8 +40,15 @@ class _GameScreenState extends ConsumerState<GameScreen>
 
   // Gesture tracking
   Offset? _dragStart;
-  static const double _swipeThreshold = 20;
+  static const double _horizontalSwipeThreshold = 14;
   static const double _hardDropVelocity = 800;
+
+  // DAS (Delayed Auto Shift) — auto-repeat when holding a direction
+  static const int _dasDelayMs = 170;
+  static const int _arrIntervalMs = 50;
+  Timer? _dasTimer;
+  Timer? _arrTimer;
+  int _dasDirection = 0; // -1 left, 1 right, 0 none
 
   @override
   void initState() {
@@ -49,8 +58,34 @@ class _GameScreenState extends ConsumerState<GameScreen>
 
   @override
   void dispose() {
+    _cancelDas();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  void _startDas(int direction) {
+    if (_dasDirection == direction) return;
+    _cancelDas();
+    _dasDirection = direction;
+    _dasTimer = Timer(const Duration(milliseconds: _dasDelayMs), () {
+      _arrTimer =
+          Timer.periodic(const Duration(milliseconds: _arrIntervalMs), (_) {
+        final GameNotifier notifier = ref.read(gameNotifierProvider.notifier);
+        if (_dasDirection == -1) {
+          notifier.moveLeft();
+        } else if (_dasDirection == 1) {
+          notifier.moveRight();
+        }
+      });
+    });
+  }
+
+  void _cancelDas() {
+    _dasTimer?.cancel();
+    _arrTimer?.cancel();
+    _dasTimer = null;
+    _arrTimer = null;
+    _dasDirection = 0;
   }
 
   @override
@@ -124,20 +159,21 @@ class _GameScreenState extends ConsumerState<GameScreen>
     final Offset delta = details.localPosition - _dragStart!;
     final GameNotifier notifier = ref.read(gameNotifierProvider.notifier);
 
-    if (delta.dx.abs() > _swipeThreshold && delta.dx.abs() > delta.dy.abs()) {
-      if (delta.dx > 0) {
+    if (delta.dx.abs() > _horizontalSwipeThreshold &&
+        delta.dx.abs() > delta.dy.abs()) {
+      final int direction = delta.dx > 0 ? 1 : -1;
+      if (direction > 0) {
         notifier.moveRight();
       } else {
         notifier.moveLeft();
       }
-      _dragStart = details.localPosition;
-    } else if (delta.dy > _swipeThreshold && delta.dy > delta.dx.abs()) {
-      notifier.softDrop();
+      _startDas(direction);
       _dragStart = details.localPosition;
     }
   }
 
   void _onPanEnd(DragEndDetails details) {
+    _cancelDas();
     final double vy = details.velocity.pixelsPerSecond.dy;
     if (vy > _hardDropVelocity) {
       ref.read(gameNotifierProvider.notifier).hardDrop();

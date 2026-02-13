@@ -22,7 +22,7 @@ class GameOverOverlay extends ConsumerStatefulWidget {
 class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
   bool _submitted = false;
   bool _submitting = false;
-  bool _adContinueUsed = false;
+  // bool _adContinueUsed = false; // TODO: re-enable with rewarded ad
 
   Future<void> _submitScore() async {
     if (_submitted || _submitting) return;
@@ -219,6 +219,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
               children: [
                 OutlinedButton(
                   onPressed: () {
+                    ref.invalidate(hasSavedGameProvider);
                     ref.read(adNotifierProvider.notifier).showInterstitial();
                     context.go('/home');
                   },

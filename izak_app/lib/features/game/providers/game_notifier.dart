@@ -532,6 +532,18 @@ class GameNotifier extends _$GameNotifier {
     final FallingBlock? block = state.currentBlock;
     if (block == null) return;
 
+    // Game over: block overlaps with existing tiles at lock time.
+    // This happens when a block spawns in an occupied zone and the
+    // player couldn't move it to a valid position during lock delay.
+    if (!Board.canPlace(state.grid, block)) {
+      clearSavedGame();
+      state = state.copyWith(
+        status: GameStatus.gameOver,
+        currentBlock: () => null,
+      );
+      return;
+    }
+
     // Track positions of newly placed tiles (before gravity).
     final Set<Position> newPositions = {
       for (final tile in block.tiles) tile.position,
@@ -1016,27 +1028,13 @@ class GameNotifier extends _$GameNotifier {
   }
 
   void _spawnNext() {
-    if (Board.isSpawnBlocked(state.grid)) {
-      clearSavedGame();
-      state = state.copyWith(
-        status: GameStatus.gameOver,
-        currentBlock: () => null,
-      );
-      return;
-    }
+    final FallingBlock next =
+        state.nextBlock ?? FallingBlock.spawn(_rng, level: state.level);
+    final FallingBlock upcoming =
+        FallingBlock.spawn(_rng, level: state.level);
 
-    final FallingBlock next = state.nextBlock ?? FallingBlock.spawn(_rng, level: state.level);
-    final FallingBlock upcoming = FallingBlock.spawn(_rng, level: state.level);
-
-    if (!Board.canPlace(state.grid, next)) {
-      clearSavedGame();
-      state = state.copyWith(
-        status: GameStatus.gameOver,
-        currentBlock: () => null,
-      );
-      return;
-    }
-
+    // Always spawn the block — game over is checked at lock time
+    // (_placeAndMerge), giving the player a chance to move/rotate.
     state = state.copyWith(
       currentBlock: () => next,
       nextBlock: () => upcoming,
