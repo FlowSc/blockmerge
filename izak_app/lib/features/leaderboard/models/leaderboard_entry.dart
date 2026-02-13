@@ -11,6 +11,8 @@ final class LeaderboardEntry {
     required this.maxChainLevel,
     required this.createdAt,
     this.gameMode = 'classic',
+    this.isCleared = false,
+    this.country,
   });
 
   final String id;
@@ -21,6 +23,8 @@ final class LeaderboardEntry {
   final int maxChainLevel;
   final DateTime createdAt;
   final String gameMode;
+  final bool isCleared;
+  final String? country;
 
   factory LeaderboardEntry.fromJson(Map<String, dynamic> json) {
     return LeaderboardEntry(
@@ -32,6 +36,8 @@ final class LeaderboardEntry {
       maxChainLevel: (json['max_chain_level'] as int?) ?? 0,
       createdAt: DateTime.parse(json['created_at'] as String),
       gameMode: (json['game_mode'] as String?) ?? 'classic',
+      isCleared: (json['is_cleared'] as bool?) ?? false,
+      country: json['country'] as String?,
     );
   }
 
@@ -43,6 +49,8 @@ final class LeaderboardEntry {
       'total_merges': totalMerges,
       'max_chain_level': maxChainLevel,
       'game_mode': gameMode,
+      'is_cleared': isCleared,
+      'country': country,
     };
   }
 }

@@ -475,6 +475,8 @@ class _LeaderboardTile extends StatelessWidget {
       _ => Colors.white38,
     };
 
+    final String? flag = _countryCodeToFlag(entry.country);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -509,14 +511,54 @@ class _LeaderboardTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  entry.nickname,
-                  style: TextStyle(
-                    fontFamily: 'PressStart2P',
-                    color: isMe ? const Color(0xFFFFD700) : Colors.white,
-                    fontSize: 9,
-                    fontWeight: FontWeight.w600,
-                  ),
+                Row(
+                  children: [
+                    if (flag != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                        child: Text(flag, style: const TextStyle(fontSize: 12)),
+                      ),
+                    Flexible(
+                      child: Text(
+                        entry.nickname,
+                        style: TextStyle(
+                          fontFamily: 'PressStart2P',
+                          color:
+                              isMe ? const Color(0xFFFFD700) : Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (entry.isCleared)
+                      Container(
+                        margin: const EdgeInsets.only(left: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          color:
+                              const Color(0xFFFFD700).withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(2),
+                          border: Border.all(
+                            color: const Color(0xFFFFD700)
+                                .withValues(alpha: 0.5),
+                            width: 0.5,
+                          ),
+                        ),
+                        child: const Text(
+                          '2048',
+                          style: TextStyle(
+                            fontFamily: 'PressStart2P',
+                            color: Color(0xFFFFD700),
+                            fontSize: 5,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -546,4 +588,15 @@ class _LeaderboardTile extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Converts a 2-letter ISO country code (e.g. "KR") to a flag emoji.
+String? _countryCodeToFlag(String? countryCode) {
+  if (countryCode == null || countryCode.length != 2) return null;
+  final String code = countryCode.toUpperCase();
+  const int base = 0x1F1E6 - 0x41; // regional indicator 'A'
+  return String.fromCharCodes([
+    base + code.codeUnitAt(0),
+    base + code.codeUnitAt(1),
+  ]);
 }

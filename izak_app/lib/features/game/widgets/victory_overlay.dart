@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/ad_provider.dart';
+import '../../../core/utils/country_code.dart';
 import '../../../core/utils/device_id.dart';
 import '../../leaderboard/providers/leaderboard_notifier.dart';
 import '../../leaderboard/widgets/nickname_dialog.dart';
@@ -41,7 +42,6 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
     _controller.forward();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(adNotifierProvider.notifier).showInterstitial();
       _submitScore();
     });
   }
@@ -76,6 +76,8 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
             totalMerges: gameState.totalMerges,
             maxChainLevel: gameState.maxChainLevel,
             gameMode: 'classic',
+            isCleared: true,
+            country: getCountryCode(),
           );
 
       if (mounted) {
@@ -238,7 +240,10 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   OutlinedButton(
-                    onPressed: () => context.go('/home'),
+                    onPressed: () {
+                      ref.read(adNotifierProvider.notifier).showInterstitial();
+                      context.go('/home');
+                    },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.white38),
                       padding: const EdgeInsets.symmetric(
@@ -262,7 +267,10 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                   ),
                   const SizedBox(width: 10),
                   OutlinedButton(
-                    onPressed: () => context.push('/leaderboard'),
+                    onPressed: () {
+                      ref.read(adNotifierProvider.notifier).showInterstitial();
+                      context.push('/leaderboard');
+                    },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(
                         color:
@@ -290,6 +298,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                   const SizedBox(width: 10),
                   ElevatedButton(
                     onPressed: () {
+                      ref.read(adNotifierProvider.notifier).showInterstitial();
                       ref.read(gameNotifierProvider.notifier).startGame();
                     },
                     style: ElevatedButton.styleFrom(

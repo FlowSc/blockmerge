@@ -7,6 +7,9 @@ create table leaderboard (
   device_id text not null,
   total_merges integer default 0,
   max_chain_level integer default 0,
+  game_mode text default 'classic',
+  is_cleared boolean default false,
+  country text,
   created_at timestamptz default now()
 );
 

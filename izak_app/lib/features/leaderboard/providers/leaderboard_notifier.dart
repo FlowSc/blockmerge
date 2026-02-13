@@ -30,6 +30,8 @@ class LeaderboardNotifier extends _$LeaderboardNotifier {
     required int totalMerges,
     required int maxChainLevel,
     String gameMode = 'classic',
+    bool isCleared = false,
+    String? country,
   }) async {
     await _repository.submitScore(
       nickname: nickname,
@@ -38,6 +40,8 @@ class LeaderboardNotifier extends _$LeaderboardNotifier {
       totalMerges: totalMerges,
       maxChainLevel: maxChainLevel,
       gameMode: gameMode,
+      isCleared: isCleared,
+      country: country,
     );
     await loadTopScores(gameMode: gameMode);
   }

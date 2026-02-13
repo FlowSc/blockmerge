@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/ad_provider.dart';
+import '../../../core/utils/country_code.dart';
 import '../../../core/utils/device_id.dart';
 import '../../leaderboard/providers/leaderboard_notifier.dart';
 import '../../leaderboard/widgets/nickname_dialog.dart';
@@ -50,6 +51,8 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
             totalMerges: gameState.totalMerges,
             maxChainLevel: gameState.maxChainLevel,
             gameMode: gameMode,
+            isCleared: gameState.hasReachedVictory,
+            country: getCountryCode(),
           );
 
       if (mounted) {
@@ -72,12 +75,6 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Show interstitial ad after a short delay so the overlay is visible first.
-      Future<void>.delayed(const Duration(milliseconds: 500), () {
-        if (mounted) {
-          ref.read(adNotifierProvider.notifier).showInterstitial();
-        }
-      });
       // Auto-submit if nickname exists
       _submitScore();
     });
@@ -221,7 +218,10 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 OutlinedButton(
-                  onPressed: () => context.go('/home'),
+                  onPressed: () {
+                    ref.read(adNotifierProvider.notifier).showInterstitial();
+                    context.go('/home');
+                  },
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Colors.white38),
                     padding: const EdgeInsets.symmetric(
@@ -245,11 +245,14 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                 ),
                 const SizedBox(width: 10),
                 OutlinedButton(
-                  onPressed: () => context.push(
-                    gameMode == GameMode.timeAttack
-                        ? '/leaderboard?tab=timeAttack'
-                        : '/leaderboard',
-                  ),
+                  onPressed: () {
+                    ref.read(adNotifierProvider.notifier).showInterstitial();
+                    context.push(
+                      gameMode == GameMode.timeAttack
+                          ? '/leaderboard?tab=timeAttack'
+                          : '/leaderboard',
+                    );
+                  },
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
                       color: const Color(0xFFFFD700).withValues(alpha: 0.5),
@@ -276,6 +279,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                 const SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () {
+                    ref.read(adNotifierProvider.notifier).showInterstitial();
                     ref
                         .read(gameNotifierProvider.notifier)
                         .startGame(mode: gameMode);

@@ -80,6 +80,8 @@ class LeaderboardRepository {
     required int totalMerges,
     required int maxChainLevel,
     String gameMode = 'classic',
+    bool isCleared = false,
+    String? country,
   }) async {
     await _client.from('leaderboard').insert({
       'nickname': nickname,
@@ -88,6 +90,8 @@ class LeaderboardRepository {
       'total_merges': totalMerges,
       'max_chain_level': maxChainLevel,
       'game_mode': gameMode,
+      'is_cleared': isCleared,
+      'country': country,
     });
   }
 }

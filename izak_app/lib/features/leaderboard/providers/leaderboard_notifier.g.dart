@@ -7,7 +7,7 @@ part of 'leaderboard_notifier.dart';
 // **************************************************************************
 
 String _$leaderboardNotifierHash() =>
-    r'00c2c5403c6daf87b9ab9688ef9f7d79602504d6';
+    r'03c6eb6cea335993f1c64283875205eabcb6c88d';
 
 /// See also [LeaderboardNotifier].
 @ProviderFor(LeaderboardNotifier)

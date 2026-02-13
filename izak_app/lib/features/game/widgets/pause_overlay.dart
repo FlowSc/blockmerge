@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/ad_provider.dart';
+import '../../../core/utils/country_code.dart';
 import '../../../core/utils/device_id.dart';
 import '../../leaderboard/providers/leaderboard_notifier.dart';
 import '../../leaderboard/widgets/nickname_dialog.dart';
@@ -98,6 +99,8 @@ class PauseOverlay extends ConsumerWidget {
                               totalMerges: gameState.totalMerges,
                               maxChainLevel: gameState.maxChainLevel,
                               gameMode: gameMode,
+                              isCleared: gameState.hasReachedVictory,
+                              country: getCountryCode(),
                             );
                       } catch (_) {
                         // Silent fail — don't block quit

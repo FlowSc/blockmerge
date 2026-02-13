@@ -32,6 +32,8 @@
 	<true/>
 	<key>LSSupportsGameMode</key>
 	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app does not use the microphone, but a linked library requires this permission.</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>This app uses advertising tracking to provide personalized ads.</string>
 	<key>SKAdNetworkItems</key>

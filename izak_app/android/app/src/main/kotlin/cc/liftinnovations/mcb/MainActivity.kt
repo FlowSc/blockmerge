@@ -1,4 +1,4 @@
-package cc.liftinnovations.izak_app
+package cc.liftinnovations.mcb
 
 import io.flutter.embedding.android.FlutterActivity
 
