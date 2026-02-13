@@ -1,0 +1,171 @@
+{
+  "@@locale": "en",
+  "appTitle": "Merge Chain Blast",
+  "subtitle": "Block Merge Puzzle",
+  "start": "START",
+  "leaderboard": "LEADERBOARD",
+  "settings": "Settings",
+  "bgm": "Background Music",
+  "bgmDesc": "Game background music",
+  "sfx": "Sound Effects",
+  "sfxDesc": "Merge and drop sound effects",
+  "vibration": "Vibration",
+  "vibrationDesc": "Haptic feedback on merge and drop",
+  "ghostBlock": "Ghost Block",
+  "ghostBlockDesc": "Preview block landing position",
+  "nickname": "Nickname",
+  "nicknameNotSet": "Not set",
+  "reviewTutorial": "Review Tutorial",
+  "restorePurchases": "Restore Purchases",
+  "restoringPurchases": "Restoring purchases...",
+  "setNickname": "Set Nickname",
+  "nicknameHint": "A-Z, 0-9, _ only (2-10 chars)",
+  "nicknameMinError": "Enter at least 2 characters",
+  "nicknameMaxError": "Maximum 10 characters",
+  "cancel": "Cancel",
+  "save": "Save",
+  "confirm": "OK",
+  "removeAds": "Remove Ads",
+  "purchased": "Purchased",
+  "removeAdsDesc": "Permanently remove all ads",
+  "removeAdsConfirm": "Remove all ads permanently for {price}?",
+  "@removeAdsConfirm": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "removeAdsConfirmDefault": "Remove all ads permanently?",
+  "purchase": "Purchase",
+  "gameOver": "GAME OVER",
+  "scoreLabel": "SCORE",
+  "levelLabel": "LV.{level}",
+  "@levelLabel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "scoreValue": "Score: {score}",
+  "@scoreValue": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "merges": "Merges",
+  "maxChain": "Max Chain",
+  "scoreSubmitFailed": "Failed to submit score",
+  "scoreSubmitted": "Score submitted!",
+  "submitScore": "Submit Score",
+  "home": "HOME",
+  "rank": "RANK",
+  "retry": "RETRY",
+  "paused": "PAUSED",
+  "resume": "Continue",
+  "quit": "Quit",
+  "youWin": "YOU WIN!",
+  "next": "NEXT",
+  "newBest": "NEW BEST!",
+  "merge": "MERGE!",
+  "chainX2": "CHAIN x2!",
+  "chainX3": "CHAIN x3!",
+  "megaChain": "MEGA x{count}!",
+  "@megaChain": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "superChain": "SUPER x{count}!",
+  "@superChain": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "amazingChain": "AMAZING x{count}!",
+  "@amazingChain": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spectacularChain": "SPECTACULAR x{count}!",
+  "@spectacularChain": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "legendaryChain": "LEGENDARY x{count}!",
+  "@legendaryChain": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "skip": "Skip",
+  "tutorialIntroTitle": "Drop blocks and\nmerge same numbers!",
+  "tutorialIntroDesc": "Place falling blocks. Same-number tiles merge automatically.",
+  "tutorialControls": "Controls",
+  "swipeLeftRight": "Swipe Left/Right",
+  "moveBlock": "Move Block",
+  "tap": "Tap",
+  "rotateBlock": "Rotate Block",
+  "swipeDownFast": "Fast Swipe Down",
+  "hardDrop": "Hard Drop",
+  "swipeDown": "Swipe Down",
+  "softDrop": "Soft Drop",
+  "tutorialChainTitle": "Chain Merge",
+  "tutorialChainDesc": "Chain merges give explosive score bonuses!",
+  "tutorialChainExample": "CHAIN x3  x7  x15 !",
+  "tutorialGoTitle": "Go for the\nhighest score!",
+  "tutorialGoDesc": "Game over when blocks reach the top.\nPlace strategically and aim for chains!",
+  "loadFailed": "Failed to load",
+  "tryAgain": "Try Again",
+  "noRecords": "No records yet",
+  "leaderboardEntry": "Merges: {merges} | Chain: x{chain}",
+  "@leaderboardEntry": {
+    "placeholders": {
+      "merges": {
+        "type": "int"
+      },
+      "chain": {
+        "type": "int"
+      }
+    }
+  },
+  "enterNickname": "Enter Nickname",
+  "nicknameDialogHint": "A-Z, 0-9, _ only (2-10 chars)",
+  "watchAdContinue": "WATCH AD",
+  "continueGame": "CONTINUE",
+  "keepGoing": "KEEP GOING",
+  "quitConfirmTitle": "Quit Game?",
+  "quitConfirmMessage": "Your current progress will be lost.",
+  "timeAttack": "TIME ATTACK",
+  "timeUp": "TIME'S UP!",
+  "classic": "CLASSIC",
+  "myBest": "MY BEST",
+  "noRecord": "No record yet",
+  "periodDaily": "TODAY",
+  "periodWeekly": "WEEK",
+  "periodMonthly": "MONTH",
+  "periodYearly": "YEAR",
+  "periodAll": "ALL",
+  "pauseNotAllowed": "Pause is not available\nin Time Attack!",
+  "timeAttackTutorialTitle": "TIME ATTACK",
+  "timeAttackTutorialRule1": "3 minutes to score\nas high as you can!",
+  "timeAttackTutorialRule2": "Pause is disabled.\nStay focused!",
+  "timeAttackTutorialRule3": "Timer keeps running\neven in background.",
+  "timeAttackTutorialGo": "GO!",
+  "privacyPolicy": "Privacy Policy"
+}

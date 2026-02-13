@@ -1,0 +1,327 @@
+import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../core/providers/ad_provider.dart';
+import '../../../core/utils/country_code.dart';
+import '../../../core/utils/device_id.dart';
+import '../../leaderboard/providers/leaderboard_notifier.dart';
+import '../../leaderboard/widgets/nickname_dialog.dart';
+import '../../settings/providers/settings_notifier.dart';
+import '../models/game_mode.dart';
+import '../providers/game_notifier.dart';
+
+class GameOverOverlay extends ConsumerStatefulWidget {
+  const GameOverOverlay({super.key});
+
+  @override
+  ConsumerState<GameOverOverlay> createState() => _GameOverOverlayState();
+}
+
+class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
+  bool _submitted = false;
+  bool _submitting = false;
+  bool _adShown = false;
+
+  Future<void> _submitScore() async {
+    if (_submitted || _submitting) return;
+
+    String? nickname = ref.read(settingsNotifierProvider).nickname;
+
+    if (nickname == null || nickname.isEmpty) {
+      if (!mounted) return;
+      nickname = await showNicknameDialog(context, ref);
+      if (nickname == null) return;
+    }
+
+    setState(() => _submitting = true);
+
+    try {
+      final String deviceId = await getDeviceId();
+      final gameState = ref.read(gameNotifierProvider);
+      final String gameMode = gameState.gameMode == GameMode.timeAttack
+          ? 'time_attack'
+          : 'classic';
+
+      await ref.read(leaderboardNotifierProvider.notifier).submitScore(
+            nickname: nickname,
+            score: gameState.score,
+            deviceId: deviceId,
+            totalMerges: gameState.totalMerges,
+            maxChainLevel: gameState.maxChainLevel,
+            gameMode: gameMode,
+            isCleared: gameState.hasReachedVictory,
+            country: getCountryCode(),
+          );
+
+      if (mounted) {
+        setState(() {
+          _submitted = true;
+          _submitting = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _submitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.scoreSubmitFailed)),
+        );
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Auto-submit if nickname exists
+      _submitScore();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final int score =
+        ref.watch(gameNotifierProvider.select((s) => s.score));
+    final int totalMerges =
+        ref.watch(gameNotifierProvider.select((s) => s.totalMerges));
+    final int maxChainLevel =
+        ref.watch(gameNotifierProvider.select((s) => s.maxChainLevel));
+    final GameMode gameMode =
+        ref.watch(gameNotifierProvider.select((s) => s.gameMode));
+    final l10n = AppLocalizations.of(context)!;
+
+    final String title = gameMode == GameMode.timeAttack
+        ? l10n.timeUp
+        : l10n.gameOver;
+
+    return Container(
+      color: Colors.black.withValues(alpha: 0.75),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontFamily: 'PressStart2P',
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 4,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.scoreValue(score),
+              style: const TextStyle(
+                fontFamily: 'PressStart2P',
+                color: Colors.white70,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _StatChip(label: l10n.merges, value: '$totalMerges'),
+                const SizedBox(width: 16),
+                _StatChip(
+                  label: l10n.maxChain,
+                  value: 'x${maxChainLevel + 1}',
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (_submitting)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white.withValues(alpha: 0.5),
+                  ),
+                ),
+              )
+            else if (_submitted)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  l10n.scoreSubmitted,
+                  style: TextStyle(
+                    fontFamily: 'PressStart2P',
+                    color: const Color(0xFF00E5FF).withValues(alpha: 0.8),
+                    fontSize: 7,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              )
+            else
+              TextButton(
+                onPressed: _submitScore,
+                child: Text(
+                  l10n.submitScore,
+                  style: TextStyle(
+                    fontFamily: 'PressStart2P',
+                    color: const Color(0xFFFFD700).withValues(alpha: 0.8),
+                    fontSize: 7,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                OutlinedButton(
+                  onPressed: () {
+                    ref.invalidate(hasSavedGameProvider);
+                    if (!_adShown) {
+                      _adShown = true;
+                      ref.read(adNotifierProvider.notifier).showInterstitial();
+                    }
+                    context.go('/home');
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.white38),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  child: Text(
+                    l10n.home,
+                    style: const TextStyle(
+                      fontFamily: 'PressStart2P',
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                OutlinedButton(
+                  onPressed: () {
+                    if (!_adShown) {
+                      _adShown = true;
+                      ref.read(adNotifierProvider.notifier).showInterstitial();
+                    }
+                    context.push(
+                      gameMode == GameMode.timeAttack
+                          ? '/leaderboard?tab=timeAttack'
+                          : '/leaderboard',
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      color: const Color(0xFFFFD700).withValues(alpha: 0.5),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  child: Text(
+                    l10n.rank,
+                    style: const TextStyle(
+                      fontFamily: 'PressStart2P',
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                      color: Color(0xFFFFD700),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    if (!_adShown) {
+                      _adShown = true;
+                      ref.read(adNotifierProvider.notifier).showInterstitial();
+                    }
+                    ref
+                        .read(gameNotifierProvider.notifier)
+                        .startGame(mode: gameMode);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00E5FF),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  child: Text(
+                    l10n.retry,
+                    style: const TextStyle(
+                      fontFamily: 'PressStart2P',
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatChip extends StatelessWidget {
+  const _StatChip({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(2),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontFamily: 'PressStart2P',
+              color: Colors.white.withValues(alpha: 0.5),
+              fontSize: 6,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: const TextStyle(
+              fontFamily: 'PressStart2P',
+              color: Colors.white,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

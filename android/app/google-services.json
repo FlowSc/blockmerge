@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1078235043431",
+    "project_id": "merge-chain-blast-8af16",
+    "storage_bucket": "merge-chain-blast-8af16.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1078235043431:android:cc7afda0771d8034d1e6c2",
+        "android_client_info": {
+          "package_name": "cc.liftinnovation.mcb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKfNnA3omg6hdtt3g0Ti5-massekNTDZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1078235043431:android:c347342a1c73abdad1e6c2",
+        "android_client_info": {
+          "package_name": "cc.liftinnovations.mcb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKfNnA3omg6hdtt3g0Ti5-massekNTDZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
