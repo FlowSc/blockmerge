@@ -150,6 +150,10 @@ class _GameScreenState extends ConsumerState<GameScreen>
     );
   }
 
+  void _onTap() {
+    ref.read(gameNotifierProvider.notifier).rotate();
+  }
+
   void _onPanStart(DragStartDetails details) {
     _dragStart = details.localPosition;
   }
@@ -179,10 +183,6 @@ class _GameScreenState extends ConsumerState<GameScreen>
       ref.read(gameNotifierProvider.notifier).hardDrop();
     }
     _dragStart = null;
-  }
-
-  void _onTap() {
-    ref.read(gameNotifierProvider.notifier).rotate();
   }
 
   @override
@@ -231,10 +231,10 @@ class _GameScreenState extends ConsumerState<GameScreen>
                     child: Stack(
                       children: [
                         GestureDetector(
+                          onTap: _onTap,
                           onPanStart: _onPanStart,
                           onPanUpdate: _onPanUpdate,
                           onPanEnd: _onPanEnd,
-                          onTap: _onTap,
                           behavior: HitTestBehavior.opaque,
                           child: const GameBoardWidget(),
                         ),

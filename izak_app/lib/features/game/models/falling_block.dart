@@ -53,13 +53,18 @@ final class FallingBlock {
     );
   }
 
-  /// Rotate 90 degrees clockwise around the block's pivot.
-  /// Formula: new_row = pivot.row + dc, new_col = pivot.col - dr
-  /// where dr = row - pivot.row, dc = col - pivot.col.
+  /// Rotate 90 degrees clockwise, preserving the bounding-box top-left
+  /// so the block stays in the same area instead of orbiting.
   FallingBlock rotated() {
     if (type == BlockType.single) return this;
 
-    final Position pivot = _pivot;
+    final Position pivot = tiles[0].position;
+
+    // Remember original bounding-box top-left
+    final int origTop = topRow;
+    final int origLeft = leftCol;
+
+    // Apply standard 90° CW rotation formula
     final List<Tile> rotatedTiles = tiles.map((Tile t) {
       final int dr = t.position.row - pivot.row;
       final int dc = t.position.col - pivot.col;
@@ -68,23 +73,29 @@ final class FallingBlock {
       );
     }).toList();
 
-    return FallingBlock(tiles: rotatedTiles, type: type);
-  }
+    // Compute new bounding-box top-left and correct drift
+    final int newTop = rotatedTiles
+        .map((Tile t) => t.position.row)
+        .reduce((int a, int b) => a < b ? a : b);
+    final int newLeft = rotatedTiles
+        .map((Tile t) => t.position.col)
+        .reduce((int a, int b) => a < b ? a : b);
 
-  /// Pivot point for rotation, chosen per block type.
-  Position get _pivot {
-    switch (type) {
-      case BlockType.single:
-        return tiles[0].position;
-      case BlockType.pair:
-        return tiles[0].position;
-      case BlockType.lShape:
-        return tiles[0].position;
-      case BlockType.jShape:
-        return tiles[1].position;
-      case BlockType.tShape:
-        return tiles[2].position;
+    final int dRow = origTop - newTop;
+    final int dCol = origLeft - newLeft;
+
+    if (dRow == 0 && dCol == 0) {
+      return FallingBlock(tiles: rotatedTiles, type: type);
     }
+
+    return FallingBlock(
+      tiles: rotatedTiles
+          .map((Tile t) => t.copyWith(
+                position: t.position.offset(dRow, dCol),
+              ))
+          .toList(),
+      type: type,
+    );
   }
 
   /// Generate a random tile value using level-based weighted probabilities.
