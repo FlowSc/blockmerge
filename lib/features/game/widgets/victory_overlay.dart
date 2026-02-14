@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/ad_provider.dart';
+import '../models/game_mode.dart';
 import '../../../core/utils/country_code.dart';
 import '../../../core/utils/device_id.dart';
 import '../../leaderboard/providers/leaderboard_notifier.dart';
@@ -12,7 +13,9 @@ import '../../settings/providers/settings_notifier.dart';
 import '../providers/game_notifier.dart';
 
 class VictoryOverlay extends ConsumerStatefulWidget {
-  const VictoryOverlay({super.key});
+  const VictoryOverlay({required this.onRetry, super.key});
+
+  final void Function(GameMode mode) onRetry;
 
   @override
   ConsumerState<VictoryOverlay> createState() => _VictoryOverlayState();
@@ -22,7 +25,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
     with SingleTickerProviderStateMixin {
   bool _submitted = false;
   bool _submitting = false;
-  bool _adShown = false;
+  bool _navigating = false;
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -241,13 +244,16 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   OutlinedButton(
-                    onPressed: () {
-                      if (!_adShown) {
-                        _adShown = true;
-                        ref.read(adNotifierProvider.notifier).showInterstitial();
-                      }
-                      context.go('/home');
-                    },
+                    onPressed: _navigating
+                        ? null
+                        : () {
+                            setState(() => _navigating = true);
+                            ref
+                                .read(adNotifierProvider.notifier)
+                                .showInterstitial(onComplete: () {
+                              if (mounted) context.go('/home');
+                            });
+                          },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.white38),
                       padding: const EdgeInsets.symmetric(
@@ -271,13 +277,19 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                   ),
                   const SizedBox(width: 10),
                   OutlinedButton(
-                    onPressed: () {
-                      if (!_adShown) {
-                        _adShown = true;
-                        ref.read(adNotifierProvider.notifier).showInterstitial();
-                      }
-                      context.push('/leaderboard');
-                    },
+                    onPressed: _navigating
+                        ? null
+                        : () {
+                            setState(() => _navigating = true);
+                            ref
+                                .read(adNotifierProvider.notifier)
+                                .showInterstitial(onComplete: () {
+                              if (mounted) {
+                                setState(() => _navigating = false);
+                                context.push('/leaderboard');
+                              }
+                            });
+                          },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(
                         color:
@@ -304,13 +316,18 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
-                    onPressed: () {
-                      if (!_adShown) {
-                        _adShown = true;
-                        ref.read(adNotifierProvider.notifier).showInterstitial();
-                      }
-                      ref.read(gameNotifierProvider.notifier).startGame();
-                    },
+                    onPressed: _navigating
+                        ? null
+                        : () {
+                            setState(() => _navigating = true);
+                            ref
+                                .read(adNotifierProvider.notifier)
+                                .showInterstitial(onComplete: () {
+                              if (mounted) {
+                                widget.onRetry(GameMode.classic);
+                              }
+                            });
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFFD700),
                       padding: const EdgeInsets.symmetric(

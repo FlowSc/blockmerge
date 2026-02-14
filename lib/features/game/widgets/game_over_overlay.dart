@@ -13,7 +13,9 @@ import '../models/game_mode.dart';
 import '../providers/game_notifier.dart';
 
 class GameOverOverlay extends ConsumerStatefulWidget {
-  const GameOverOverlay({super.key});
+  const GameOverOverlay({required this.onRetry, super.key});
+
+  final void Function(GameMode mode) onRetry;
 
   @override
   ConsumerState<GameOverOverlay> createState() => _GameOverOverlayState();
@@ -22,7 +24,7 @@ class GameOverOverlay extends ConsumerStatefulWidget {
 class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
   bool _submitted = false;
   bool _submitting = false;
-  bool _adShown = false;
+  bool _navigating = false;
 
   Future<void> _submitScore() async {
     if (_submitted || _submitting) return;
@@ -177,14 +179,17 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 OutlinedButton(
-                  onPressed: () {
-                    ref.invalidate(hasSavedGameProvider);
-                    if (!_adShown) {
-                      _adShown = true;
-                      ref.read(adNotifierProvider.notifier).showInterstitial();
-                    }
-                    context.go('/home');
-                  },
+                  onPressed: _navigating
+                      ? null
+                      : () {
+                          setState(() => _navigating = true);
+                          ref.invalidate(hasSavedGameProvider);
+                          ref
+                              .read(adNotifierProvider.notifier)
+                              .showInterstitial(onComplete: () {
+                            if (mounted) context.go('/home');
+                          });
+                        },
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Colors.white38),
                     padding: const EdgeInsets.symmetric(
@@ -208,17 +213,23 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                 ),
                 const SizedBox(width: 10),
                 OutlinedButton(
-                  onPressed: () {
-                    if (!_adShown) {
-                      _adShown = true;
-                      ref.read(adNotifierProvider.notifier).showInterstitial();
-                    }
-                    context.push(
-                      gameMode == GameMode.timeAttack
-                          ? '/leaderboard?tab=timeAttack'
-                          : '/leaderboard',
-                    );
-                  },
+                  onPressed: _navigating
+                      ? null
+                      : () {
+                          setState(() => _navigating = true);
+                          ref
+                              .read(adNotifierProvider.notifier)
+                              .showInterstitial(onComplete: () {
+                            if (mounted) {
+                              setState(() => _navigating = false);
+                              context.push(
+                                gameMode == GameMode.timeAttack
+                                    ? '/leaderboard?tab=timeAttack'
+                                    : '/leaderboard',
+                              );
+                            }
+                          });
+                        },
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
                       color: const Color(0xFFFFD700).withValues(alpha: 0.5),
@@ -244,15 +255,18 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
-                  onPressed: () {
-                    if (!_adShown) {
-                      _adShown = true;
-                      ref.read(adNotifierProvider.notifier).showInterstitial();
-                    }
-                    ref
-                        .read(gameNotifierProvider.notifier)
-                        .startGame(mode: gameMode);
-                  },
+                  onPressed: _navigating
+                      ? null
+                      : () {
+                          setState(() => _navigating = true);
+                          ref
+                              .read(adNotifierProvider.notifier)
+                              .showInterstitial(onComplete: () {
+                            if (mounted) {
+                              widget.onRetry(gameMode);
+                            }
+                          });
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00E5FF),
                     padding: const EdgeInsets.symmetric(

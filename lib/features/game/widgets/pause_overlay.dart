@@ -111,8 +111,11 @@ class PauseOverlay extends ConsumerWidget {
                   await ref.read(gameNotifierProvider.notifier).clearSavedGame();
                   if (!context.mounted) return;
                   ref.invalidate(hasSavedGameProvider);
-                  ref.read(adNotifierProvider.notifier).showInterstitial();
-                  context.go('/home');
+                  ref
+                      .read(adNotifierProvider.notifier)
+                      .showInterstitial(onComplete: () {
+                    if (context.mounted) context.go('/home');
+                  });
                 }
               },
             ),

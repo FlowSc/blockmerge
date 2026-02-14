@@ -312,6 +312,45 @@ void main() {
       expect(result.steps[1].scoreGained, 24); // 1 pair * 8 * x3
       expect(result.totalScore, 32);
     });
+
+    test('2-2 / 4-4 / 4-2 cascades into multiple merges', () {
+      // Regression: small merge (2+2) must not be blocked by larger pair
+      // selection, because it creates a cascade through the 4s.
+      //
+      //  col:  0  1
+      //  row9: 2  2
+      // row10: 4  4
+      // row11: 4  2
+      final List<List<int?>> grid = Board.empty();
+      grid[9][0] = 2;
+      grid[9][1] = 2;
+      grid[10][0] = 4;
+      grid[10][1] = 4;
+      grid[11][0] = 4;
+      grid[11][1] = 2;
+
+      final (List<List<int?>> finalGrid, MergeChainResult result) =
+          Board.runMergeChainWithGrid(grid);
+
+      // Must have at least 2 chain steps (not just 1 merge that kills
+      // the cascade). Batch path merges 2+2 AND one 4+4 in step 1,
+      // then remaining 4+4 in step 2.
+      expect(result.steps.length, greaterThanOrEqualTo(2));
+
+      // All original 2s and 4s should be consumed. Only 8s (or higher)
+      // and the isolated bottom-right 2 should remain.
+      final List<int> remaining = [];
+      for (final List<int?> row in finalGrid) {
+        for (final int? v in row) {
+          if (v != null) remaining.add(v);
+        }
+      }
+      // The bottom-right 2 is untouched; everything else merged upward.
+      expect(remaining, contains(2)); // isolated bottom-right 2
+      expect(remaining.where((int v) => v >= 8).length, greaterThanOrEqualTo(1));
+      // No stray 4s should survive — all 4-value tiles should have merged.
+      expect(remaining.where((int v) => v == 4).length, 0);
+    });
   });
 
   group('Board.isSpawnBlocked', () {

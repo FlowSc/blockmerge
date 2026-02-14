@@ -37,6 +37,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
     with WidgetsBindingObserver {
   bool _showCountdown = true;
   bool _pendingResume = false;
+  GameMode? _pendingRetryMode;
 
   // Gesture tracking
   Offset? _dragStart;
@@ -105,7 +106,11 @@ class _GameScreenState extends ConsumerState<GameScreen>
     setState(() {
       _showCountdown = false;
     });
-    if (_pendingResume) {
+    if (_pendingRetryMode != null) {
+      final GameMode mode = _pendingRetryMode!;
+      _pendingRetryMode = null;
+      ref.read(gameNotifierProvider.notifier).startGame(mode: mode);
+    } else if (_pendingResume) {
       _pendingResume = false;
       ref.read(gameNotifierProvider.notifier).resume();
     } else if (widget.isContinue) {
@@ -117,6 +122,13 @@ class _GameScreenState extends ConsumerState<GameScreen>
     } else {
       ref.read(gameNotifierProvider.notifier).startGame(mode: widget.gameMode);
     }
+  }
+
+  void _onRetry(GameMode mode) {
+    setState(() {
+      _pendingRetryMode = mode;
+      _showCountdown = true;
+    });
   }
 
   void _onResume() {
@@ -258,8 +270,10 @@ class _GameScreenState extends ConsumerState<GameScreen>
             const NewBestNotification(),
             if (status == GameStatus.paused && !_showCountdown)
               PauseOverlay(onResume: _onResume),
-            if (status == GameStatus.victory) const VictoryOverlay(),
-            if (status == GameStatus.gameOver) const GameOverOverlay(),
+            if (status == GameStatus.victory)
+              VictoryOverlay(onRetry: _onRetry),
+            if (status == GameStatus.gameOver)
+              GameOverOverlay(onRetry: _onRetry),
             if (_showCountdown)
               CountdownOverlay(
                 onComplete: _onCountdownComplete,

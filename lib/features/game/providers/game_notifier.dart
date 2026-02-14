@@ -622,8 +622,8 @@ class GameNotifier extends _$GameNotifier {
   }
 
   /// Pick the best pair to merge.
-  /// Priority: pre-existing tiles first, then bottom-most, then best
-  /// direction (via chain simulation including gravity).
+  /// Primary: total chain potential (simulate merge → gravity → chain).
+  /// Tiebreakers: higher merge value → bottom-most → fewer new tiles.
   MergedPair _selectBestPair(
     List<List<int?>> grid,
     List<MergedPair> pairs, {
@@ -631,42 +631,71 @@ class GameNotifier extends _$GameNotifier {
   }) {
     if (pairs.length == 1) return _chooseBestDirection(grid, pairs.first);
 
-    // Prefer pairs involving only pre-existing (non-new) tiles.
-    if (newTilePositions != null && newTilePositions.isNotEmpty) {
-      int newCount(MergedPair p) {
-        int c = 0;
-        if (newTilePositions.contains(p.from1)) c++;
-        if (newTilePositions.contains(p.from2)) c++;
-        return c;
+    // Evaluate each pair: best direction + full chain simulation.
+    // Vertical pairs are normalized to merge downward (matches the
+    // animation override in _animateMergeChain) so the simulation
+    // uses the same direction that will actually be executed.
+    final List<(MergedPair, int, int)> evaluated = [];
+    for (final MergedPair pair in pairs) {
+      MergedPair directed = _chooseBestDirection(grid, pair);
+      if (directed.from1.col == directed.from2.col) {
+        final Position lowerPos = directed.from1.row > directed.from2.row
+            ? directed.from1
+            : directed.from2;
+        if (directed.to != lowerPos) {
+          directed = MergedPair(
+            from1: directed.from1,
+            from2: directed.from2,
+            to: lowerPos,
+            newValue: directed.newValue,
+          );
+        }
       }
-
-      final int fewest = pairs.map(newCount).reduce(min);
-      final List<MergedPair> preferred =
-          pairs.where((MergedPair p) => newCount(p) == fewest).toList();
-      if (preferred.length == 1) {
-        return _chooseBestDirection(grid, preferred.first);
-      }
-      pairs = preferred;
+      final (int merges, int score) = _simulateChain(grid, directed);
+      evaluated.add((directed, merges, score));
     }
 
-    // Group by bottom-ness (highest max row = closest to base)
-    int pairBottomRow(MergedPair p) => max(p.from1.row, p.from2.row);
+    // Sort by chain potential, then tiebreakers.
+    evaluated.sort(((MergedPair, int, int) a, (MergedPair, int, int) b) {
+      // 1. Most total chain merges.
+      int cmp = b.$2.compareTo(a.$2);
+      if (cmp != 0) return cmp;
 
-    final int bottomRow = pairs.map(pairBottomRow).reduce(max);
-    final List<MergedPair> bottomPairs = pairs
-        .where((MergedPair p) => pairBottomRow(p) == bottomRow)
-        .toList();
+      // 2. Highest total chain score.
+      cmp = b.$3.compareTo(a.$3);
+      if (cmp != 0) return cmp;
 
-    if (bottomPairs.length == 1) {
-      return _chooseBestDirection(grid, bottomPairs.first);
-    }
+      // 3. Higher individual merge value.
+      cmp = b.$1.newValue.compareTo(a.$1.newValue);
+      if (cmp != 0) return cmp;
 
-    // Multiple bottom pairs: pick best direction for each, then compare
-    final List<MergedPair> candidates = [
-      for (final MergedPair pair in bottomPairs)
-        _chooseBestDirection(grid, pair),
-    ];
-    return _pickBestCandidate(grid, candidates);
+      // 4. Bottom-most pair (higher row = closer to base).
+      final int aBottom = max(a.$1.from1.row, a.$1.from2.row);
+      final int bBottom = max(b.$1.from1.row, b.$1.from2.row);
+      cmp = bBottom.compareTo(aBottom);
+      if (cmp != 0) return cmp;
+
+      // 5. Fewer new tiles (prefer pre-existing merges).
+      if (newTilePositions != null && newTilePositions.isNotEmpty) {
+        int newCount(MergedPair p) {
+          int c = 0;
+          if (newTilePositions.contains(p.from1)) c++;
+          if (newTilePositions.contains(p.from2)) c++;
+          return c;
+        }
+        cmp = newCount(a.$1).compareTo(newCount(b.$1));
+        if (cmp != 0) return cmp;
+      }
+
+      // 6. Deterministic: position-based ordering (sort stability).
+      cmp = a.$1.from1.row.compareTo(b.$1.from1.row);
+      if (cmp != 0) return cmp;
+      cmp = a.$1.from1.col.compareTo(b.$1.from1.col);
+      if (cmp != 0) return cmp;
+      return a.$1.from2.col.compareTo(b.$1.from2.col);
+    });
+
+    return evaluated.first.$1;
   }
 
   /// Choose the best merge direction for a single pair by simulating
@@ -771,64 +800,6 @@ class GameNotifier extends _$GameNotifier {
       }
     }
     return closest;
-  }
-
-  MergedPair _pickBestCandidate(
-    List<List<int?>> grid,
-    List<MergedPair> candidates,
-  ) {
-    MergedPair best = candidates.first;
-    bool bestHasChain = false;
-    int bestNeighbor = -1;
-    int bestMerges = -1;
-    int bestScore = -1;
-
-    for (final MergedPair candidate in candidates) {
-      final Position other =
-          candidate.to == candidate.from1 ? candidate.from2 : candidate.from1;
-      final bool hasChain = _hasMatchingNeighbor(
-        grid,
-        candidate.to,
-        other,
-        candidate.newValue,
-      );
-      final int neighborVal = _closestChainNeighbor(
-        grid,
-        candidate.to,
-        other,
-        candidate.newValue,
-      );
-      final (int totalMerges, int totalScore) =
-          _simulateChain(grid, candidate);
-
-      // Primary: immediate chain adjacency
-      // Secondary: closest bigger neighbor (smaller value = closer chain)
-      // Tertiary: more chain merges / higher score
-      final bool isBetterNeighbor = (neighborVal != 0 && bestNeighbor == 0) ||
-          (neighborVal != 0 &&
-              bestNeighbor != 0 &&
-              neighborVal < bestNeighbor);
-      final bool sameNeighbor = neighborVal == bestNeighbor;
-      final bool isBetter = (hasChain && !bestHasChain) ||
-          (hasChain == bestHasChain && isBetterNeighbor) ||
-          (hasChain == bestHasChain &&
-              sameNeighbor &&
-              totalMerges > bestMerges) ||
-          (hasChain == bestHasChain &&
-              sameNeighbor &&
-              totalMerges == bestMerges &&
-              totalScore > bestScore);
-
-      if (isBetter) {
-        best = candidate;
-        bestHasChain = hasChain;
-        bestNeighbor = neighborVal;
-        bestMerges = totalMerges;
-        bestScore = totalScore;
-      }
-    }
-
-    return best;
   }
 
   /// Compute animation delay scaled by chain level.
