@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/constants/game_constants.dart';
 import '../../l10n/app_localizations.dart';
 import '../home/widgets/countdown_overlay.dart';
 import 'models/game_mode.dart';
@@ -18,6 +20,8 @@ import 'widgets/score_display.dart';
 import 'widgets/time_attack_warning.dart';
 import 'widgets/victory_overlay.dart';
 import '../../shared/widgets/banner_ad_widget.dart';
+
+enum _DragAxis { none, horizontal, vertical }
 
 class GameScreen extends ConsumerStatefulWidget {
   const GameScreen({
@@ -39,14 +43,18 @@ class _GameScreenState extends ConsumerState<GameScreen>
   bool _pendingResume = false;
   GameMode? _pendingRetryMode;
 
-  // Gesture tracking
-  Offset? _dragStart;
-  static const double _horizontalSwipeThreshold = 14;
+  // Gesture tracking — accumulated delta + axis lock
+  double _accumDx = 0;
+  double _accumDy = 0;
+  _DragAxis _dragAxis = _DragAxis.none;
+  double _cellWidth = 50;
+  static const double _moveThresholdFraction = 0.3;
+  static const double _axisLockDistance = 8;
   static const double _hardDropVelocity = 800;
 
   // DAS (Delayed Auto Shift) — auto-repeat when holding a direction
-  static const int _dasDelayMs = 170;
-  static const int _arrIntervalMs = 50;
+  static const int _dasDelayMs = 130;
+  static const int _arrIntervalMs = 33;
   Timer? _dasTimer;
   Timer? _arrTimer;
   int _dasDirection = 0; // -1 left, 1 right, 0 none
@@ -167,34 +175,62 @@ class _GameScreenState extends ConsumerState<GameScreen>
   }
 
   void _onPanStart(DragStartDetails details) {
-    _dragStart = details.localPosition;
+    _accumDx = 0;
+    _accumDy = 0;
+    _dragAxis = _DragAxis.none;
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
-    if (_dragStart == null) return;
-    final Offset delta = details.localPosition - _dragStart!;
+    _accumDx += details.delta.dx;
+    _accumDy += details.delta.dy;
+
+    // Lock axis once sufficient distance is reached (ties favor horizontal)
+    if (_dragAxis == _DragAxis.none) {
+      if (_accumDx.abs() >= _axisLockDistance &&
+          _accumDx.abs() >= _accumDy.abs()) {
+        _dragAxis = _DragAxis.horizontal;
+      } else if (_accumDy.abs() >= _axisLockDistance) {
+        _dragAxis = _DragAxis.vertical;
+      } else {
+        return;
+      }
+    }
+
+    if (_dragAxis != _DragAxis.horizontal) return;
+
+    // Cancel DAS immediately if direction reversed before threshold
+    if (_dasDirection != 0 && _accumDx * _dasDirection < 0) {
+      _cancelDas();
+    }
+
+    // Consume accumulated delta in cell-relative steps
+    final double threshold = _cellWidth * _moveThresholdFraction;
+    if (threshold <= 0) return;
     final GameNotifier notifier = ref.read(gameNotifierProvider.notifier);
 
-    if (delta.dx.abs() > _horizontalSwipeThreshold &&
-        delta.dx.abs() > delta.dy.abs()) {
-      final int direction = delta.dx > 0 ? 1 : -1;
+    while (_accumDx.abs() >= threshold) {
+      final int direction = _accumDx > 0 ? 1 : -1;
       if (direction > 0) {
         notifier.moveRight();
       } else {
         notifier.moveLeft();
       }
+      _accumDx -= direction * threshold;
       _startDas(direction);
-      _dragStart = details.localPosition;
     }
   }
 
   void _onPanEnd(DragEndDetails details) {
     _cancelDas();
-    final double vy = details.velocity.pixelsPerSecond.dy;
-    if (vy > _hardDropVelocity) {
-      ref.read(gameNotifierProvider.notifier).hardDrop();
+    if (_dragAxis != _DragAxis.horizontal) {
+      final double vy = details.velocity.pixelsPerSecond.dy;
+      if (vy > _hardDropVelocity) {
+        ref.read(gameNotifierProvider.notifier).hardDrop();
+      }
     }
-    _dragStart = null;
+    _accumDx = 0;
+    _accumDy = 0;
+    _dragAxis = _DragAxis.none;
   }
 
   @override
@@ -240,23 +276,32 @@ class _GameScreenState extends ConsumerState<GameScreen>
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Stack(
-                      children: [
-                        GestureDetector(
-                          onTap: _onTap,
-                          onPanStart: _onPanStart,
-                          onPanUpdate: _onPanUpdate,
-                          onPanEnd: _onPanEnd,
-                          behavior: HitTestBehavior.opaque,
-                          child: const GameBoardWidget(),
-                        ),
-                        const Positioned(
-                          top: 4,
-                          left: 0,
-                          right: 0,
-                          child: TimeAttackWarning(),
-                        ),
-                      ],
+                    child: LayoutBuilder(
+                      builder:
+                          (BuildContext context, BoxConstraints constraints) {
+                        _cellWidth = min(
+                          (constraints.maxWidth - 4) / GameConstants.columns,
+                          (constraints.maxHeight - 6) / GameConstants.rows,
+                        );
+                        return Stack(
+                          children: [
+                            GestureDetector(
+                              onTap: _onTap,
+                              onPanStart: _onPanStart,
+                              onPanUpdate: _onPanUpdate,
+                              onPanEnd: _onPanEnd,
+                              behavior: HitTestBehavior.opaque,
+                              child: const GameBoardWidget(),
+                            ),
+                            const Positioned(
+                              top: 4,
+                              left: 0,
+                              right: 0,
+                              child: TimeAttackWarning(),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ),
