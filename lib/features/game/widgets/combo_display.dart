@@ -112,7 +112,7 @@ class _ComboDisplayState extends ConsumerState<ComboDisplay>
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'PressStart2P',
+                          fontFamily: 'DungGeunMo',
                           color: color,
                           fontSize: 16 + chainLevel * 2.0,
                           fontWeight: FontWeight.w900,

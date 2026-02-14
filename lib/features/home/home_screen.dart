@@ -32,7 +32,7 @@ class HomeScreen extends ConsumerWidget {
                 l10n.appTitle,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  fontFamily: 'PressStart2P',
+                  fontFamily: 'DungGeunMo',
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF00E5FF),
@@ -44,7 +44,7 @@ class HomeScreen extends ConsumerWidget {
                 l10n.subtitle,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  fontFamily: 'PressStart2P',
+                  fontFamily: 'DungGeunMo',
                   fontSize: 8,
                   color: Colors.white70,
                 ),
@@ -65,7 +65,7 @@ class HomeScreen extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       textStyle: const TextStyle(
-                        fontFamily: 'PressStart2P',
+                        fontFamily: 'DungGeunMo',
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
@@ -93,7 +93,7 @@ class HomeScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     textStyle: const TextStyle(
-                      fontFamily: 'PressStart2P',
+                      fontFamily: 'DungGeunMo',
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),
@@ -122,7 +122,7 @@ class HomeScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     textStyle: const TextStyle(
-                      fontFamily: 'PressStart2P',
+                      fontFamily: 'DungGeunMo',
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),
@@ -144,7 +144,7 @@ class HomeScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     textStyle: const TextStyle(
-                      fontFamily: 'PressStart2P',
+                      fontFamily: 'DungGeunMo',
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
                     ),
@@ -166,7 +166,7 @@ class HomeScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     textStyle: const TextStyle(
-                      fontFamily: 'PressStart2P',
+                      fontFamily: 'DungGeunMo',
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
                     ),

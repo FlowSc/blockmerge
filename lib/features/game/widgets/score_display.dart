@@ -44,7 +44,7 @@ class ScoreDisplay extends ConsumerWidget {
           Text(
             l10n.scoreLabel,
             style: TextStyle(
-              fontFamily: 'PressStart2P',
+              fontFamily: 'DungGeunMo',
               color: Colors.white.withValues(alpha: 0.5),
               fontSize: 7,
               fontWeight: FontWeight.bold,
@@ -55,7 +55,7 @@ class ScoreDisplay extends ConsumerWidget {
           Text(
             '$score',
             style: const TextStyle(
-              fontFamily: 'PressStart2P',
+              fontFamily: 'DungGeunMo',
               color: Colors.white,
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -65,7 +65,7 @@ class ScoreDisplay extends ConsumerWidget {
           Text(
             bottomLabel,
             style: TextStyle(
-              fontFamily: 'PressStart2P',
+              fontFamily: 'DungGeunMo',
               color: bottomColor,
               fontSize: 7,
               fontWeight: FontWeight.bold,

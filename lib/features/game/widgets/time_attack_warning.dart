@@ -171,7 +171,7 @@ class _TimeAttackWarningState extends ConsumerState<TimeAttackWarning>
                     child: Text(
                       _bannerText,
                       style: TextStyle(
-                        fontFamily: 'PressStart2P',
+                        fontFamily: 'DungGeunMo',
                         color: _bannerColor,
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
@@ -205,7 +205,7 @@ class _TimeAttackWarningState extends ConsumerState<TimeAttackWarning>
     return Text(
       '$seconds',
       style: TextStyle(
-        fontFamily: 'PressStart2P',
+        fontFamily: 'DungGeunMo',
         color: color,
         fontSize: 32,
         fontWeight: FontWeight.w900,

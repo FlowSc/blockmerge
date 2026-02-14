@@ -107,7 +107,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
             Text(
               title,
               style: const TextStyle(
-                fontFamily: 'PressStart2P',
+                fontFamily: 'DungGeunMo',
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
@@ -118,7 +118,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
             Text(
               l10n.scoreValue(score),
               style: const TextStyle(
-                fontFamily: 'PressStart2P',
+                fontFamily: 'DungGeunMo',
                 color: Colors.white70,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -155,7 +155,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                 child: Text(
                   l10n.scoreSubmitted,
                   style: TextStyle(
-                    fontFamily: 'PressStart2P',
+                    fontFamily: 'DungGeunMo',
                     color: const Color(0xFF00E5FF).withValues(alpha: 0.8),
                     fontSize: 7,
                     fontWeight: FontWeight.w500,
@@ -168,7 +168,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                 child: Text(
                   l10n.submitScore,
                   style: TextStyle(
-                    fontFamily: 'PressStart2P',
+                    fontFamily: 'DungGeunMo',
                     color: const Color(0xFFFFD700).withValues(alpha: 0.8),
                     fontSize: 7,
                   ),
@@ -203,7 +203,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                   child: Text(
                     l10n.home,
                     style: const TextStyle(
-                      fontFamily: 'PressStart2P',
+                      fontFamily: 'DungGeunMo',
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
@@ -245,7 +245,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                   child: Text(
                     l10n.rank,
                     style: const TextStyle(
-                      fontFamily: 'PressStart2P',
+                      fontFamily: 'DungGeunMo',
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
@@ -280,7 +280,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
                   child: Text(
                     l10n.retry,
                     style: const TextStyle(
-                      fontFamily: 'PressStart2P',
+                      fontFamily: 'DungGeunMo',
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
@@ -317,7 +317,7 @@ class _StatChip extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              fontFamily: 'PressStart2P',
+              fontFamily: 'DungGeunMo',
               color: Colors.white.withValues(alpha: 0.5),
               fontSize: 6,
               fontWeight: FontWeight.bold,
@@ -328,7 +328,7 @@ class _StatChip extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
-              fontFamily: 'PressStart2P',
+              fontFamily: 'DungGeunMo',
               color: Colors.white,
               fontSize: 10,
               fontWeight: FontWeight.bold,

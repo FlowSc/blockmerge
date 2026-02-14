@@ -66,7 +66,7 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: Text(
               settings.nickname ?? l10n.nicknameNotSet,
               style: TextStyle(
-                fontFamily: 'PressStart2P',
+                fontFamily: 'DungGeunMo',
                 color: Colors.white.withValues(alpha: 0.5),
                 fontSize: 6,
               ),
@@ -95,7 +95,7 @@ class SettingsScreen extends ConsumerWidget {
             child: Text(
               'Merge Chain Blast v1.0.0',
               style: TextStyle(
-                fontFamily: 'PressStart2P',
+                fontFamily: 'DungGeunMo',
                 color: Colors.white.withValues(alpha: 0.3),
                 fontSize: 6,
               ),
@@ -191,7 +191,7 @@ class _SettingsTile extends StatelessWidget {
       subtitle: Text(
         subtitle,
         style: TextStyle(
-          fontFamily: 'PressStart2P',
+          fontFamily: 'DungGeunMo',
           color: Colors.white.withValues(alpha: 0.5),
           fontSize: 6,
         ),

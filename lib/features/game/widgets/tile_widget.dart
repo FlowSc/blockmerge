@@ -44,7 +44,7 @@ class TileWidget extends StatelessWidget {
           child: Text(
             '$value',
             style: TextStyle(
-              fontFamily: 'PressStart2P',
+              fontFamily: 'DungGeunMo',
               color: textColor,
               fontSize: size * 0.28,
               fontWeight: FontWeight.bold,

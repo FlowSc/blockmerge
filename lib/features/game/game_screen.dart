@@ -155,7 +155,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
           l10n.pauseNotAllowed,
           textAlign: TextAlign.center,
           style: const TextStyle(
-            fontFamily: 'PressStart2P',
+            fontFamily: 'DungGeunMo',
             fontSize: 7,
             color: Colors.white,
           ),

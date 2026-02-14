@@ -88,7 +88,7 @@ class _NewBestNotificationState extends ConsumerState<NewBestNotification>
                     child: Text(
                       l10n.newBest,
                       style: const TextStyle(
-                        fontFamily: 'PressStart2P',
+                        fontFamily: 'DungGeunMo',
                         color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.w900,

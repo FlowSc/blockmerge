@@ -36,7 +36,7 @@ class NextBlockPreview extends ConsumerWidget {
           Text(
             l10n.next,
             style: TextStyle(
-              fontFamily: 'PressStart2P',
+              fontFamily: 'DungGeunMo',
               color: Colors.white.withValues(alpha: 0.5),
               fontSize: 7,
               fontWeight: FontWeight.bold,

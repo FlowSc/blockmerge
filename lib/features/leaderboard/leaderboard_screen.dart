@@ -145,12 +145,12 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
           labelColor: const Color(0xFFFFD700),
           unselectedLabelColor: Colors.white54,
           labelStyle: const TextStyle(
-            fontFamily: 'PressStart2P',
+            fontFamily: 'DungGeunMo',
             fontSize: 8,
             fontWeight: FontWeight.bold,
           ),
           unselectedLabelStyle: const TextStyle(
-            fontFamily: 'PressStart2P',
+            fontFamily: 'DungGeunMo',
             fontSize: 8,
           ),
         ),
@@ -208,7 +208,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
             Text(
               l10n.loadFailed,
               style: TextStyle(
-                fontFamily: 'PressStart2P',
+                fontFamily: 'DungGeunMo',
                 color: Colors.white.withValues(alpha: 0.7),
                 fontSize: 9,
               ),
@@ -219,7 +219,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
               child: Text(
                 l10n.tryAgain,
                 style: const TextStyle(
-                  fontFamily: 'PressStart2P',
+                  fontFamily: 'DungGeunMo',
                   fontSize: 8,
                 ),
               ),
@@ -234,7 +234,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
         child: Text(
           l10n.noRecords,
           style: TextStyle(
-            fontFamily: 'PressStart2P',
+            fontFamily: 'DungGeunMo',
             color: Colors.white.withValues(alpha: 0.5),
             fontSize: 8,
           ),
@@ -345,7 +345,7 @@ class _PeriodChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            fontFamily: 'PressStart2P',
+            fontFamily: 'DungGeunMo',
             fontSize: 6,
             color: isSelected
                 ? const Color(0xFF00E5FF)
@@ -390,7 +390,7 @@ class _MyBestBar extends StatelessWidget {
                       rank != null ? '#$rank' : '-',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        fontFamily: 'PressStart2P',
+                        fontFamily: 'DungGeunMo',
                         color: Color(0xFF00E5FF),
                         fontSize: 8,
                         fontWeight: FontWeight.bold,
@@ -408,7 +408,7 @@ class _MyBestBar extends StatelessWidget {
                     child: Text(
                       l10n.myBest,
                       style: const TextStyle(
-                        fontFamily: 'PressStart2P',
+                        fontFamily: 'DungGeunMo',
                         color: Color(0xFF00E5FF),
                         fontSize: 6,
                         fontWeight: FontWeight.bold,
@@ -420,7 +420,7 @@ class _MyBestBar extends StatelessWidget {
                     child: Text(
                       entry!.nickname,
                       style: const TextStyle(
-                        fontFamily: 'PressStart2P',
+                        fontFamily: 'DungGeunMo',
                         color: Color(0xFF00E5FF),
                         fontSize: 9,
                         fontWeight: FontWeight.w600,
@@ -431,7 +431,7 @@ class _MyBestBar extends StatelessWidget {
                   Text(
                     '${entry!.score}',
                     style: const TextStyle(
-                      fontFamily: 'PressStart2P',
+                      fontFamily: 'DungGeunMo',
                       color: Color(0xFF00E5FF),
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
@@ -443,7 +443,7 @@ class _MyBestBar extends StatelessWidget {
                 child: Text(
                   l10n.noRecord,
                   style: TextStyle(
-                    fontFamily: 'PressStart2P',
+                    fontFamily: 'DungGeunMo',
                     color: Colors.white.withValues(alpha: 0.3),
                     fontSize: 7,
                   ),
@@ -499,7 +499,7 @@ class _LeaderboardTile extends StatelessWidget {
               '$rank',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: 'PressStart2P',
+                fontFamily: 'DungGeunMo',
                 color: rankColor,
                 fontSize: rank <= 3 ? 12 : 10,
                 fontWeight: FontWeight.bold,
@@ -522,7 +522,7 @@ class _LeaderboardTile extends StatelessWidget {
                       child: Text(
                         entry.nickname,
                         style: TextStyle(
-                          fontFamily: 'PressStart2P',
+                          fontFamily: 'DungGeunMo',
                           color:
                               isMe ? const Color(0xFFFFD700) : Colors.white,
                           fontSize: 9,
@@ -551,7 +551,7 @@ class _LeaderboardTile extends StatelessWidget {
                         child: const Text(
                           '2048',
                           style: TextStyle(
-                            fontFamily: 'PressStart2P',
+                            fontFamily: 'DungGeunMo',
                             color: Color(0xFFFFD700),
                             fontSize: 5,
                             fontWeight: FontWeight.bold,
@@ -567,7 +567,7 @@ class _LeaderboardTile extends StatelessWidget {
                     entry.maxChainLevel + 1,
                   ),
                   style: TextStyle(
-                    fontFamily: 'PressStart2P',
+                    fontFamily: 'DungGeunMo',
                     color: Colors.white.withValues(alpha: 0.4),
                     fontSize: 6,
                   ),
@@ -578,7 +578,7 @@ class _LeaderboardTile extends StatelessWidget {
           Text(
             '${entry.score}',
             style: TextStyle(
-              fontFamily: 'PressStart2P',
+              fontFamily: 'DungGeunMo',
               color: isMe ? const Color(0xFFFFD700) : Colors.white,
               fontSize: 10,
               fontWeight: FontWeight.bold,

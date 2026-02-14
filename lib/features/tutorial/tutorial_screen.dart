@@ -45,7 +45,7 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
                 child: Text(
                   l10n.skip,
                   style: TextStyle(
-                    fontFamily: 'PressStart2P',
+                    fontFamily: 'DungGeunMo',
                     fontSize: 8,
                     color: Colors.white.withValues(alpha: 0.5),
                   ),
@@ -106,7 +106,7 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
                           child: Text(
                             l10n.start,
                             style: const TextStyle(
-                              fontFamily: 'PressStart2P',
+                              fontFamily: 'DungGeunMo',
                               fontWeight: FontWeight.bold,
                               fontSize: 10,
                               color: Colors.black,
@@ -171,7 +171,7 @@ class _ControlsPage extends StatelessWidget {
           Text(
             l10n.tutorialControls,
             style: const TextStyle(
-              fontFamily: 'PressStart2P',
+              fontFamily: 'DungGeunMo',
               fontSize: 14,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -231,7 +231,7 @@ class _ControlRow extends StatelessWidget {
               Text(
                 label,
                 style: const TextStyle(
-                  fontFamily: 'PressStart2P',
+                  fontFamily: 'DungGeunMo',
                   color: Colors.white,
                   fontSize: 8,
                   fontWeight: FontWeight.w600,
@@ -273,7 +273,7 @@ class _ChainPage extends StatelessWidget {
           Text(
             l10n.tutorialChainTitle,
             style: const TextStyle(
-              fontFamily: 'PressStart2P',
+              fontFamily: 'DungGeunMo',
               fontSize: 14,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -322,7 +322,7 @@ class _ChainPage extends StatelessWidget {
             child: Text(
               l10n.tutorialChainExample,
               style: const TextStyle(
-                fontFamily: 'PressStart2P',
+                fontFamily: 'DungGeunMo',
                 color: Color(0xFFFFD93D),
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
@@ -355,7 +355,7 @@ class _NumberBox extends StatelessWidget {
       child: Text(
         value,
         style: const TextStyle(
-          fontFamily: 'PressStart2P',
+          fontFamily: 'DungGeunMo',
           color: Colors.white,
           fontSize: 14,
           fontWeight: FontWeight.bold,
@@ -407,7 +407,7 @@ class _TutorialPageLayout extends StatelessWidget {
             title,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              fontFamily: 'PressStart2P',
+              fontFamily: 'DungGeunMo',
               fontSize: 14,
               fontWeight: FontWeight.bold,
               color: Colors.white,

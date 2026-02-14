@@ -46,6 +46,6 @@ flutter:
     - assets/music/
     - assets/sfx/
   fonts:
-    - family: PressStart2P
+    - family: DungGeunMo
       fonts:
-        - asset: assets/fonts/PressStart2P-Regular.ttf
+        - asset: assets/fonts/DungGeunMo.otf

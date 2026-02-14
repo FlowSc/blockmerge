@@ -20,7 +20,7 @@ abstract final class AppTheme {
         elevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
-          fontFamily: 'PressStart2P',
+          fontFamily: 'DungGeunMo',
           color: Colors.white,
           fontSize: 12,
           fontWeight: FontWeight.bold,
@@ -29,19 +29,19 @@ abstract final class AppTheme {
       ),
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
-          fontFamily: 'PressStart2P',
+          fontFamily: 'DungGeunMo',
           color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
         headlineMedium: TextStyle(
-          fontFamily: 'PressStart2P',
+          fontFamily: 'DungGeunMo',
           color: Colors.white,
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
         bodyLarge: TextStyle(
-          fontFamily: 'PressStart2P',
+          fontFamily: 'DungGeunMo',
           color: Colors.white70,
           fontSize: 10,
         ),
