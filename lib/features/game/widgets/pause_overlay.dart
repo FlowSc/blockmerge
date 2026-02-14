@@ -59,16 +59,40 @@ class PauseOverlay extends ConsumerWidget {
                 final bool? confirmed = await showDialog<bool>(
                   context: context,
                   builder: (BuildContext ctx) => AlertDialog(
-                    title: Text(l10n.quitConfirmTitle),
-                    content: Text(l10n.quitConfirmMessage),
+                    title: Text(
+                      l10n.quitConfirmTitle,
+                      style: const TextStyle(
+                        fontFamily: 'DungGeunMo',
+                        fontSize: 16,
+                      ),
+                    ),
+                    content: Text(
+                      l10n.quitConfirmMessage,
+                      style: const TextStyle(
+                        fontFamily: 'DungGeunMo',
+                        fontSize: 12,
+                      ),
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, false),
-                        child: Text(l10n.cancel),
+                        child: Text(
+                          l10n.cancel,
+                          style: const TextStyle(
+                            fontFamily: 'DungGeunMo',
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, true),
-                        child: Text(l10n.confirm),
+                        child: Text(
+                          l10n.confirm,
+                          style: const TextStyle(
+                            fontFamily: 'DungGeunMo',
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
                     ],
                   ),

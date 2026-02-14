@@ -151,7 +151,13 @@ void _showLanguageDialog(
       final l10n = AppLocalizations.of(ctx)!;
 
       return AlertDialog(
-        title: Text(l10n.language),
+        title: Text(
+          l10n.language,
+          style: const TextStyle(
+            fontFamily: 'DungGeunMo',
+            fontSize: 16,
+          ),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -195,7 +201,13 @@ void _showNicknameDialog(
       final l10n = AppLocalizations.of(ctx)!;
 
       return AlertDialog(
-        title: Text(l10n.setNickname),
+        title: Text(
+          l10n.setNickname,
+          style: const TextStyle(
+            fontFamily: 'DungGeunMo',
+            fontSize: 16,
+          ),
+        ),
         content: Form(
           key: formKey,
           child: TextFormField(
@@ -222,7 +234,13 @@ void _showNicknameDialog(
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l10n.cancel),
+            child: Text(
+              l10n.cancel,
+              style: const TextStyle(
+                fontFamily: 'DungGeunMo',
+                fontSize: 12,
+              ),
+            ),
           ),
           FilledButton(
             onPressed: () {
@@ -233,7 +251,13 @@ void _showNicknameDialog(
                 Navigator.of(ctx).pop();
               }
             },
-            child: Text(l10n.save),
+            child: Text(
+              l10n.save,
+              style: const TextStyle(
+                fontFamily: 'DungGeunMo',
+                fontSize: 12,
+              ),
+            ),
           ),
         ],
       );

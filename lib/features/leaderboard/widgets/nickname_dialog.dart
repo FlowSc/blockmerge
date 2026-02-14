@@ -20,7 +20,13 @@ Future<String?> showNicknameDialog(BuildContext context, WidgetRef ref) async {
       final l10n = AppLocalizations.of(ctx)!;
 
       return AlertDialog(
-        title: Text(l10n.enterNickname),
+        title: Text(
+          l10n.enterNickname,
+          style: const TextStyle(
+            fontFamily: 'DungGeunMo',
+            fontSize: 16,
+          ),
+        ),
         content: Form(
           key: formKey,
           child: TextFormField(
@@ -47,7 +53,13 @@ Future<String?> showNicknameDialog(BuildContext context, WidgetRef ref) async {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(null),
-            child: Text(l10n.cancel),
+            child: Text(
+              l10n.cancel,
+              style: const TextStyle(
+                fontFamily: 'DungGeunMo',
+                fontSize: 12,
+              ),
+            ),
           ),
           FilledButton(
             onPressed: () {
@@ -59,7 +71,13 @@ Future<String?> showNicknameDialog(BuildContext context, WidgetRef ref) async {
                 Navigator.of(ctx).pop(nickname);
               }
             },
-            child: Text(l10n.confirm),
+            child: Text(
+              l10n.confirm,
+              style: const TextStyle(
+                fontFamily: 'DungGeunMo',
+                fontSize: 12,
+              ),
+            ),
           ),
         ],
       );
