@@ -6,7 +6,7 @@ part of 'ad_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$adNotifierHash() => r'f270c3af83d9ef4279df28782f9111d5c8f8764e';
+String _$adNotifierHash() => r'42e51410c18e9e123e6f2cfdc7259135d59a17c8';
 
 /// See also [AdNotifier].
 @ProviderFor(AdNotifier)

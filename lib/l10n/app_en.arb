@@ -167,5 +167,7 @@
   "timeAttackTutorialRule2": "Pause is disabled.\nStay focused!",
   "timeAttackTutorialRule3": "Timer keeps running\neven in background.",
   "timeAttackTutorialGo": "GO!",
-  "privacyPolicy": "Privacy Policy"
+  "privacyPolicy": "Privacy Policy",
+  "language": "Language",
+  "languageDesc": "Change app display language"
 }

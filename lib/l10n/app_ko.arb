@@ -80,6 +80,7 @@
   "leaderboardEntry": "Merges: {merges} | Chain: x{chain}",
   "enterNickname": "닉네임 입력",
   "nicknameDialogHint": "리더보드에 표시될 이름 (2~10자)",
+  "watchAdContinue": "광고 보기",
   "continueGame": "이어하기",
   "keepGoing": "계속하기",
   "quitConfirmTitle": "게임 종료",
@@ -100,5 +101,7 @@
   "timeAttackTutorialRule2": "일시정지가 불가합니다.\n집중하세요!",
   "timeAttackTutorialRule3": "백그라운드에서도\n타이머가 계속됩니다.",
   "timeAttackTutorialGo": "GO!",
-  "privacyPolicy": "개인정보 처리방침"
+  "privacyPolicy": "개인정보 처리방침",
+  "language": "언어",
+  "languageDesc": "앱 표시 언어 변경"
 }

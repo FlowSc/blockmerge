@@ -114,7 +114,7 @@ class _ComboDisplayState extends ConsumerState<ComboDisplay>
                         style: TextStyle(
                           fontFamily: 'DungGeunMo',
                           color: color,
-                          fontSize: 16 + chainLevel * 2.0,
+                          fontSize: 18 + chainLevel * 2.0,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 3,
                           shadows: [

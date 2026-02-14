@@ -22,7 +22,7 @@ abstract final class AppTheme {
         titleTextStyle: TextStyle(
           fontFamily: 'DungGeunMo',
           color: Colors.white,
-          fontSize: 12,
+          fontSize: 14,
           fontWeight: FontWeight.bold,
           letterSpacing: 2,
         ),
@@ -31,19 +31,19 @@ abstract final class AppTheme {
         headlineLarge: TextStyle(
           fontFamily: 'DungGeunMo',
           color: Colors.white,
-          fontSize: 20,
+          fontSize: 22,
           fontWeight: FontWeight.bold,
         ),
         headlineMedium: TextStyle(
           fontFamily: 'DungGeunMo',
           color: Colors.white,
-          fontSize: 14,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
         bodyLarge: TextStyle(
           fontFamily: 'DungGeunMo',
           color: Colors.white70,
-          fontSize: 10,
+          fontSize: 12,
         ),
       ),
     );

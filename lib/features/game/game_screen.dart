@@ -156,7 +156,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontFamily: 'DungGeunMo',
-            fontSize: 7,
+            fontSize: 9,
             color: Colors.white,
           ),
         ),

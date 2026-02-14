@@ -146,12 +146,12 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
           unselectedLabelColor: Colors.white54,
           labelStyle: const TextStyle(
             fontFamily: 'DungGeunMo',
-            fontSize: 8,
+            fontSize: 10,
             fontWeight: FontWeight.bold,
           ),
           unselectedLabelStyle: const TextStyle(
             fontFamily: 'DungGeunMo',
-            fontSize: 8,
+            fontSize: 10,
           ),
         ),
       ),
@@ -210,7 +210,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
               style: TextStyle(
                 fontFamily: 'DungGeunMo',
                 color: Colors.white.withValues(alpha: 0.7),
-                fontSize: 9,
+                fontSize: 11,
               ),
             ),
             const SizedBox(height: 12),
@@ -220,7 +220,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
                 l10n.tryAgain,
                 style: const TextStyle(
                   fontFamily: 'DungGeunMo',
-                  fontSize: 8,
+                  fontSize: 10,
                 ),
               ),
             ),
@@ -236,7 +236,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen>
           style: TextStyle(
             fontFamily: 'DungGeunMo',
             color: Colors.white.withValues(alpha: 0.5),
-            fontSize: 8,
+            fontSize: 10,
           ),
         ),
       );
@@ -346,7 +346,7 @@ class _PeriodChip extends StatelessWidget {
           label,
           style: TextStyle(
             fontFamily: 'DungGeunMo',
-            fontSize: 6,
+            fontSize: 8,
             color: isSelected
                 ? const Color(0xFF00E5FF)
                 : Colors.white.withValues(alpha: 0.5),
@@ -392,7 +392,7 @@ class _MyBestBar extends StatelessWidget {
                       style: const TextStyle(
                         fontFamily: 'DungGeunMo',
                         color: Color(0xFF00E5FF),
-                        fontSize: 8,
+                        fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -410,7 +410,7 @@ class _MyBestBar extends StatelessWidget {
                       style: const TextStyle(
                         fontFamily: 'DungGeunMo',
                         color: Color(0xFF00E5FF),
-                        fontSize: 6,
+                        fontSize: 8,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -422,7 +422,7 @@ class _MyBestBar extends StatelessWidget {
                       style: const TextStyle(
                         fontFamily: 'DungGeunMo',
                         color: Color(0xFF00E5FF),
-                        fontSize: 9,
+                        fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -433,7 +433,7 @@ class _MyBestBar extends StatelessWidget {
                     style: const TextStyle(
                       fontFamily: 'DungGeunMo',
                       color: Color(0xFF00E5FF),
-                      fontSize: 10,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -445,7 +445,7 @@ class _MyBestBar extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'DungGeunMo',
                     color: Colors.white.withValues(alpha: 0.3),
-                    fontSize: 7,
+                    fontSize: 9,
                   ),
                 ),
               ),
@@ -501,7 +501,7 @@ class _LeaderboardTile extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'DungGeunMo',
                 color: rankColor,
-                fontSize: rank <= 3 ? 12 : 10,
+                fontSize: rank <= 3 ? 14 : 12,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -516,7 +516,7 @@ class _LeaderboardTile extends StatelessWidget {
                     if (flag != null)
                       Padding(
                         padding: const EdgeInsets.only(right: 4),
-                        child: Text(flag, style: const TextStyle(fontSize: 12)),
+                        child: Text(flag, style: const TextStyle(fontSize: 14)),
                       ),
                     Flexible(
                       child: Text(
@@ -525,7 +525,7 @@ class _LeaderboardTile extends StatelessWidget {
                           fontFamily: 'DungGeunMo',
                           color:
                               isMe ? const Color(0xFFFFD700) : Colors.white,
-                          fontSize: 9,
+                          fontSize: 11,
                           fontWeight: FontWeight.w600,
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -553,7 +553,7 @@ class _LeaderboardTile extends StatelessWidget {
                           style: TextStyle(
                             fontFamily: 'DungGeunMo',
                             color: Color(0xFFFFD700),
-                            fontSize: 5,
+                            fontSize: 7,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -569,7 +569,7 @@ class _LeaderboardTile extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'DungGeunMo',
                     color: Colors.white.withValues(alpha: 0.4),
-                    fontSize: 6,
+                    fontSize: 8,
                   ),
                 ),
               ],
@@ -580,7 +580,7 @@ class _LeaderboardTile extends StatelessWidget {
             style: TextStyle(
               fontFamily: 'DungGeunMo',
               color: isMe ? const Color(0xFFFFD700) : Colors.white,
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
             ),
           ),

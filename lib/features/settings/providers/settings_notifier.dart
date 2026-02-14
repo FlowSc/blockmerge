@@ -13,6 +13,7 @@ const String _tutorialKey = 'tutorial_seen';
 const String _timeAttackTutorialKey = 'time_attack_tutorial_seen';
 const String _nicknameKey = 'nickname';
 const String _adFreeKey = 'ad_free';
+const String _localeKey = 'locale_code';
 
 // Legacy key for migration from single sound toggle.
 const String _legacySoundKey = 'sound_enabled';
@@ -50,6 +51,7 @@ class SettingsNotifier extends _$SettingsNotifier {
           prefs.getBool(_timeAttackTutorialKey) ?? false,
       nickname: prefs.getString(_nicknameKey),
       isAdFree: prefs.getBool(_adFreeKey) ?? false,
+      localeCode: prefs.getString(_localeKey),
     );
   }
 
@@ -103,5 +105,15 @@ class SettingsNotifier extends _$SettingsNotifier {
     state = state.copyWith(isAdFree: value);
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_adFreeKey, value);
+  }
+
+  Future<void> setLocale(String? localeCode) async {
+    state = state.copyWith(localeCode: () => localeCode);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (localeCode == null) {
+      await prefs.remove(_localeKey);
+    } else {
+      await prefs.setString(_localeKey, localeCode);
+    }
   }
 }

@@ -38,7 +38,7 @@ class PauseOverlay extends ConsumerWidget {
               style: const TextStyle(
                 fontFamily: 'DungGeunMo',
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 4,
               ),
@@ -150,7 +150,7 @@ class _MenuButton extends StatelessWidget {
           label,
           style: const TextStyle(
             fontFamily: 'DungGeunMo',
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: FontWeight.bold,
             letterSpacing: 1,
           ),

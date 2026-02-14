@@ -11,6 +11,7 @@ final class SettingsState {
     this.timeAttackTutorialSeen = false,
     this.nickname,
     this.isAdFree = false,
+    this.localeCode,
   });
 
   final bool bgmEnabled;
@@ -21,6 +22,7 @@ final class SettingsState {
   final bool timeAttackTutorialSeen;
   final String? nickname;
   final bool isAdFree;
+  final String? localeCode;
 
   SettingsState copyWith({
     bool? bgmEnabled,
@@ -31,6 +33,7 @@ final class SettingsState {
     bool? timeAttackTutorialSeen,
     String? Function()? nickname,
     bool? isAdFree,
+    String? Function()? localeCode,
   }) {
     return SettingsState(
       bgmEnabled: bgmEnabled ?? this.bgmEnabled,
@@ -42,6 +45,7 @@ final class SettingsState {
           timeAttackTutorialSeen ?? this.timeAttackTutorialSeen,
       nickname: nickname != null ? nickname() : this.nickname,
       isAdFree: isAdFree ?? this.isAdFree,
+      localeCode: localeCode != null ? localeCode() : this.localeCode,
     );
   }
 }

@@ -268,7 +268,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get nicknameDialogHint => '리더보드에 표시될 이름 (2~10자)';
 
   @override
-  String get watchAdContinue => 'WATCH AD';
+  String get watchAdContinue => '광고 보기';
 
   @override
   String get continueGame => '이어하기';
@@ -332,4 +332,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacyPolicy => '개인정보 처리방침';
+
+  @override
+  String get language => '언어';
+
+  @override
+  String get languageDesc => '앱 표시 언어 변경';
 }

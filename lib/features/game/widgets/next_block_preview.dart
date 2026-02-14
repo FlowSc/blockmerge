@@ -38,7 +38,7 @@ class NextBlockPreview extends ConsumerWidget {
             style: TextStyle(
               fontFamily: 'DungGeunMo',
               color: Colors.white.withValues(alpha: 0.5),
-              fontSize: 7,
+              fontSize: 9,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
             ),

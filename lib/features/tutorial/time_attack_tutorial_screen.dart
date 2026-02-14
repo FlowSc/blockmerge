@@ -31,7 +31,7 @@ class TimeAttackTutorialScreen extends ConsumerWidget {
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontFamily: 'DungGeunMo',
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFFFF6EC7),
                   letterSpacing: 2,
@@ -79,7 +79,7 @@ class TimeAttackTutorialScreen extends ConsumerWidget {
                     l10n.timeAttackTutorialGo,
                     style: const TextStyle(
                       fontFamily: 'DungGeunMo',
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -117,7 +117,7 @@ class _RuleRow extends StatelessWidget {
             style: const TextStyle(
               fontFamily: 'DungGeunMo',
               color: Colors.white,
-              fontSize: 8,
+              fontSize: 10,
               height: 1.8,
             ),
           ),

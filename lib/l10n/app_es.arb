@@ -1,0 +1,173 @@
+{
+  "@@locale": "es",
+  "appTitle": "Merge Chain Blast",
+  "subtitle": "Block Merge Puzzle",
+  "start": "JUGAR",
+  "leaderboard": "CLASIFICACIÓN",
+  "settings": "Ajustes",
+  "bgm": "Música de fondo",
+  "bgmDesc": "Música de fondo del juego",
+  "sfx": "Efectos de sonido",
+  "sfxDesc": "Efectos de sonido de fusión y caída",
+  "vibration": "Vibración",
+  "vibrationDesc": "Vibración al fusionar y soltar bloques",
+  "ghostBlock": "Bloque fantasma",
+  "ghostBlockDesc": "Vista previa de la posición de aterrizaje",
+  "nickname": "Apodo",
+  "nicknameNotSet": "Sin definir",
+  "reviewTutorial": "Repetir tutorial",
+  "restorePurchases": "Restaurar compras",
+  "restoringPurchases": "Restaurando compras...",
+  "setNickname": "Establecer apodo",
+  "nicknameHint": "Solo A-Z, 0-9, _ (2-10 caracteres)",
+  "nicknameMinError": "Introduce al menos 2 caracteres",
+  "nicknameMaxError": "Máximo 10 caracteres",
+  "cancel": "Cancelar",
+  "save": "Guardar",
+  "confirm": "OK",
+  "removeAds": "Eliminar anuncios",
+  "purchased": "Comprado",
+  "removeAdsDesc": "Eliminar todos los anuncios permanentemente",
+  "removeAdsConfirm": "¿Eliminar todos los anuncios permanentemente por {price}?",
+  "@removeAdsConfirm": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "removeAdsConfirmDefault": "¿Eliminar todos los anuncios permanentemente?",
+  "purchase": "Comprar",
+  "gameOver": "FIN DEL JUEGO",
+  "scoreLabel": "PUNTOS",
+  "levelLabel": "NV.{level}",
+  "@levelLabel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "scoreValue": "Puntos: {score}",
+  "@scoreValue": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "merges": "Fusiones",
+  "maxChain": "Cadena máx.",
+  "scoreSubmitFailed": "Error al enviar la puntuación",
+  "scoreSubmitted": "¡Puntuación enviada!",
+  "submitScore": "Enviar puntuación",
+  "home": "INICIO",
+  "rank": "RANGO",
+  "retry": "REINTENTAR",
+  "paused": "PAUSADO",
+  "resume": "Continuar",
+  "quit": "Salir",
+  "youWin": "¡GANASTE!",
+  "next": "SIGUIENTE",
+  "newBest": "¡NUEVO RÉCORD!",
+  "merge": "¡FUSIÓN!",
+  "chainX2": "¡CADENA x2!",
+  "chainX3": "¡CADENA x3!",
+  "megaChain": "¡MEGA x{count}!",
+  "@megaChain": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "superChain": "¡SUPER x{count}!",
+  "@superChain": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "amazingChain": "¡INCREÍBLE x{count}!",
+  "@amazingChain": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spectacularChain": "¡ESPECTACULAR x{count}!",
+  "@spectacularChain": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "legendaryChain": "¡LEGENDARIO x{count}!",
+  "@legendaryChain": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "skip": "Omitir",
+  "tutorialIntroTitle": "¡Suelta bloques y\nfusiona números iguales!",
+  "tutorialIntroDesc": "Coloca los bloques que caen. Los números iguales se fusionan automáticamente.",
+  "tutorialControls": "Controles",
+  "swipeLeftRight": "Deslizar izquierda/derecha",
+  "moveBlock": "Mover bloque",
+  "tap": "Tocar",
+  "rotateBlock": "Rotar bloque",
+  "swipeDownFast": "Deslizar rápido hacia abajo",
+  "hardDrop": "Caída instantánea",
+  "swipeDown": "Deslizar hacia abajo",
+  "softDrop": "Caída suave",
+  "tutorialChainTitle": "Fusión en cadena",
+  "tutorialChainDesc": "¡Las fusiones en cadena dan bonificaciones explosivas!",
+  "tutorialChainExample": "CADENA x3  x7  x15 !",
+  "tutorialGoTitle": "¡Consigue la\npuntuación más alta!",
+  "tutorialGoDesc": "El juego termina cuando los bloques llegan arriba.\n¡Coloca estratégicamente y busca cadenas!",
+  "loadFailed": "Error al cargar",
+  "tryAgain": "Reintentar",
+  "noRecords": "Aún no hay registros",
+  "leaderboardEntry": "Fusiones: {merges} | Cadena: x{chain}",
+  "@leaderboardEntry": {
+    "placeholders": {
+      "merges": {
+        "type": "int"
+      },
+      "chain": {
+        "type": "int"
+      }
+    }
+  },
+  "enterNickname": "Introducir apodo",
+  "nicknameDialogHint": "Solo A-Z, 0-9, _ (2-10 caracteres)",
+  "watchAdContinue": "VER ANUNCIO",
+  "continueGame": "CONTINUAR",
+  "keepGoing": "SEGUIR JUGANDO",
+  "quitConfirmTitle": "¿Salir del juego?",
+  "quitConfirmMessage": "Se perderá tu progreso actual.",
+  "timeAttack": "CONTRARRELOJ",
+  "timeUp": "¡TIEMPO AGOTADO!",
+  "classic": "CLÁSICO",
+  "myBest": "MI MEJOR",
+  "noRecord": "Sin registro aún",
+  "periodDaily": "HOY",
+  "periodWeekly": "SEMANA",
+  "periodMonthly": "MES",
+  "periodYearly": "AÑO",
+  "periodAll": "TODO",
+  "pauseNotAllowed": "¡La pausa no está disponible\nen Contrarreloj!",
+  "timeAttackTutorialTitle": "CONTRARRELOJ",
+  "timeAttackTutorialRule1": "¡3 minutos para conseguir\nla mayor puntuación posible!",
+  "timeAttackTutorialRule2": "La pausa está desactivada.\n¡Concéntrate!",
+  "timeAttackTutorialRule3": "El temporizador sigue corriendo\nincluso en segundo plano.",
+  "timeAttackTutorialGo": "¡YA!",
+  "privacyPolicy": "Política de privacidad",
+  "language": "Idioma",
+  "languageDesc": "Cambiar el idioma de la aplicación"
+}

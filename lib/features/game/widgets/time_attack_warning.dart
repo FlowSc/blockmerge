@@ -173,7 +173,7 @@ class _TimeAttackWarningState extends ConsumerState<TimeAttackWarning>
                       style: TextStyle(
                         fontFamily: 'DungGeunMo',
                         color: _bannerColor,
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.w900,
                         shadows: [
                           Shadow(
@@ -207,7 +207,7 @@ class _TimeAttackWarningState extends ConsumerState<TimeAttackWarning>
       style: TextStyle(
         fontFamily: 'DungGeunMo',
         color: color,
-        fontSize: 32,
+        fontSize: 36,
         fontWeight: FontWeight.w900,
         shadows: [
           Shadow(

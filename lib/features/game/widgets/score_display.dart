@@ -46,7 +46,7 @@ class ScoreDisplay extends ConsumerWidget {
             style: TextStyle(
               fontFamily: 'DungGeunMo',
               color: Colors.white.withValues(alpha: 0.5),
-              fontSize: 7,
+              fontSize: 9,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
             ),
@@ -57,7 +57,7 @@ class ScoreDisplay extends ConsumerWidget {
             style: const TextStyle(
               fontFamily: 'DungGeunMo',
               color: Colors.white,
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -67,7 +67,7 @@ class ScoreDisplay extends ConsumerWidget {
             style: TextStyle(
               fontFamily: 'DungGeunMo',
               color: bottomColor,
-              fontSize: 7,
+              fontSize: 9,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
             ),

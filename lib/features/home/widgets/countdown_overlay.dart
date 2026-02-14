@@ -65,7 +65,7 @@ class _CountdownOverlayState extends State<CountdownOverlay>
             '$_count',
             style: const TextStyle(
               fontFamily: 'DungGeunMo',
-              fontSize: 64,
+              fontSize: 72,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),

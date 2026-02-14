@@ -129,7 +129,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                 style: TextStyle(
                   fontFamily: 'DungGeunMo',
                   color: Color(0xFFFFD700),
-                  fontSize: 28,
+                  fontSize: 30,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 6,
                   shadows: [
@@ -146,7 +146,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                 style: const TextStyle(
                   fontFamily: 'DungGeunMo',
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 4,
                 ),
@@ -157,7 +157,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                 style: const TextStyle(
                   fontFamily: 'DungGeunMo',
                   color: Colors.white70,
-                  fontSize: 12,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -194,7 +194,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                     style: TextStyle(
                       fontFamily: 'DungGeunMo',
                       color: const Color(0xFF00E5FF).withValues(alpha: 0.8),
-                      fontSize: 7,
+                      fontSize: 9,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -207,7 +207,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                     style: TextStyle(
                       fontFamily: 'DungGeunMo',
                       color: const Color(0xFFFFD700).withValues(alpha: 0.8),
-                      fontSize: 7,
+                      fontSize: 9,
                     ),
                   ),
                 ),
@@ -231,7 +231,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                     l10n.keepGoing,
                     style: const TextStyle(
                       fontFamily: 'DungGeunMo',
-                      fontSize: 10,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
                       color: Colors.black,
@@ -268,7 +268,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                       l10n.home,
                       style: const TextStyle(
                         fontFamily: 'DungGeunMo',
-                        fontSize: 8,
+                        fontSize: 10,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
                         color: Colors.white70,
@@ -307,7 +307,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                       l10n.rank,
                       style: const TextStyle(
                         fontFamily: 'DungGeunMo',
-                        fontSize: 8,
+                        fontSize: 10,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
                         color: Color(0xFFFFD700),
@@ -342,7 +342,7 @@ class _VictoryOverlayState extends ConsumerState<VictoryOverlay>
                       l10n.retry,
                       style: const TextStyle(
                         fontFamily: 'DungGeunMo',
-                        fontSize: 8,
+                        fontSize: 10,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
                         color: Colors.black,
@@ -381,7 +381,7 @@ class _StatChip extends StatelessWidget {
             style: TextStyle(
               fontFamily: 'DungGeunMo',
               color: Colors.white.withValues(alpha: 0.5),
-              fontSize: 6,
+              fontSize: 8,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
             ),
@@ -392,7 +392,7 @@ class _StatChip extends StatelessWidget {
             style: const TextStyle(
               fontFamily: 'DungGeunMo',
               color: Colors.white,
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
             ),
           ),

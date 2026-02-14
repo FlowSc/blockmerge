@@ -68,7 +68,7 @@ class SettingsScreen extends ConsumerWidget {
               style: TextStyle(
                 fontFamily: 'DungGeunMo',
                 color: Colors.white.withValues(alpha: 0.5),
-                fontSize: 6,
+                fontSize: 8,
               ),
             ),
             trailing: const Icon(Icons.chevron_right),
@@ -79,6 +79,21 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l10n.reviewTutorial),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/tutorial'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.language),
+            title: Text(l10n.language),
+            subtitle: Text(
+              _localeDisplayName(settings.localeCode),
+              style: TextStyle(
+                fontFamily: 'DungGeunMo',
+                color: Colors.white.withValues(alpha: 0.5),
+                fontSize: 8,
+              ),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () =>
+                _showLanguageDialog(context, ref, settings.localeCode),
           ),
           const Divider(height: 32),
           ListTile(
@@ -97,7 +112,7 @@ class SettingsScreen extends ConsumerWidget {
               style: TextStyle(
                 fontFamily: 'DungGeunMo',
                 color: Colors.white.withValues(alpha: 0.3),
-                fontSize: 6,
+                fontSize: 8,
               ),
             ),
           ),
@@ -105,6 +120,64 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+String _localeDisplayName(String? localeCode) {
+  return switch (localeCode) {
+    'en' => 'English',
+    'ko' => '한국어',
+    'ja' => '日本語',
+    'es' => 'Español',
+    _ => 'System',
+  };
+}
+
+void _showLanguageDialog(
+  BuildContext context,
+  WidgetRef ref,
+  String? currentLocale,
+) {
+  const List<(String?, String)> options = [
+    (null, 'System'),
+    ('en', 'English'),
+    ('ko', '한국어'),
+    ('ja', '日本語'),
+    ('es', 'Español'),
+  ];
+
+  showDialog<void>(
+    context: context,
+    builder: (BuildContext ctx) {
+      final l10n = AppLocalizations.of(ctx)!;
+
+      return AlertDialog(
+        title: Text(l10n.language),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final (String? code, String label) in options)
+              RadioListTile<String?>(
+                title: Text(
+                  label,
+                  style: const TextStyle(
+                    fontFamily: 'DungGeunMo',
+                    fontSize: 12,
+                  ),
+                ),
+                value: code,
+                groupValue: currentLocale,
+                onChanged: (String? value) {
+                  ref
+                      .read(settingsNotifierProvider.notifier)
+                      .setLocale(value);
+                  Navigator.of(ctx).pop();
+                },
+              ),
+          ],
+        ),
+      );
+    },
+  );
 }
 
 void _showNicknameDialog(
@@ -193,7 +266,7 @@ class _SettingsTile extends StatelessWidget {
         style: TextStyle(
           fontFamily: 'DungGeunMo',
           color: Colors.white.withValues(alpha: 0.5),
-          fontSize: 6,
+          fontSize: 8,
         ),
       ),
       value: value,

@@ -46,7 +46,7 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
                   l10n.skip,
                   style: TextStyle(
                     fontFamily: 'DungGeunMo',
-                    fontSize: 8,
+                    fontSize: 10,
                     color: Colors.white.withValues(alpha: 0.5),
                   ),
                 ),
@@ -108,7 +108,7 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
                             style: const TextStyle(
                               fontFamily: 'DungGeunMo',
                               fontWeight: FontWeight.bold,
-                              fontSize: 10,
+                              fontSize: 12,
                               color: Colors.black,
                             ),
                           ),
@@ -172,7 +172,7 @@ class _ControlsPage extends StatelessWidget {
             l10n.tutorialControls,
             style: const TextStyle(
               fontFamily: 'DungGeunMo',
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -233,7 +233,7 @@ class _ControlRow extends StatelessWidget {
                 style: const TextStyle(
                   fontFamily: 'DungGeunMo',
                   color: Colors.white,
-                  fontSize: 8,
+                  fontSize: 10,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -241,7 +241,7 @@ class _ControlRow extends StatelessWidget {
                 description,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.5),
-                  fontSize: 12,
+                  fontSize: 14,
                 ),
               ),
             ],
@@ -274,7 +274,7 @@ class _ChainPage extends StatelessWidget {
             l10n.tutorialChainTitle,
             style: const TextStyle(
               fontFamily: 'DungGeunMo',
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -285,9 +285,9 @@ class _ChainPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _NumberBox(value: '2', color: Color(0xFF55FF55)),
-              Text(' + ', style: TextStyle(color: Colors.white54, fontSize: 20)),
+              Text(' + ', style: TextStyle(color: Colors.white54, fontSize: 22)),
               _NumberBox(value: '2', color: Color(0xFF55FF55)),
-              Text(' = ', style: TextStyle(color: Colors.white54, fontSize: 20)),
+              Text(' = ', style: TextStyle(color: Colors.white54, fontSize: 22)),
               _NumberBox(value: '4', color: Color(0xFF55FFFF)),
             ],
           ),
@@ -296,9 +296,9 @@ class _ChainPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _NumberBox(value: '4', color: Color(0xFF55FFFF)),
-              Text(' + ', style: TextStyle(color: Colors.white54, fontSize: 20)),
+              Text(' + ', style: TextStyle(color: Colors.white54, fontSize: 22)),
               _NumberBox(value: '4', color: Color(0xFF55FFFF)),
-              Text(' = ', style: TextStyle(color: Colors.white54, fontSize: 20)),
+              Text(' = ', style: TextStyle(color: Colors.white54, fontSize: 22)),
               _NumberBox(value: '8', color: Color(0xFFFF8844)),
             ],
           ),
@@ -308,7 +308,7 @@ class _ChainPage extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.7),
-              fontSize: 13,
+              fontSize: 15,
               height: 1.5,
             ),
           ),
@@ -324,7 +324,7 @@ class _ChainPage extends StatelessWidget {
               style: const TextStyle(
                 fontFamily: 'DungGeunMo',
                 color: Color(0xFFFFD93D),
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 2,
               ),
@@ -357,7 +357,7 @@ class _NumberBox extends StatelessWidget {
         style: const TextStyle(
           fontFamily: 'DungGeunMo',
           color: Colors.white,
-          fontSize: 14,
+          fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -408,7 +408,7 @@ class _TutorialPageLayout extends StatelessWidget {
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontFamily: 'DungGeunMo',
-              fontSize: 14,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.white,
               height: 1.3,
@@ -420,7 +420,7 @@ class _TutorialPageLayout extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.7),
-              fontSize: 13,
+              fontSize: 15,
               height: 1.5,
             ),
           ),

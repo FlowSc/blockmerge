@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/theme/app_theme.dart';
+import 'features/settings/providers/settings_notifier.dart';
 import 'features/game/game_screen.dart';
 import 'features/game/models/game_mode.dart';
 import 'features/home/home_screen.dart';
@@ -70,14 +72,14 @@ GoRouter _createRouter() => GoRouter(
   ],
 );
 
-class IzakApp extends StatefulWidget {
+class IzakApp extends ConsumerStatefulWidget {
   const IzakApp({super.key});
 
   @override
-  State<IzakApp> createState() => _IzakAppState();
+  ConsumerState<IzakApp> createState() => _IzakAppState();
 }
 
-class _IzakAppState extends State<IzakApp> {
+class _IzakAppState extends ConsumerState<IzakApp> {
   late final GoRouter _router = _createRouter();
 
   @override
@@ -88,6 +90,10 @@ class _IzakAppState extends State<IzakApp> {
 
   @override
   Widget build(BuildContext context) {
+    final String? localeCode = ref.watch(
+      settingsNotifierProvider.select((s) => s.localeCode),
+    );
+
     return MaterialApp.router(
       title: 'Merge Chain Blast',
       theme: AppTheme.darkTheme,
@@ -95,6 +101,7 @@ class _IzakAppState extends State<IzakApp> {
       debugShowCheckedModeBanner: false,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      locale: localeCode != null ? Locale(localeCode) : null,
     );
   }
 }

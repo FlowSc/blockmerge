@@ -90,7 +90,7 @@ class _NewBestNotificationState extends ConsumerState<NewBestNotification>
                       style: const TextStyle(
                         fontFamily: 'DungGeunMo',
                         color: Colors.white,
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 3,
                       ),
