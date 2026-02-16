@@ -103,5 +103,6 @@
   "timeAttackTutorialGo": "GO!",
   "privacyPolicy": "개인정보 처리방침",
   "language": "언어",
-  "languageDesc": "앱 표시 언어 변경"
+  "languageDesc": "앱 표시 언어 변경",
+  "playTime": "Time"
 }

@@ -23,7 +23,7 @@ final hasSavedGameProvider = AutoDisposeFutureProvider<bool>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef HasSavedGameRef = AutoDisposeFutureProviderRef<bool>;
-String _$gameNotifierHash() => r'47d85f677ef0a21f88b0aab664df0573f58f102a';
+String _$gameNotifierHash() => r'565889ce432d074916359449dbe5d13fcaf83bc3';
 
 /// See also [GameNotifier].
 @ProviderFor(GameNotifier)

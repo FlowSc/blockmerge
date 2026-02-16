@@ -13,6 +13,7 @@ final class LeaderboardEntry {
     this.gameMode = 'classic',
     this.isCleared = false,
     this.country,
+    this.playTimeSeconds = 0,
   });
 
   final String id;
@@ -25,6 +26,7 @@ final class LeaderboardEntry {
   final String gameMode;
   final bool isCleared;
   final String? country;
+  final int playTimeSeconds;
 
   factory LeaderboardEntry.fromJson(Map<String, dynamic> json) {
     return LeaderboardEntry(
@@ -38,6 +40,7 @@ final class LeaderboardEntry {
       gameMode: (json['game_mode'] as String?) ?? 'classic',
       isCleared: (json['is_cleared'] as bool?) ?? false,
       country: json['country'] as String?,
+      playTimeSeconds: (json['play_time_seconds'] as int?) ?? 0,
     );
   }
 
@@ -51,6 +54,7 @@ final class LeaderboardEntry {
       'game_mode': gameMode,
       'is_cleared': isCleared,
       'country': country,
+      'play_time_seconds': playTimeSeconds,
     };
   }
 }

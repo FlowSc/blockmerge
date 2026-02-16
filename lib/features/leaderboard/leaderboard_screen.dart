@@ -572,6 +572,15 @@ class _LeaderboardTile extends StatelessWidget {
                     fontSize: 8,
                   ),
                 ),
+                if (entry.playTimeSeconds > 0)
+                  Text(
+                    _formatPlayTime(entry.playTimeSeconds),
+                    style: TextStyle(
+                      fontFamily: 'DungGeunMo',
+                      color: Colors.white.withValues(alpha: 0.3),
+                      fontSize: 7,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -588,6 +597,12 @@ class _LeaderboardTile extends StatelessWidget {
       ),
     );
   }
+}
+
+String _formatPlayTime(int seconds) {
+  final int m = seconds ~/ 60;
+  final int s = seconds % 60;
+  return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
 }
 
 /// Converts a 2-letter ISO country code (e.g. "KR") to a flag emoji.

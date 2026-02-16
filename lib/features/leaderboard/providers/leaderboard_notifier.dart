@@ -32,6 +32,7 @@ class LeaderboardNotifier extends _$LeaderboardNotifier {
     String gameMode = 'classic',
     bool isCleared = false,
     String? country,
+    int playTimeSeconds = 0,
   }) async {
     await _repository.submitScore(
       nickname: nickname,
@@ -42,6 +43,7 @@ class LeaderboardNotifier extends _$LeaderboardNotifier {
       gameMode: gameMode,
       isCleared: isCleared,
       country: country,
+      playTimeSeconds: playTimeSeconds,
     );
     await loadTopScores(gameMode: gameMode);
   }

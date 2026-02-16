@@ -55,6 +55,7 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
             gameMode: gameMode,
             isCleared: gameState.hasReachedVictory,
             country: getCountryCode(),
+            playTimeSeconds: gameState.playTimeSeconds,
           );
 
       if (mounted) {
@@ -90,6 +91,8 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
         ref.watch(gameNotifierProvider.select((s) => s.totalMerges));
     final int maxChainLevel =
         ref.watch(gameNotifierProvider.select((s) => s.maxChainLevel));
+    final String playTime =
+        ref.watch(gameNotifierProvider.select((s) => s.formattedPlayTime));
     final GameMode gameMode =
         ref.watch(gameNotifierProvider.select((s) => s.gameMode));
     final l10n = AppLocalizations.of(context)!;
@@ -129,11 +132,13 @@ class _GameOverOverlayState extends ConsumerState<GameOverOverlay> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _StatChip(label: l10n.merges, value: '$totalMerges'),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 _StatChip(
                   label: l10n.maxChain,
                   value: 'x${maxChainLevel + 1}',
                 ),
+                const SizedBox(width: 12),
+                _StatChip(label: l10n.playTime, value: playTime),
               ],
             ),
             const SizedBox(height: 8),

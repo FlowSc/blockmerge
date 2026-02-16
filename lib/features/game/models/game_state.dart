@@ -70,6 +70,7 @@ final class GameState {
     this.slidingMerge,
     this.hasUsedContinue = false,
     this.gravityDrops,
+    this.playTimeSeconds = 0,
   });
 
   /// 12 rows x 6 columns. null = empty cell, int = tile value.
@@ -120,7 +121,16 @@ final class GameState {
   /// Tiles currently dropping due to gravity. Non-null during gravity animation.
   final List<TileDrop>? gravityDrops;
 
+  /// Elapsed play time in seconds (paused time excluded).
+  final int playTimeSeconds;
+
   int get level => score ~/ GameConstants.pointsPerLevel;
+
+  String get formattedPlayTime {
+    final int minutes = playTimeSeconds ~/ 60;
+    final int seconds = playTimeSeconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
 
   GameState copyWith({
     List<List<int?>>? grid,
@@ -142,6 +152,7 @@ final class GameState {
     SlidingMerge? Function()? slidingMerge,
     bool? hasUsedContinue,
     List<TileDrop>? Function()? gravityDrops,
+    int? playTimeSeconds,
   }) {
     return GameState(
       grid: grid ?? this.grid,
@@ -171,6 +182,7 @@ final class GameState {
       hasUsedContinue: hasUsedContinue ?? this.hasUsedContinue,
       gravityDrops:
           gravityDrops != null ? gravityDrops() : this.gravityDrops,
+      playTimeSeconds: playTimeSeconds ?? this.playTimeSeconds,
     );
   }
 }

@@ -725,6 +725,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change app display language'**
   String get languageDesc;
+
+  /// No description provided for @playTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get playTime;
 }
 
 class _AppLocalizationsDelegate

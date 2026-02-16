@@ -35,6 +35,7 @@ class GameNotifier extends _$GameNotifier {
   Timer? _animTimer;
   Timer? _lockTimer;
   Timer? _countdownTimer;
+  Timer? _playTimeTimer;
   bool _isLocking = false;
   DateTime? _lockStartedAt;
 
@@ -83,6 +84,7 @@ class GameNotifier extends _$GameNotifier {
       'maxChainLevel': state.maxChainLevel,
       'hasReachedVictory': state.hasReachedVictory,
       'gameMode': state.gameMode.name,
+      'playTimeSeconds': state.playTimeSeconds,
     };
     if (state.currentBlock != null) {
       json['currentBlock'] = state.currentBlock!.toJson();
@@ -140,9 +142,11 @@ class GameNotifier extends _$GameNotifier {
         maxChainLevel: json['maxChainLevel'] as int,
         hasReachedVictory: json['hasReachedVictory'] as bool? ?? false,
         gameMode: restoredMode,
+        playTimeSeconds: (json['playTimeSeconds'] as int?) ?? 0,
       );
 
       _rng = Random();
+      _startPlayTimeTimer();
       if (currentBlock != null) {
         _startTicker();
       } else {
@@ -171,6 +175,8 @@ class GameNotifier extends _$GameNotifier {
     _lockTimer = null;
     _countdownTimer?.cancel();
     _countdownTimer = null;
+    _playTimeTimer?.cancel();
+    _playTimeTimer = null;
     _isLocking = false;
     _lockStartedAt = null;
   }
@@ -277,6 +283,7 @@ class GameNotifier extends _$GameNotifier {
     );
 
     clearSavedGame();
+    _startPlayTimeTimer();
     _startTicker();
     if (mode == GameMode.timeAttack) {
       _startCountdownTimer();
@@ -373,6 +380,7 @@ class GameNotifier extends _$GameNotifier {
     _animTimer?.cancel();
     _lockTimer?.cancel();
     _countdownTimer?.cancel();
+    _playTimeTimer?.cancel();
     _isLocking = false;
 
     if (state.isAnimating) {
@@ -455,6 +463,7 @@ class GameNotifier extends _$GameNotifier {
     if (state.status != GameStatus.paused) return;
     state = state.copyWith(status: GameStatus.playing);
 
+    _startPlayTimeTimer();
     if (state.gameMode == GameMode.timeAttack) {
       _startCountdownTimer();
     }
@@ -468,6 +477,16 @@ class GameNotifier extends _$GameNotifier {
   }
 
   // --- Internal ---
+
+  void _startPlayTimeTimer() {
+    _playTimeTimer?.cancel();
+    _playTimeTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (state.status != GameStatus.playing) return;
+      state = state.copyWith(
+        playTimeSeconds: state.playTimeSeconds + 1,
+      );
+    });
+  }
 
   void _startCountdownTimer() {
     _countdownTimer?.cancel();

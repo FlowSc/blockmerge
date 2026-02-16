@@ -169,5 +169,6 @@
   "timeAttackTutorialGo": "GO!",
   "privacyPolicy": "Privacy Policy",
   "language": "Language",
-  "languageDesc": "Change app display language"
+  "languageDesc": "Change app display language",
+  "playTime": "Time"
 }

@@ -346,4 +346,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get languageDesc => 'Cambiar el idioma de la aplicación';
+
+  @override
+  String get playTime => 'Time';
 }

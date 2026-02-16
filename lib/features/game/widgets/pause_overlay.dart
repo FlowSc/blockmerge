@@ -20,6 +20,9 @@ class PauseOverlay extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final String playTime = ref.watch(
+      gameNotifierProvider.select((s) => s.formattedPlayTime),
+    );
 
     return Container(
       color: Colors.black.withValues(alpha: 0.8),
@@ -43,7 +46,17 @@ class PauseOverlay extends ConsumerWidget {
                 letterSpacing: 4,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 12),
+            Text(
+              playTime,
+              style: TextStyle(
+                fontFamily: 'DungGeunMo',
+                color: Colors.white.withValues(alpha: 0.5),
+                fontSize: 12,
+                letterSpacing: 2,
+              ),
+            ),
+            const SizedBox(height: 32),
             _MenuButton(
               label: l10n.resume,
               icon: Icons.play_arrow,
@@ -125,6 +138,7 @@ class PauseOverlay extends ConsumerWidget {
                               gameMode: gameMode,
                               isCleared: gameState.hasReachedVictory,
                               country: getCountryCode(),
+                              playTimeSeconds: gameState.playTimeSeconds,
                             );
                       } catch (_) {
                         // Silent fail — don't block quit

@@ -82,6 +82,7 @@ class LeaderboardRepository {
     String gameMode = 'classic',
     bool isCleared = false,
     String? country,
+    int playTimeSeconds = 0,
   }) async {
     await _client.from('leaderboard').insert({
       'nickname': nickname,
@@ -92,6 +93,7 @@ class LeaderboardRepository {
       'game_mode': gameMode,
       'is_cleared': isCleared,
       'country': country,
+      'play_time_seconds': playTimeSeconds,
     });
   }
 }

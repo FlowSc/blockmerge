@@ -48,13 +48,13 @@ class _GameScreenState extends ConsumerState<GameScreen>
   double _accumDy = 0;
   _DragAxis _dragAxis = _DragAxis.none;
   double _cellWidth = 50;
-  static const double _moveThresholdFraction = 0.3;
+  static const double _moveThresholdFraction = 0.9;
   static const double _axisLockDistance = 8;
   static const double _hardDropVelocity = 800;
 
   // DAS (Delayed Auto Shift) — auto-repeat when holding a direction
-  static const int _dasDelayMs = 130;
-  static const int _arrIntervalMs = 33;
+  static const int _dasDelayMs = 170;
+  static const int _arrIntervalMs = 50;
   Timer? _dasTimer;
   Timer? _arrTimer;
   int _dasDirection = 0; // -1 left, 1 right, 0 none
@@ -208,6 +208,10 @@ class _GameScreenState extends ConsumerState<GameScreen>
     if (threshold <= 0) return;
     final GameNotifier notifier = ref.read(gameNotifierProvider.notifier);
 
+    // Cancel DAS during active dragging to prevent double-movement
+    _cancelDas();
+
+    int lastDirection = 0;
     while (_accumDx.abs() >= threshold) {
       final int direction = _accumDx > 0 ? 1 : -1;
       if (direction > 0) {
@@ -216,7 +220,12 @@ class _GameScreenState extends ConsumerState<GameScreen>
         notifier.moveLeft();
       }
       _accumDx -= direction * threshold;
-      _startDas(direction);
+      lastDirection = direction;
+    }
+
+    // Start DAS only after movement completes (for drag-and-hold auto-repeat)
+    if (lastDirection != 0) {
+      _startDas(lastDirection);
     }
   }
 
@@ -264,6 +273,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
                         )
                       else
                         const SizedBox(width: 48),
+                      const _PlayTimeClock(),
                       const Spacer(),
                       const NextBlockPreview(),
                       const Spacer(),
@@ -327,6 +337,26 @@ class _GameScreenState extends ConsumerState<GameScreen>
         ),
       ),
       bottomNavigationBar: const BannerAdWidget(),
+    );
+  }
+}
+
+class _PlayTimeClock extends ConsumerWidget {
+  const _PlayTimeClock();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final String playTime = ref.watch(
+      gameNotifierProvider.select((s) => s.formattedPlayTime),
+    );
+
+    return Text(
+      playTime,
+      style: TextStyle(
+        fontFamily: 'DungGeunMo',
+        color: Colors.white.withValues(alpha: 0.5),
+        fontSize: 11,
+      ),
     );
   }
 }

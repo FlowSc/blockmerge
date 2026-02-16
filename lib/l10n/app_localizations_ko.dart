@@ -338,4 +338,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get languageDesc => '앱 표시 언어 변경';
+
+  @override
+  String get playTime => 'Time';
 }
