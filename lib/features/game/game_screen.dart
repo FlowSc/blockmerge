@@ -50,7 +50,9 @@ class _GameScreenState extends ConsumerState<GameScreen>
   double _cellWidth = 50;
   static const double _moveThresholdFraction = 0.9;
   static const double _axisLockDistance = 8;
-  static const double _hardDropVelocity = 800;
+  static const double _hardDropVelocity = 400;
+  static const double _softDropThresholdFraction = 0.5;
+  bool _hardDropped = false;
 
   // DAS (Delayed Auto Shift) — auto-repeat when holding a direction
   static const int _dasDelayMs = 170;
@@ -178,6 +180,7 @@ class _GameScreenState extends ConsumerState<GameScreen>
     _accumDx = 0;
     _accumDy = 0;
     _dragAxis = _DragAxis.none;
+    _hardDropped = false;
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
@@ -194,6 +197,19 @@ class _GameScreenState extends ConsumerState<GameScreen>
       } else {
         return;
       }
+    }
+
+    // Vertical drag: soft drop per cell height
+    if (_dragAxis == _DragAxis.vertical) {
+      if (_hardDropped) return;
+      final double softThreshold = _cellWidth * _softDropThresholdFraction;
+      if (softThreshold <= 0) return;
+      final GameNotifier notifier = ref.read(gameNotifierProvider.notifier);
+      while (_accumDy >= softThreshold) {
+        notifier.softDrop();
+        _accumDy -= softThreshold;
+      }
+      return;
     }
 
     if (_dragAxis != _DragAxis.horizontal) return;
@@ -231,10 +247,13 @@ class _GameScreenState extends ConsumerState<GameScreen>
 
   void _onPanEnd(DragEndDetails details) {
     _cancelDas();
-    if (_dragAxis != _DragAxis.horizontal) {
+    if (!_hardDropped) {
       final double vy = details.velocity.pixelsPerSecond.dy;
-      if (vy > _hardDropVelocity) {
+      final double vx = details.velocity.pixelsPerSecond.dx.abs();
+      // Trigger hard drop if downward velocity is dominant
+      if (vy > _hardDropVelocity && vy > vx) {
         ref.read(gameNotifierProvider.notifier).hardDrop();
+        _hardDropped = true;
       }
     }
     _accumDx = 0;
