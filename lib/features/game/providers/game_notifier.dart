@@ -104,24 +104,26 @@ class GameNotifier extends _$GameNotifier {
     if (raw == null) return false;
 
     try {
-      final Map<String, dynamic> json =
-          jsonDecode(raw) as Map<String, dynamic>;
+      final Map<String, dynamic> json = jsonDecode(raw) as Map<String, dynamic>;
 
       final List<List<int?>> grid = (json['grid'] as List<dynamic>)
-          .map((dynamic row) => (row as List<dynamic>)
-              .map((dynamic v) => v as int?)
-              .toList())
+          .map(
+            (dynamic row) =>
+                (row as List<dynamic>).map((dynamic v) => v as int?).toList(),
+          )
           .toList();
 
       FallingBlock? currentBlock;
       if (json['currentBlock'] != null) {
         currentBlock = FallingBlock.fromJson(
-            json['currentBlock'] as Map<String, dynamic>);
+          json['currentBlock'] as Map<String, dynamic>,
+        );
       }
       FallingBlock? nextBlock;
       if (json['nextBlock'] != null) {
-        nextBlock =
-            FallingBlock.fromJson(json['nextBlock'] as Map<String, dynamic>);
+        nextBlock = FallingBlock.fromJson(
+          json['nextBlock'] as Map<String, dynamic>,
+        );
       }
 
       final String modeStr = json['gameMode'] as String? ?? 'classic';
@@ -190,8 +192,9 @@ class GameNotifier extends _$GameNotifier {
 
     // Hard cap: if total lock time exceeded, don't reset
     if (_lockStartedAt != null) {
-      final int elapsed =
-          DateTime.now().difference(_lockStartedAt!).inMilliseconds;
+      final int elapsed = DateTime.now()
+          .difference(_lockStartedAt!)
+          .inMilliseconds;
       if (elapsed >= GameConstants.maxLockMs) return;
     }
 
@@ -221,25 +224,22 @@ class GameNotifier extends _$GameNotifier {
     // Clamp remaining time to not exceed the hard cap
     int delayMs = GameConstants.lockDelayMs;
     if (_lockStartedAt != null) {
-      final int elapsed =
-          DateTime.now().difference(_lockStartedAt!).inMilliseconds;
+      final int elapsed = DateTime.now()
+          .difference(_lockStartedAt!)
+          .inMilliseconds;
       final int remaining = GameConstants.maxLockMs - elapsed;
       delayMs = delayMs.clamp(0, remaining);
     }
 
-    _lockTimer = Timer(
-      Duration(milliseconds: delayMs),
-      () {
-        _isLocking = false;
-        _lockStartedAt = null;
-        _placeAndMerge();
-      },
-    );
+    _lockTimer = Timer(Duration(milliseconds: delayMs), () {
+      _isLocking = false;
+      _lockStartedAt = null;
+      _placeAndMerge();
+    });
   }
 
   void _haptic([int chainLevel = 0]) {
-    final bool enabled =
-        ref.read(settingsNotifierProvider).vibrationEnabled;
+    final bool enabled = ref.read(settingsNotifierProvider).vibrationEnabled;
     if (!enabled) return;
 
     switch (chainLevel) {
@@ -389,8 +389,9 @@ class GameNotifier extends _$GameNotifier {
       final (List<List<int?>> finalGrid, MergeChainResult result) =
           Board.runMergeChainWithGrid(settled);
       final int newScore = state.score + result.totalScore;
-      final int newHighScore =
-          newScore > state.highScore ? newScore : state.highScore;
+      final int newHighScore = newScore > state.highScore
+          ? newScore
+          : state.highScore;
 
       if (newHighScore > state.highScore) {
         _saveHighScore(newHighScore);
@@ -435,14 +436,12 @@ class GameNotifier extends _$GameNotifier {
       highlightedPositions: () => null,
       newMergedPositions: () => null,
       slidingMerge: () => null,
-        gravityDrops: () => null,
+      gravityDrops: () => null,
     );
 
     if (state.gameMode == GameMode.timeAttack) {
       // Give 30 extra seconds in time attack mode
-      state = state.copyWith(
-        remainingSeconds: state.remainingSeconds + 30,
-      );
+      state = state.copyWith(remainingSeconds: state.remainingSeconds + 30);
       _startCountdownTimer();
     }
 
@@ -452,10 +451,7 @@ class GameNotifier extends _$GameNotifier {
   /// Continue playing after reaching 2048 (endless mode).
   void continueAfterVictory() {
     if (state.status != GameStatus.victory) return;
-    state = state.copyWith(
-      status: GameStatus.playing,
-      hasReachedVictory: true,
-    );
+    state = state.copyWith(status: GameStatus.playing, hasReachedVictory: true);
     _spawnNext();
   }
 
@@ -482,9 +478,7 @@ class GameNotifier extends _$GameNotifier {
     _playTimeTimer?.cancel();
     _playTimeTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (state.status != GameStatus.playing) return;
-      state = state.copyWith(
-        playTimeSeconds: state.playTimeSeconds + 1,
-      );
+      state = state.copyWith(playTimeSeconds: state.playTimeSeconds + 1);
     });
   }
 
@@ -508,7 +502,7 @@ class GameNotifier extends _$GameNotifier {
           highlightedPositions: () => null,
           newMergedPositions: () => null,
           slidingMerge: () => null,
-        gravityDrops: () => null,
+          gravityDrops: () => null,
         );
       } else {
         state = state.copyWith(remainingSeconds: next);
@@ -519,9 +513,10 @@ class GameNotifier extends _$GameNotifier {
   void _startTicker() {
     _tickTimer?.cancel();
     final int level = state.level;
-    final int tickMs = (GameConstants.initialTickMs -
-            level * GameConstants.speedIncreasePerLevel)
-        .clamp(GameConstants.minTickMs, GameConstants.initialTickMs);
+    final int tickMs =
+        (GameConstants.initialTickMs -
+                level * GameConstants.speedIncreasePerLevel)
+            .clamp(GameConstants.minTickMs, GameConstants.initialTickMs);
     _tickTimer = Timer.periodic(Duration(milliseconds: tickMs), (_) {
       _tick();
     });
@@ -598,13 +593,12 @@ class GameNotifier extends _$GameNotifier {
 
       _animTimer = Timer(const Duration(milliseconds: 200), () {
         final List<List<int?>> settledGrid = Board.applyGravity(grid);
-        final Set<Position> adjustedNew =
-            _adjustPositionsAfterGravity(grid, newPositions);
-
-        state = state.copyWith(
-          grid: settledGrid,
-          gravityDrops: () => null,
+        final Set<Position> adjustedNew = _adjustPositionsAfterGravity(
+          grid,
+          newPositions,
         );
+
+        state = state.copyWith(grid: settledGrid, gravityDrops: () => null);
 
         _animTimer = Timer(const Duration(milliseconds: 80), () {
           _animateMergeChain(settledGrid, 0, newTilePositions: adjustedNew);
@@ -630,10 +624,9 @@ class GameNotifier extends _$GameNotifier {
       final int tileCount = isNew.length;
       for (int i = 0; i < tileCount; i++) {
         if (isNew[i]) {
-          adjusted.add(Position(
-            row: GameConstants.rows - tileCount + i,
-            col: col,
-          ));
+          adjusted.add(
+            Position(row: GameConstants.rows - tileCount + i, col: col),
+          );
         }
       }
     }
@@ -702,6 +695,7 @@ class GameNotifier extends _$GameNotifier {
           if (newTilePositions.contains(p.from2)) c++;
           return c;
         }
+
         cmp = newCount(a.$1).compareTo(newCount(b.$1));
         if (cmp != 0) return cmp;
       }
@@ -719,10 +713,7 @@ class GameNotifier extends _$GameNotifier {
 
   /// Choose the best merge direction for a single pair by simulating
   /// both directions (merge → gravity → full chain).
-  MergedPair _chooseBestDirection(
-    List<List<int?>> grid,
-    MergedPair pair,
-  ) {
+  MergedPair _chooseBestDirection(List<List<int?>> grid, MergedPair pair) {
     final MergedPair toPos1 = MergedPair(
       from1: pair.from1,
       from2: pair.from2,
@@ -738,19 +729,35 @@ class GameNotifier extends _$GameNotifier {
 
     // Primary: immediate chain — merged value matches an adjacent tile.
     final int mergedValue = pair.newValue;
-    final bool chain1 =
-        _hasMatchingNeighbor(grid, pair.from1, pair.from2, mergedValue);
-    final bool chain2 =
-        _hasMatchingNeighbor(grid, pair.from2, pair.from1, mergedValue);
+    final bool chain1 = _hasMatchingNeighbor(
+      grid,
+      pair.from1,
+      pair.from2,
+      mergedValue,
+    );
+    final bool chain2 = _hasMatchingNeighbor(
+      grid,
+      pair.from2,
+      pair.from1,
+      mergedValue,
+    );
     if (chain1 && !chain2) return toPos1;
     if (chain2 && !chain1) return toPos2;
 
     // Secondary: toward the closest bigger neighbor (better chain setup).
     // e.g. 4+4=8: neighbor 32 (2 steps) is better than 128 (4 steps).
-    final int c1 =
-        _closestChainNeighbor(grid, pair.from1, pair.from2, mergedValue);
-    final int c2 =
-        _closestChainNeighbor(grid, pair.from2, pair.from1, mergedValue);
+    final int c1 = _closestChainNeighbor(
+      grid,
+      pair.from1,
+      pair.from2,
+      mergedValue,
+    );
+    final int c2 = _closestChainNeighbor(
+      grid,
+      pair.from2,
+      pair.from1,
+      mergedValue,
+    );
     if (c1 != 0 && (c2 == 0 || c1 < c2)) return toPos1;
     if (c2 != 0 && (c1 == 0 || c2 < c1)) return toPos2;
 
@@ -772,15 +779,16 @@ class GameNotifier extends _$GameNotifier {
 
   /// Simulate merge → gravity → full chain and return (totalMerges, totalScore).
   (int, int) _simulateChain(List<List<int?>> grid, MergedPair candidate) {
-    final List<List<int?>> afterMerge =
-        Board.applyMerges(grid, [candidate]);
+    final List<List<int?>> afterMerge = Board.applyMerges(grid, [candidate]);
     final List<List<int?>> afterGravity = Board.applyGravity(afterMerge);
     final MergeChainResult result = Board.runMergeChain(afterGravity);
 
-    final int totalMerges = 1 + result.steps.fold<int>(
-      0,
-      (int sum, MergeStep step) => sum + step.mergedPairs.length,
-    );
+    final int totalMerges =
+        1 +
+        result.steps.fold<int>(
+          0,
+          (int sum, MergeStep step) => sum + step.mergedPairs.length,
+        );
     final int totalScore = candidate.newValue + result.totalScore;
     return (totalMerges, totalScore);
   }
@@ -825,8 +833,7 @@ class GameNotifier extends _$GameNotifier {
   /// Higher chains play faster: 0.92^chainLevel, clamped to 60% minimum.
   int _chainDelayMs(int baseMs, int chainLevel) {
     if (chainLevel <= 0) return baseMs;
-    final double multiplier =
-        pow(0.92, chainLevel).toDouble().clamp(0.6, 1.0);
+    final double multiplier = pow(0.92, chainLevel).toDouble().clamp(0.6, 1.0);
     return (baseMs * multiplier).round();
   }
 
@@ -866,40 +873,34 @@ class GameNotifier extends _$GameNotifier {
 
     final List<MergedPair> singlePair = [target];
 
-    // Phase 1: Highlight the pair about to merge (glow effect)
-    final Set<Position> highlights = {target.from1, target.from2};
-
-    state = state.copyWith(
-      highlightedPositions: () => highlights,
-    );
-
     // Determine which tile slides and which stays
     final Position stayPos = target.to;
-    final Position slidePos =
-        target.to == target.from1 ? target.from2 : target.from1;
+    final Position slidePos = target.to == target.from1
+        ? target.from2
+        : target.from1;
     final int tileValue = target.newValue ~/ 2;
 
-    // Phase 2: After glow, start sliding animation
-    _animTimer = Timer(Duration(milliseconds: _chainDelayMs(200, chainLevel)), () {
-      state = state.copyWith(
-        highlightedPositions: () => null,
-        slidingMerge: () => SlidingMerge(
-          from: slidePos,
-          to: stayPos,
-          stayPosition: stayPos,
-          tileValue: tileValue,
-        ),
-      );
+    // Phase 1: Start sliding immediately (no pre-merge highlight flash).
+    state = state.copyWith(
+      highlightedPositions: () => null,
+      slidingMerge: () => SlidingMerge(
+        from: slidePos,
+        to: stayPos,
+        stayPosition: stayPos,
+        tileValue: tileValue,
+      ),
+    );
 
-      // Phase 3: After slide completes, apply merge
-      _animTimer = Timer(Duration(milliseconds: _chainDelayMs(250, chainLevel)), () {
+    // Phase 2: After slide completes, apply merge
+    _animTimer = Timer(
+      Duration(milliseconds: _chainDelayMs(250, chainLevel)),
+      () {
         final int multiplier = GameConstants.chainMultiplier(chainLevel);
         final int stepScore = target.newValue * multiplier;
 
         _haptic(chainLevel);
         ref.read(sfxNotifierProvider.notifier).playMerge(chainLevel);
-        final List<List<int?>> mergedGrid =
-            Board.applyMerges(grid, singlePair);
+        final List<List<int?>> mergedGrid = Board.applyMerges(grid, singlePair);
 
         // Build progressive chain result for combo display
         final List<MergeStep> prevSteps =
@@ -920,7 +921,7 @@ class GameNotifier extends _$GameNotifier {
         state = state.copyWith(
           grid: mergedGrid,
           slidingMerge: () => null,
-        gravityDrops: () => null,
+          gravityDrops: () => null,
           newMergedPositions: () => {target.to},
           score: state.score + stepScore,
           lastMergeChain: () => chainResult,
@@ -930,58 +931,68 @@ class GameNotifier extends _$GameNotifier {
         );
 
         // Phase 4: After showing merged tile, animate gravity drop
-        _animTimer = Timer(Duration(milliseconds: _chainDelayMs(200, chainLevel)), () {
-          final List<TileDrop> drops =
-              Board.computeGravityDrops(mergedGrid);
+        _animTimer = Timer(
+          Duration(milliseconds: _chainDelayMs(200, chainLevel)),
+          () {
+            final List<TileDrop> drops = Board.computeGravityDrops(mergedGrid);
 
-          if (drops.isEmpty) {
-            // No gravity needed — go straight to next merge check
+            if (drops.isEmpty) {
+              // No gravity needed — go straight to next merge check
+              state = state.copyWith(newMergedPositions: () => null);
+              _animTimer = Timer(
+                Duration(milliseconds: _chainDelayMs(100, chainLevel)),
+                () {
+                  _animateMergeChain(mergedGrid, chainLevel + 1);
+                },
+              );
+              return;
+            }
+
+            // Set gravity drops for widget animation (grid stays pre-gravity)
             state = state.copyWith(
               newMergedPositions: () => null,
-            );
-            _animTimer = Timer(Duration(milliseconds: _chainDelayMs(100, chainLevel)), () {
-              _animateMergeChain(mergedGrid, chainLevel + 1);
-            });
-            return;
-          }
-
-          // Set gravity drops for widget animation (grid stays pre-gravity)
-          state = state.copyWith(
-            newMergedPositions: () => null,
-            gravityDrops: () => drops,
-          );
-
-          // Phase 5: After gravity animation, apply actual gravity
-          _animTimer = Timer(Duration(milliseconds: _chainDelayMs(200, chainLevel)), () {
-            final List<List<int?>> gravityGrid =
-                Board.applyGravity(mergedGrid);
-
-            state = state.copyWith(
-              grid: gravityGrid,
-              gravityDrops: () => null,
+              gravityDrops: () => drops,
             );
 
-            // Phase 6: After gravity settles, check for next merge
-            _animTimer = Timer(Duration(milliseconds: _chainDelayMs(80, chainLevel)), () {
-              _animateMergeChain(gravityGrid, chainLevel + 1);
-            });
-          });
-        });
-      });
-    });
+            // Phase 5: After gravity animation, apply actual gravity
+            _animTimer = Timer(
+              Duration(milliseconds: _chainDelayMs(200, chainLevel)),
+              () {
+                final List<List<int?>> gravityGrid = Board.applyGravity(
+                  mergedGrid,
+                );
+
+                state = state.copyWith(
+                  grid: gravityGrid,
+                  gravityDrops: () => null,
+                );
+
+                // Phase 6: After gravity settles, check for next merge
+                _animTimer = Timer(
+                  Duration(milliseconds: _chainDelayMs(80, chainLevel)),
+                  () {
+                    _animateMergeChain(gravityGrid, chainLevel + 1);
+                  },
+                );
+              },
+            );
+          },
+        );
+      },
+    );
   }
 
   void _finishMergeChain() {
-    final int newHighScore =
-        state.score > state.highScore ? state.score : state.highScore;
+    final int newHighScore = state.score > state.highScore
+        ? state.score
+        : state.highScore;
 
     if (newHighScore > state.highScore) {
       _saveHighScore(newHighScore);
     }
 
     // Check for win condition (2048 tile) — skip in time attack or endless mode.
-    if (!state.hasReachedVictory &&
-        state.gameMode != GameMode.timeAttack) {
+    if (!state.hasReachedVictory && state.gameMode != GameMode.timeAttack) {
       final bool hasWinTile = state.grid.any(
         (List<int?> row) =>
             row.any((int? v) => v != null && v >= GameConstants.winTileValue),
@@ -996,7 +1007,7 @@ class GameNotifier extends _$GameNotifier {
           highlightedPositions: () => null,
           newMergedPositions: () => null,
           slidingMerge: () => null,
-        gravityDrops: () => null,
+          gravityDrops: () => null,
           currentChainLevel: 0,
           status: GameStatus.victory,
         );
@@ -1010,7 +1021,7 @@ class GameNotifier extends _$GameNotifier {
       highlightedPositions: () => null,
       newMergedPositions: () => null,
       slidingMerge: () => null,
-        gravityDrops: () => null,
+      gravityDrops: () => null,
       currentChainLevel: 0,
     );
 
@@ -1020,15 +1031,11 @@ class GameNotifier extends _$GameNotifier {
   void _spawnNext() {
     final FallingBlock next =
         state.nextBlock ?? FallingBlock.spawn(_rng, level: state.level);
-    final FallingBlock upcoming =
-        FallingBlock.spawn(_rng, level: state.level);
+    final FallingBlock upcoming = FallingBlock.spawn(_rng, level: state.level);
 
     // Always spawn the block — game over is checked at lock time
     // (_placeAndMerge), giving the player a chance to move/rotate.
-    state = state.copyWith(
-      currentBlock: () => next,
-      nextBlock: () => upcoming,
-    );
+    state = state.copyWith(currentBlock: () => next, nextBlock: () => upcoming);
 
     _startTicker();
   }

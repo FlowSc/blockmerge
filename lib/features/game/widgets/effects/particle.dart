@@ -34,30 +34,29 @@ class Particle {
   double get lifeRatio => (life / maxLife).clamp(0.0, 1.0);
 
   /// Projected size based on z-depth.
-  double get projectedSize =>
-      baseSize * (1.0 + z * 0.005).clamp(0.3, 3.0);
+  double get projectedSize => baseSize * (1.0 + z * 0.0065).clamp(0.25, 3.2);
 
   /// Projected opacity based on z-depth and remaining life.
   double get projectedOpacity =>
-      ((1.0 + z * 0.003).clamp(0.2, 1.0) * lifeRatio).clamp(0.0, 1.0);
+      ((1.0 + z * 0.0042).clamp(0.18, 1.0) * lifeRatio).clamp(0.0, 1.0);
 
   Particle()
-      : x = 0,
-        y = 0,
-        z = 0,
-        vx = 0,
-        vy = 0,
-        vz = 0,
-        baseSize = 4,
-        rotation = 0,
-        rotationSpeed = 0,
-        life = 0,
-        maxLife = 1,
-        color = const Color(0xFFFFFFFF),
-        shape = ParticleShape.orb,
-        drag = 0.96,
-        gravity = 0,
-        maxTrailLength = 0;
+    : x = 0,
+      y = 0,
+      z = 0,
+      vx = 0,
+      vy = 0,
+      vz = 0,
+      baseSize = 4,
+      rotation = 0,
+      rotationSpeed = 0,
+      life = 0,
+      maxLife = 1,
+      color = const Color(0xFFFFFFFF),
+      shape = ParticleShape.orb,
+      drag = 0.96,
+      gravity = 0,
+      maxTrailLength = 0;
 
   /// Reset for object-pool reuse.
   void init({

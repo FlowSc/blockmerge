@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'effect_presets.dart';
-import 'particle.dart';
 import 'particle_painter.dart';
 import 'particle_system.dart';
 
@@ -34,7 +33,8 @@ class _MergeExplosionEffectState extends State<MergeExplosionEffect>
   late final ParticleSystem _system;
   double _prevValue = 0;
   bool _chainSpawned = false;
-  bool _secondFlashSpawned = false;
+  bool _accentSpawned = false;
+  bool _depthBurstSpawned = false;
 
   @override
   void initState() {
@@ -82,18 +82,29 @@ class _MergeExplosionEffectState extends State<MergeExplosionEffect>
       );
     }
 
-    // At ~15% progress, spawn a secondary flash.
-    if (!_secondFlashSpawned && current >= 0.15) {
-      _secondFlashSpawned = true;
-      _system.spawn(
-        x: widget.size / 2,
-        y: widget.size / 2,
-        baseSize: 18 * (1.0 + widget.chainLevel * 0.2),
-        vx: 0,
-        vy: 0,
-        life: 0.2,
+    // At ~16% progress, add a shape-based accent burst (no extra screen flash).
+    if (!_accentSpawned && current >= 0.16) {
+      _accentSpawned = true;
+      EffectPresets.spawnMergeAccentBurst(
+        _system,
+        cx: widget.size / 2,
+        cy: widget.size / 2,
+        tileValue: widget.tileValue,
+        chainLevel: widget.chainLevel,
         color: widget.color,
-        shape: ParticleShape.flash,
+      );
+    }
+
+    // At ~36% progress, add a late depth burst for pseudo-3D layering.
+    if (!_depthBurstSpawned && current >= 0.36) {
+      _depthBurstSpawned = true;
+      EffectPresets.spawnMergeDepthBurst(
+        _system,
+        cx: widget.size / 2,
+        cy: widget.size / 2,
+        tileValue: widget.tileValue,
+        chainLevel: widget.chainLevel,
+        color: widget.color,
       );
     }
   }

@@ -41,29 +41,29 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
-    _shakeAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0, end: 4), weight: 15),
-      TweenSequenceItem(tween: Tween(begin: 4, end: -3), weight: 15),
-      TweenSequenceItem(tween: Tween(begin: -3, end: 2.5), weight: 15),
-      TweenSequenceItem(tween: Tween(begin: 2.5, end: -1.5), weight: 15),
-      TweenSequenceItem(tween: Tween(begin: -1.5, end: 1), weight: 15),
-      TweenSequenceItem(tween: Tween(begin: 1, end: 0), weight: 25),
-    ]).animate(CurvedAnimation(
-      parent: _shakeController,
-      curve: Curves.easeOut,
-    ));
+    _shakeAnimation = TweenSequence<double>(
+      [
+        TweenSequenceItem(tween: Tween(begin: 0, end: 4), weight: 15),
+        TweenSequenceItem(tween: Tween(begin: 4, end: -3), weight: 15),
+        TweenSequenceItem(tween: Tween(begin: -3, end: 2.5), weight: 15),
+        TweenSequenceItem(tween: Tween(begin: 2.5, end: -1.5), weight: 15),
+        TweenSequenceItem(tween: Tween(begin: -1.5, end: 1), weight: 15),
+        TweenSequenceItem(tween: Tween(begin: 1, end: 0), weight: 25),
+      ],
+    ).animate(CurvedAnimation(parent: _shakeController, curve: Curves.easeOut));
 
     _borderColorController = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
 
-    _blockSlideController = AnimationController(
-      duration: const Duration(milliseconds: 60),
-      vsync: this,
-    )..addListener(() {
-        setState(() {});
-      });
+    _blockSlideController =
+        AnimationController(
+          duration: const Duration(milliseconds: 60),
+          vsync: this,
+        )..addListener(() {
+          setState(() {});
+        });
   }
 
   @override
@@ -128,8 +128,7 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
 
     // Detect horizontal movement of falling block for slide animation.
     ref.listen<int?>(
-      gameNotifierProvider
-          .select((GameState s) => s.currentBlock?.leftCol),
+      gameNotifierProvider.select((GameState s) => s.currentBlock?.leftCol),
       (int? prev, int? next) {
         if (prev != null && next != null && prev != next) {
           // Skip animation for large jumps (new block spawn).
@@ -195,8 +194,10 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
         ghostPositions = {};
         ghostValues = {};
         for (final game.Tile tile in ghost.tiles) {
-          final Position pos =
-              Position(row: tile.position.row, col: tile.position.col);
+          final Position pos = Position(
+            row: tile.position.row,
+            col: tile.position.col,
+          );
           ghostPositions.add(pos);
           ghostValues[pos] = tile.value;
         }
@@ -224,10 +225,7 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
                 decoration: BoxDecoration(
                   color: const Color(0xFF0B0B1A),
                   borderRadius: BorderRadius.circular(2),
-                  border: Border.all(
-                    color: borderColor,
-                    width: 2,
-                  ),
+                  border: Border.all(color: borderColor, width: 2),
                 ),
                 child: child,
               );
@@ -242,8 +240,7 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
                 ),
                 // Ghost tiles
                 if (ghostPositions != null && ghostValues != null)
-                  ..._buildGhostTiles(
-                      ghostPositions, ghostValues, cellSize),
+                  ..._buildGhostTiles(ghostPositions, ghostValues, cellSize),
                 // Board tiles + falling block
                 ..._buildTiles(
                   displayGrid,
@@ -269,16 +266,18 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
                   ),
                 // Gravity drop animated tiles
                 if (gravityDrops != null)
-                  ...gravityDrops.map((TileDrop drop) => _GravityTile(
-                        key: ValueKey(
-                          'gdrop_${drop.fromRow}_${drop.col}_${drop.value}',
-                        ),
-                        fromRow: drop.fromRow,
-                        toRow: drop.toRow,
-                        col: drop.col,
-                        value: drop.value,
-                        cellSize: cellSize,
-                      )),
+                  ...gravityDrops.map(
+                    (TileDrop drop) => _GravityTile(
+                      key: ValueKey(
+                        'gdrop_${drop.fromRow}_${drop.col}_${drop.value}',
+                      ),
+                      fromRow: drop.fromRow,
+                      toRow: drop.toRow,
+                      col: drop.col,
+                      value: drop.value,
+                      cellSize: cellSize,
+                    ),
+                  ),
                 // Merge explosion particle effects
                 if (newMerged != null)
                   ..._buildMergeExplosions(
@@ -300,10 +299,7 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
             final double dy = _shakeIntensity >= 0.7
                 ? _shakeAnimation.value * _shakeIntensity * 0.4
                 : 0;
-            return Transform.translate(
-              offset: Offset(dx, dy),
-              child: child,
-            );
+            return Transform.translate(offset: Offset(dx, dy), child: child);
           },
           child: board,
         );
@@ -333,7 +329,8 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
   }
 
   double get _currentSlideOffset {
-    if (!_blockSlideController.isAnimating && _blockSlideController.isCompleted) {
+    if (!_blockSlideController.isAnimating &&
+        _blockSlideController.isCompleted) {
       return 0;
     }
     return _blockSlideOffset * (1.0 - _blockSlideController.value);
@@ -382,12 +379,13 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
           final bool isHighlighted = highlighted?.contains(pos) ?? false;
           final bool isNewMerge = newMerged?.contains(pos) ?? false;
           final bool isFalling = fallingBlockPositions.contains(pos);
-          final double slidePixels =
-              isFalling ? _currentSlideOffset * cellSize : 0;
+          final double slidePixels = isFalling
+              ? _currentSlideOffset * cellSize
+              : 0;
 
           widgets.add(
             Positioned(
-              key: ValueKey('tile_${row}_${col}_${value}_$isNewMerge'),
+              key: ValueKey('tile_${row}_$col'),
               left: col * cellSize + 1 + slidePixels,
               top: row * cellSize + 1,
               child: TileWidget(
@@ -443,8 +441,7 @@ class _GameBoardWidgetState extends ConsumerState<GameBoardWidget>
       final int? value = grid[pos.row][pos.col];
       if (value == null) continue;
 
-      final int tier =
-          value < 64 ? 0 : ((log(value) / ln2) - 5).round();
+      final int tier = value < 64 ? 0 : ((log(value) / ln2) - 5).round();
       final double effectSize =
           cellSize * (2.0 + tier * 0.3 + chainLevel * 0.2);
       final double offset = (effectSize - cellSize) / 2;
@@ -517,9 +514,10 @@ class _SlidingTileState extends State<_SlidingTile>
       widget.toRow * widget.cellSize + 1,
     );
 
-    _positionAnimation = Tween<Offset>(begin: from, end: to).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInQuart),
-    );
+    _positionAnimation = Tween<Offset>(
+      begin: from,
+      end: to,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInQuart));
 
     _controller.forward();
   }
@@ -543,10 +541,7 @@ class _SlidingTileState extends State<_SlidingTile>
       child: SizedBox(
         width: widget.cellSize - 2,
         height: widget.cellSize - 2,
-        child: TileWidget(
-          value: widget.value,
-          size: widget.cellSize - 2,
-        ),
+        child: TileWidget(value: widget.value, size: widget.cellSize - 2),
       ),
     );
   }
@@ -594,9 +589,10 @@ class _GravityTileState extends State<_GravityTile>
       widget.toRow * widget.cellSize + 1,
     );
 
-    _positionAnimation = Tween<Offset>(begin: from, end: to).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInQuad),
-    );
+    _positionAnimation = Tween<Offset>(
+      begin: from,
+      end: to,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInQuad));
 
     _controller.forward();
   }
@@ -620,10 +616,7 @@ class _GravityTileState extends State<_GravityTile>
       child: SizedBox(
         width: widget.cellSize - 2,
         height: widget.cellSize - 2,
-        child: TileWidget(
-          value: widget.value,
-          size: widget.cellSize - 2,
-        ),
+        child: TileWidget(value: widget.value, size: widget.cellSize - 2),
       ),
     );
   }

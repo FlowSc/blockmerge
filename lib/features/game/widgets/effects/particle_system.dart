@@ -7,7 +7,7 @@ import 'particle.dart';
 /// Provides object pooling to eliminate GC pressure during gameplay,
 /// and z-depth sorting for correct draw order.
 class ParticleSystem {
-  static const int _maxParticles = 200;
+  static const int _maxParticles = 320;
 
   final List<Particle> _active = [];
   final List<Particle> _pool = [];
@@ -37,8 +37,7 @@ class ParticleSystem {
   }) {
     if (_active.length >= _maxParticles) return null;
 
-    final Particle p =
-        _pool.isNotEmpty ? _pool.removeLast() : Particle();
+    final Particle p = _pool.isNotEmpty ? _pool.removeLast() : Particle();
 
     p.init(
       x: x,

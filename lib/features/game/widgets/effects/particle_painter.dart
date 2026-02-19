@@ -8,8 +8,7 @@ import 'particle_system.dart';
 
 /// Renders all particles from a [ParticleSystem] onto a [Canvas].
 ///
-/// Uses additive blending (BlendMode.plus) for flash/orb/spark/ember
-/// so overlapping particles become brighter instead of muddier.
+/// Uses regular alpha compositing to avoid full-tile color flashing.
 class ParticlePainter extends CustomPainter {
   ParticlePainter({required this.system});
 
@@ -51,25 +50,22 @@ class ParticlePainter extends CustomPainter {
   void _drawFlash(Canvas canvas, Particle p, double opacity) {
     final double radius = p.projectedSize * p.lifeRatio * 2;
     if (radius < 0.5) return;
-    // Additive blend — overlapping flashes get brighter.
     _paint
-      ..blendMode = BlendMode.plus
+      ..blendMode = BlendMode.srcOver
       ..shader = ui.Gradient.radial(
         Offset(p.x, p.y),
         radius,
         [
-          Colors.white.withValues(alpha: opacity),
-          Colors.white.withValues(alpha: opacity * 0.7),
-          p.color.withValues(alpha: opacity * 0.4),
+          Colors.white.withValues(alpha: opacity * 0.35),
+          Colors.white.withValues(alpha: opacity * 0.2),
+          p.color.withValues(alpha: opacity * 0.25),
           p.color.withValues(alpha: 0),
         ],
         [0.0, 0.2, 0.6, 1.0],
       )
       ..maskFilter = null;
     canvas.drawCircle(Offset(p.x, p.y), radius, _paint);
-    _paint
-      ..shader = null
-      ..blendMode = BlendMode.srcOver;
+    _paint.shader = null;
   }
 
   void _drawRing(Canvas canvas, Particle p, double opacity) {
@@ -84,9 +80,12 @@ class ParticlePainter extends CustomPainter {
     // Bright white-tinted ring for visibility.
     _paint
       ..shader = null
-      ..blendMode = BlendMode.plus
-      ..color = Color.lerp(p.color, Colors.white, 0.5)!
-          .withValues(alpha: opacity * 0.8)
+      ..blendMode = BlendMode.srcOver
+      ..color = Color.lerp(
+        p.color,
+        Colors.white,
+        0.5,
+      )!.withValues(alpha: opacity * 0.55)
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeW
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, strokeW * 1.2);
@@ -110,15 +109,18 @@ class ParticlePainter extends CustomPainter {
     final Offset center = Offset(p.x, p.y);
     final Offset highlight = Offset(p.x - sz * 0.25, p.y - sz * 0.25);
     _paint
-      ..blendMode = BlendMode.plus
+      ..blendMode = BlendMode.srcOver
       ..shader = ui.Gradient.radial(
         highlight,
         sz * 2.0,
         [
-          Colors.white.withValues(alpha: opacity * 0.9),
-          Color.lerp(p.color, Colors.white, 0.3)!
-              .withValues(alpha: opacity * 0.8),
-          p.color.withValues(alpha: opacity * 0.4),
+          Colors.white.withValues(alpha: opacity * 0.28),
+          Color.lerp(
+            p.color,
+            Colors.white,
+            0.3,
+          )!.withValues(alpha: opacity * 0.35),
+          p.color.withValues(alpha: opacity * 0.3),
           p.color.withValues(alpha: 0),
         ],
         [0.0, 0.3, 0.6, 1.0],
@@ -129,7 +131,7 @@ class ParticlePainter extends CustomPainter {
     // White core dot for 3D highlight.
     _paint
       ..shader = null
-      ..color = Colors.white.withValues(alpha: opacity * 0.7);
+      ..color = Colors.white.withValues(alpha: opacity * 0.3);
     canvas.drawCircle(
       Offset(p.x - sz * 0.15, p.y - sz * 0.15),
       sz * 0.3,
@@ -145,12 +147,14 @@ class ParticlePainter extends CustomPainter {
     // Trail lines with fading thickness.
     _drawTrail(canvas, p, opacity * 0.7, sz * 0.8);
 
-    // Bright head — additive for glow.
     _paint
       ..shader = null
-      ..blendMode = BlendMode.plus
-      ..color = Color.lerp(p.color, Colors.white, 0.4)!
-          .withValues(alpha: opacity)
+      ..blendMode = BlendMode.srcOver
+      ..color = Color.lerp(
+        p.color,
+        Colors.white,
+        0.4,
+      )!.withValues(alpha: opacity * 0.6)
       ..maskFilter = null;
     canvas.drawCircle(Offset(p.x, p.y), sz, _paint);
     _paint.blendMode = BlendMode.srcOver;
@@ -175,8 +179,11 @@ class ParticlePainter extends CustomPainter {
     // Lighter fill — lerp toward white for visibility on dark background.
     _paint
       ..shader = null
-      ..color = Color.lerp(p.color, Colors.white, 0.3)!
-          .withValues(alpha: opacity * 0.85)
+      ..color = Color.lerp(
+        p.color,
+        Colors.white,
+        0.3,
+      )!.withValues(alpha: opacity * 0.85)
       ..style = PaintingStyle.fill
       ..maskFilter = null
       ..blendMode = BlendMode.srcOver;
@@ -199,37 +206,33 @@ class ParticlePainter extends CustomPainter {
     if (radius < 0.3) return;
 
     _paint
-      ..blendMode = BlendMode.plus
+      ..blendMode = BlendMode.srcOver
       ..shader = ui.Gradient.radial(
         Offset(p.x, p.y),
         radius * 1.5,
         [
-          Colors.white.withValues(alpha: opacity * 0.6),
-          Color.lerp(p.color, Colors.white, 0.3)!
-              .withValues(alpha: opacity * 0.7),
-          p.color.withValues(alpha: opacity * 0.2),
+          Colors.white.withValues(alpha: opacity * 0.22),
+          Color.lerp(
+            p.color,
+            Colors.white,
+            0.3,
+          )!.withValues(alpha: opacity * 0.32),
+          p.color.withValues(alpha: opacity * 0.22),
           p.color.withValues(alpha: 0),
         ],
         [0.0, 0.25, 0.6, 1.0],
       )
       ..maskFilter = null;
     canvas.drawCircle(Offset(p.x, p.y), radius * 1.5, _paint);
-    _paint
-      ..shader = null
-      ..blendMode = BlendMode.srcOver;
+    _paint.shader = null;
   }
 
   /// Draw a motion trail from recorded positions.
-  void _drawTrail(
-    Canvas canvas,
-    Particle p,
-    double opacity,
-    double maxWidth,
-  ) {
+  void _drawTrail(Canvas canvas, Particle p, double opacity, double maxWidth) {
     final int len = p.trailX.length;
     if (len < 2) return;
 
-    _trailPaint.blendMode = BlendMode.plus;
+    _trailPaint.blendMode = BlendMode.srcOver;
 
     for (int i = 0; i < len - 1; i++) {
       final double t = i / len; // 0..1, older = smaller t
@@ -237,8 +240,11 @@ class ParticlePainter extends CustomPainter {
       if (alpha < 0.01) continue;
       final double w = maxWidth * t;
       _trailPaint
-        ..color = Color.lerp(p.color, Colors.white, 0.2)!
-            .withValues(alpha: alpha)
+        ..color = Color.lerp(
+          p.color,
+          Colors.white,
+          0.2,
+        )!.withValues(alpha: alpha)
         ..strokeWidth = w
         ..strokeCap = StrokeCap.round;
       canvas.drawLine(
@@ -252,8 +258,11 @@ class ParticlePainter extends CustomPainter {
     if (len >= 1) {
       final double alpha = opacity * 0.7;
       _trailPaint
-        ..color = Color.lerp(p.color, Colors.white, 0.2)!
-            .withValues(alpha: alpha)
+        ..color = Color.lerp(
+          p.color,
+          Colors.white,
+          0.2,
+        )!.withValues(alpha: alpha)
         ..strokeWidth = maxWidth
         ..strokeCap = StrokeCap.round;
       canvas.drawLine(
